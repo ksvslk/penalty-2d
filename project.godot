@@ -1,0 +1,95 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "RigidBody2D",
+"class": "Ball",
+"language": "GDScript",
+"path": "res://scripts/ball.gd"
+}, {
+"base": "Button",
+"class": "CountryButton",
+"language": "GDScript",
+"path": "res://scripts/country_button.gd"
+}, {
+"base": "ColorRect",
+"class": "GoalIndicator",
+"language": "GDScript",
+"path": "res://scripts/goal_indicator.gd"
+}, {
+"base": "Node2D",
+"class": "Mediator",
+"language": "GDScript",
+"path": "res://scripts/level.gd"
+} ]
+_global_script_class_icons={
+"Ball": "",
+"CountryButton": "",
+"GoalIndicator": "",
+"Mediator": ""
+}
+
+[application]
+
+config/name="Penalty Frenzy"
+run/main_scene="res://Master.tscn"
+config/icon="res://icon.png"
+
+[autoload]
+
+Data="*res://autoload/Data.gd"
+C="*res://autoload/C.gd"
+DebugLine="*res://scenes/DebugLine.tscn"
+
+[display]
+
+window/size/width=1080
+window/size/height=2400
+window/size/test_width=800
+window/size/test_height=1280
+window/handheld/orientation="portrait"
+window/stretch/mode="2d"
+window/stretch/aspect="keep"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/FlexContainer/plugin.cfg", "res://addons/dockable_container/plugin.cfg" )
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[layer_names]
+
+2d_physics/layer_1="ball"
+2d_physics/layer_2="wall"
+2d_physics/layer_3="goal"
+2d_physics/layer_4="keeper"
+
+[locale]
+
+translation_remaps={
+"res://art/flag/default.png": PoolStringArray( "res://art/flag/dj.png:aa_DJ", "res://art/flag/er.png:aa_ER", "res://art/flag/et.png:aa_ET", "res://art/flag/za.png:af_ZA", "res://art/flag/pe.png:agr_PE", "res://art/flag/gh.png:ak_GH", "res://art/flag/et.png:am_ET", "res://art/flag/es.png:an_ES", "res://art/flag/in.png:anp_IN", "res://art/flag/ae.png:ar_AE", "res://art/flag/bh.png:ar_BH", "res://art/flag/dz.png:ar_DZ", "res://art/flag/eg.png:ar_EG", "res://art/flag/in.png:ar_IN", "res://art/flag/iq.png:ar_IQ", "res://art/flag/jo.png:ar_JO", "res://art/flag/kw.png:ar_KW", "res://art/flag/lb.png:ar_LB", "res://art/flag/ly.png:ar_LY", "res://art/flag/ma.png:ar_MA", "res://art/flag/om.png:ar_OM", "res://art/flag/qa.png:ar_QA", "res://art/flag/sa.png:ar_SA", "res://art/flag/sd.png:ar_SD", "res://art/flag/ss.png:ar_SS", "res://art/flag/sy.png:ar_SY", "res://art/flag/tn.png:ar_TN", "res://art/flag/ye.png:ar_YE", "res://art/flag/in.png:as_IN", "res://art/flag/es.png:ast_ES", "res://art/flag/pe.png:ayc_PE", "res://art/flag/pe.png:ay_PE", "res://art/flag/az.png:az", "res://art/flag/az.png:az_AZ", "res://art/flag/by.png:be", "res://art/flag/by.png:be_BY", "res://art/flag/zm.png:bem_ZM", "res://art/flag/dz.png:ber_DZ", "res://art/flag/ma.png:ber_MA", "res://art/flag/bg.png:bg", "res://art/flag/bg.png:bg_BG", "res://art/flag/in.png:bhb_IN", "res://art/flag/in.png:bho_IN", "res://art/flag/bd.png:bn_BD", "res://art/flag/in.png:bn_IN", "res://art/flag/cn.png:bo_CN", "res://art/flag/in.png:bo_IN", "res://art/flag/fr.png:br_FR", "res://art/flag/in.png:brx_IN", "res://art/flag/ba.png:bs_BA", "res://art/flag/er.png:byn_ER", "res://art/flag/ad.png:ca_AD", "res://art/flag/es.png:ca_ES", "res://art/flag/fr.png:ca_FR", "res://art/flag/it.png:ca_IT", "res://art/flag/ru.png:ce_RU", "res://art/flag/us.png:chr_US", "res://art/flag/tw.png:cmn_TW", "res://art/flag/ua.png:crh_UA", "res://art/flag/pl.png:csb_PL", "res://art/flag/cz.png:cs", "res://art/flag/cz.png:cs_CZ", "res://art/flag/ru.png:cv_RU", "res://art/flag/gb-wls.png:cy_GB", "res://art/flag/dk.png:da", "res://art/flag/dk.png:da_DK", "res://art/flag/at.png:de_AT", "res://art/flag/be.png:de_BE", "res://art/flag/ch.png:de_CH", "res://art/flag/de.png:de_DE", "res://art/flag/it.png:de_IT", "res://art/flag/lu.png:de_LU", "res://art/flag/in.png:doi_IN", "res://art/flag/mv.png:dv_MV", "res://art/flag/bt.png:dz_BT", "res://art/flag/cy.png:el_CY", "res://art/flag/gr.png:el_GR", "res://art/flag/ag.png:en_AG", "res://art/flag/au.png:en_AU", "res://art/flag/bw.png:en_BW", "res://art/flag/ca.png:en_CA", "res://art/flag/dk.png:en_DK", "res://art/flag/hk.png:en_HK", "res://art/flag/ie.png:en_IE", "res://art/flag/il.png:en_IL", "res://art/flag/in.png:en_IN", "res://art/flag/ng.png:en_NG", "res://art/flag/nz.png:en_NZ", "res://art/flag/ph.png:en_PH", "res://art/flag/sg.png:en_SG", "res://art/flag/us.png:en_US", "res://art/flag/za.png:en_ZA", "res://art/flag/zm.png:en_ZM", "res://art/flag/zw.png:en_ZW", "res://art/flag/ar.png:es_AR", "res://art/flag/bo.png:es_BO", "res://art/flag/cl.png:es_CL", "res://art/flag/co.png:es_CO", "res://art/flag/cr.png:es_CR", "res://art/flag/cu.png:es_CU", "res://art/flag/do.png:es_DO", "res://art/flag/ec.png:es_EC", "res://art/flag/es.png:es_ES", "res://art/flag/gt.png:es_GT", "res://art/flag/hn.png:es_HN", "res://art/flag/mx.png:es_MX", "res://art/flag/ni.png:es_NI", "res://art/flag/pa.png:es_PY", "res://art/flag/pe.png:es_PE", "res://art/flag/pr.png:es_PR", "res://art/flag/py.png:es_PY", "res://art/flag/sv.png:es_SV", "res://art/flag/us.png:es_US", "res://art/flag/uy.png:es_UY", "res://art/flag/ve.png:es_VE", "res://art/flag/ee.png:et_EE", "res://art/flag/es.png:eu_ES", "res://art/flag/ir.png:fa_IR", "res://art/flag/sn.png:ff_SN", "res://art/flag/fi.png:fi_FI", "res://art/flag/ph.png:fil_PH", "res://art/flag/fo.png:fo_FO", "res://art/flag/be.png:fr_BE", "res://art/flag/ca.png:fr_CA", "res://art/flag/ch.png:fr_CH", "res://art/flag/fr.png:fr_FR", "res://art/flag/lu.png:fr_LU", "res://art/flag/it.png:fur_IT", "res://art/flag/de.png:fy_DE", "res://art/flag/nl.png:fy_NL", "res://art/flag/ie.png:ga_IE", "res://art/flag/gb-sct.png:gd_GB", "res://art/flag/er.png:gez_ER", "res://art/flag/et.png:gez_ET", "res://art/flag/es.png:gl_ES", "res://art/flag/in.png:gu_IN", "res://art/flag/tw.png:hak_TW", "res://art/flag/ng.png:ha_NG", "res://art/flag/il.png:he_IL", "res://art/flag/in.png:hi_IN", "res://art/flag/in.png:hne_IN", "res://art/flag/hr.png:hr_HR", "res://art/flag/de.png:hsb_DE", "res://art/flag/ht.png:ht_HT", "res://art/flag/hu.png:hu_HU", "res://art/flag/mx.png:hus_MX", "res://art/flag/am.png:hy_AM", "res://art/flag/fr.png:ia_FR", "res://art/flag/id.png:id_ID", "res://art/flag/ng.png:ig_NG", "res://art/flag/ca.png:ik_CA", "res://art/flag/is.png:is_IS", "res://art/flag/ch.png:it_CH", "res://art/flag/it.png:it_IT", "res://art/flag/ca.png:iu_CA", "res://art/flag/jp.png:ja_JP", "res://art/flag/dz.png:kab_DZ", "res://art/flag/ge.png:ka_GE", "res://art/flag/kz.png:kk_KZ", "res://art/flag/gl.png:kl_GL", "res://art/flag/kh.png:km_KH", "res://art/flag/in.png:kn_IN", "res://art/flag/in.png:kok_IN", "res://art/flag/kr.png:ko_KR", "res://art/flag/in.png:ks_IN", "res://art/flag/tr.png:ku_TR", "res://art/flag/kg.png:ky_KG", "res://art/flag/lu.png:lb_LU", "res://art/flag/ug.png:lg_UG", "res://art/flag/be.png:li_BE", "res://art/flag/nl.png:li_NL", "res://art/flag/it.png:lij_IT", "res://art/flag/cd.png:ln_CD", "res://art/flag/la.png:lo_LA", "res://art/flag/lt.png:lt_LT", "res://art/flag/lv.png:lv_LV", "res://art/flag/tw.png:lzh_TW", "res://art/flag/in.png:mag_IN", "res://art/flag/in.png:mai_IN", "res://art/flag/mg.png:mg_MG", "res://art/flag/mh.png:mh_MH", "res://art/flag/ru.png:mhr_RU", "res://art/flag/nz.png:mi_NZ", "res://art/flag/ni.png:miq_NI", "res://art/flag/mk.png:mk_MK", "res://art/flag/in.png:ml_IN", "res://art/flag/in.png:mni_IN", "res://art/flag/mn.png:mn_MN", "res://art/flag/in.png:mr_IN", "res://art/flag/my.png:ms_MY", "res://art/flag/mt.png:mt_MT", "res://art/flag/mm.png:my_MM", "res://art/flag/ru.png:myv_RU", "res://art/flag/mx.png:nah_MX", "res://art/flag/tw.png:nan_TW", "res://art/flag/no.png:nb_NO", "res://art/flag/de.png:nds_DE", "res://art/flag/nl.png:nds_NL", "res://art/flag/np.png:ne_NP", "res://art/flag/mx.png:nhn_MX", "res://art/flag/nu.png:niu_NU", "res://art/flag/nz.png:niu_NZ", "res://art/flag/aw.png:nl_AW", "res://art/flag/be.png:nl_BE", "res://art/flag/nl.png:nl_NL", "res://art/flag/no.png:nn_NO", "res://art/flag/za.png:nso_ZA", "res://art/flag/fr.png:oc_FR", "res://art/flag/za.png:nr_ZA", "res://art/flag/et.png:om_ET", "res://art/flag/ke.png:om_KE", "res://art/flag/in.png:or_IN", "res://art/flag/ru.png:os_RU", "res://art/flag/in.png:pa_IN", "res://art/flag/nl.png:pap_AN", "res://art/flag/aw.png:pap_AW", "res://art/flag/cw.png:pap_CW", "res://art/flag/pk.png:pa_PK", "res://art/flag/pl.png:pl_PL", "res://art/flag/af.png:ps_AF", "res://art/flag/br.png:pt_BR", "res://art/flag/pt.png:pt_PT", "res://art/flag/pe.png:quy_PE", "res://art/flag/pe.png:quz_PE", "res://art/flag/in.png:raj_IN", "res://art/flag/ro.png:ro_RO", "res://art/flag/ru.png:ru_RU", "res://art/flag/ua.png:ru_UA", "res://art/flag/rw.png:rw_RW", "res://art/flag/in.png:sa_IN", "res://art/flag/in.png:sat_IN", "res://art/flag/it.png:sc_IT", "res://art/flag/gb-sct.png:sco", "res://art/flag/in.png:sd_IN", "res://art/flag/no.png:se_NO", "res://art/flag/lt.png:sgs_LT", "res://art/flag/ca.png:shs_CA", "res://art/flag/et.png:sid_ET", "res://art/flag/lk.png:si_LK", "res://art/flag/sk.png:sk_SK", "res://art/flag/si.png:sl_SI", "res://art/flag/dj.png:so_DJ", "res://art/flag/et.png:so_ET", "res://art/flag/ke.png:so_KE", "res://art/flag/so.png:so_SO", "res://art/flag/ml.png:son_ML", "res://art/flag/al.png:sq_AL", "res://art/flag/xk.png:sq_KV", "res://art/flag/mk.png:sq_MK", "res://art/flag/me.png:sr_ME", "res://art/flag/rs.png:sr_RS", "res://art/flag/za.png:ss_ZA", "res://art/flag/za.png:st_ZA", "res://art/flag/fi.png:sv_FI", "res://art/flag/se.png:sv_SE", "res://art/flag/ke.png:sw_KE", "res://art/flag/tz.png:sw_TZ", "res://art/flag/pl.png:szl_PL", "res://art/flag/in.png:ta_IN", "res://art/flag/lk.png:ta_LK", "res://art/flag/in.png:te_IN", "res://art/flag/tj.png:tg_TJ", "res://art/flag/np.png:the_NP", "res://art/flag/th.png:th_TH", "res://art/flag/er.png:ti_ER", "res://art/flag/et.png:ti_ET", "res://art/flag/er.png:tig_ER", "res://art/flag/tm.png:tk_TM", "res://art/flag/ph.png:tl_PH", "res://art/flag/za.png:tn_ZA", "res://art/flag/cy.png:tr_CY", "res://art/flag/tr.png:tr_TR", "res://art/flag/za.png:ts_ZA", "res://art/flag/ru.png:tt_RU", "res://art/flag/ma.png:tzm_MA", "res://art/flag/cn.png:ug_CN", "res://art/flag/ua.png:uk_UA", "res://art/flag/us.png:unm_US", "res://art/flag/in.png:ur_IN", "res://art/flag/pk.png:ur_PK", "res://art/flag/uz.png:uz_UZ", "res://art/flag/za.png:ve_ZA", "res://art/flag/vn.png:vi_VN", "res://art/flag/be.png:wa_BE", "res://art/flag/ch.png:wae_CH", "res://art/flag/et.png:wal_ET", "res://art/flag/sn.png:wo_SN", "res://art/flag/za.png:xh_ZA", "res://art/flag/us.png:yi_US", "res://art/flag/ng.png:yo_NG", "res://art/flag/hk.png:yue_HK", "res://art/flag/cn.png:zh_CN", "res://art/flag/hk.png:zh_HK", "res://art/flag/sg.png:zh_SG", "res://art/flag/tw.png:zh_TW", "res://art/flag/za.png:zu_ZA", "res://art/flag/id.png:id", "res://art/flag/gb-eng.png:en", "res://art/flag/gb-eng.png:en_GB", "res://art/flag/gb-eng.png:gv_GB", "res://art/flag/gb-eng.png:kw_GB" )
+}
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+quality/driver/driver_name="GLES2"
+vram_compression/import_etc=true
+vram_compression/import_etc2=false
+environment/default_environment="res://default_env.tres"

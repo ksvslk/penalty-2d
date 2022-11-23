@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://scripts/ball.gd" type="Script" id=1]
+[ext_resource path="res://art/football.svg" type="Texture" id=2]
+[ext_resource path="res://sound/kick.wav" type="AudioStream" id=3]
+[ext_resource path="res://art/flag/default.png" type="Texture" id=4]
+
+[sub_resource type="PhysicsMaterial" id=4]
+friction = 0.7
+bounce = 0.5
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 100.0
+
+[node name="Ball" type="RigidBody2D" groups=["pickable"]]
+position = Vector2( 494, 649 )
+z_index = 1
+collision_mask = 15
+input_pickable = true
+physics_material_override = SubResource( 4 )
+gravity_scale = 15.0
+continuous_cd = 2
+script = ExtResource( 1 )
+
+[node name="Football" type="Sprite" parent="."]
+scale = Vector2( 0.68, 0.68 )
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="KickSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 3 )
+pitch_scale = 0.5
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_left = -18.0
+margin_top = -52.0
+margin_right = 29.0
+margin_bottom = -20.0
+color = Color( 0, 0, 0, 0.0941176 )
+
+[node name="Flag" type="TextureRect" parent="."]
+margin_left = -16.0
+margin_top = -50.0
+margin_right = 27.0
+margin_bottom = -22.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 6
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

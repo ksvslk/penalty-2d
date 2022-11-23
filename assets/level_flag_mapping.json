@@ -1,0 +1,846 @@
+{
+    "1": {
+        "country":"San Marino",
+        "flag":"sm"
+    },
+    "2": {
+        "country":"Anguilla",
+        "flag":"ai"
+    },
+    "3": {
+        "country":"British Virgin Islands",
+        "flag":"vg"
+    },
+    "4": {
+        "country":"US Virgin Islands",
+        "flag":"vi"
+    },
+    "5": {
+        "country":"Sri Lanka",
+        "flag":"lk"
+    },
+    "6": {
+        "country":"Turks and Caicos Islands",
+        "flag":"tc"
+    },
+    "7": {
+        "country":"Guam",
+        "flag":"gu"
+    },
+    "8": {
+        "country":"Gibraltar",
+        "flag":"gi"
+    },
+    "9": {
+        "country":"Somalia",
+        "flag":"so"
+    },
+    "10": {
+        "country":"Bahamas",
+        "flag":"bs"
+    },
+    "11": {
+        "country":"Aruba",
+        "flag":"aw"
+    },
+    "12": {
+        "country":"Eritrea",
+        "flag":"er"
+    },
+    "13": {
+        "country":"Seychelles",
+        "flag":"sc"
+    },
+    "14": {
+        "country":"Timor-Leste",
+        "flag":"tl"
+    },
+    "15": {
+        "country":"Tonga",
+        "flag":"to"
+    },
+    "16": {
+        "country":"Liechtenstein",
+        "flag":"li"
+    },
+    "17": {
+        "country":"Cayman Islands",
+        "flag":"ky"
+    },
+    "18": {
+        "country":"Pakistan",
+        "flag":"pk"
+    },
+    "19": {
+        "country":"Djibouti",
+        "flag":"dj"
+    },
+    "20": {
+        "country":"Bangladesh",
+        "flag":"bd"
+    },
+    "21": {
+        "country":"Samoa",
+        "flag":"ws"
+    },
+    "22": {
+        "country":"Brunei Darussalam",
+        "flag":"bn"
+    },
+    "23": {
+        "country":"Cook Islands",
+        "flag":"ck"
+    },
+    "24": {
+        "country":"American Samoa",
+        "flag":"as"
+    },
+    "25": {
+        "country":"Laos",
+        "flag":"la"
+    },
+    "26": {
+        "country":"São Tomé and Príncipe",
+        "flag":"st"
+    },
+    "27": {
+        "country":"Bhutan",
+        "flag":"bt"
+    },
+    "28": {
+        "country":"Dominica",
+        "flag":"dm"
+    },
+    "29": {
+        "country":"Mongolia",
+        "flag":"mn"
+    },
+    "30": {
+        "country":"Macau",
+        "flag":"mo"
+    },
+    "31": {
+        "country":"Chad",
+        "flag":"td"
+    },
+    "32": {
+        "country":"Mauritius",
+        "flag":"mu"
+    },
+    "33": {
+        "country":"Montserrat",
+        "flag":"ms"
+    },
+    "34": {
+        "country":"St Vincent and the Grenadines",
+        "flag":"vc"
+    },
+    "35": {
+        "country":"Cambodia",
+        "flag":"kh"
+    },
+    "36": {
+        "country":"Belize",
+        "flag":"bz"
+    },
+    "37": {
+        "country":"Nepal",
+        "flag":"np"
+    },
+    "38": {
+        "country":"Moldova",
+        "flag":"md"
+    },
+    "39": {
+        "country":"Grenada",
+        "flag":"gd"
+    },
+    "40": {
+        "country":"St Lucia",
+        "flag":"lc"
+    },
+    "41": {
+        "country":"Guyana",
+        "flag":"gy"
+    },
+    "42": {
+        "country":"Puerto Rico",
+        "flag":"pr"
+    },
+    "43": {
+        "country":"Bermuda",
+        "flag":"bm"
+    },
+    "44": {
+        "country":"Malta",
+        "flag":"mt"
+    },
+    "45": {
+        "country":"Cuba",
+        "flag":"cu"
+    },
+    "46": {
+        "country":"Barbados",
+        "flag":"bb"
+    },
+    "47": {
+        "country":"South Sudan",
+        "flag":"ss"
+    },
+    "48": {
+        "country":"Vanuatu",
+        "flag":"vu"
+    },
+    "49": {
+        "country":"Fiji",
+        "flag":"fj"
+    },
+    "50": {
+        "country":"Tahiti",
+        "flag":"pf"
+    },
+    "51": {
+        "country":"New Caledonia",
+        "flag":"nc"
+    },
+    "52": {
+        "country":"Singapore",
+        "flag":"sg"
+    },
+    "53": {
+        "country":"Papua New Guinea",
+        "flag":"pg"
+    },
+    "54": {
+        "country":"Myanmar",
+        "flag":"mm"
+    },
+    "55": {
+        "country":"Taiwan",
+        "flag":"tw"
+    },
+    "56": {
+        "country":"Afghanistan",
+        "flag":"af"
+    },
+    "57": {
+        "country":"Yemen",
+        "flag":"ye"
+    },
+    "58": {
+        "country":"Maldives",
+        "flag":"mv"
+    },
+    "59": {
+        "country":"Dominican Republic",
+        "flag":"do"
+    },
+    "60": {
+        "country":"Indonesia",
+        "flag":"id"
+    },
+    "61": {
+        "country":"Andorra",
+        "flag":"ad"
+    },
+    "62": {
+        "country":"Liberia",
+        "flag":"lr"
+    },
+    "63": {
+        "country":"Kuwait",
+        "flag":"kw"
+    },
+    "64": {
+        "country":"Botswana",
+        "flag":"bw"
+    },
+    "65": {
+        "country":"Lesotho",
+        "flag":"ls"
+    },
+    "66": {
+        "country":"Malaysia",
+        "flag":"my"
+    },
+    "67": {
+        "country":"Hong Kong",
+        "flag":"hk"
+    },
+    "68": {
+        "country":"Lithuania",
+        "flag":"lt"
+    },
+    "69": {
+        "country":"Eswatini",
+        "flag":"sz"
+    },
+    "70": {
+        "country":"Nicaragua",
+        "flag":"ni"
+    },
+    "71": {
+        "country":"Burundi",
+        "flag":"bi"
+    },
+    "72": {
+        "country":"St Kitts and Nevis",
+        "flag":"kn"
+    },
+    "73": {
+        "country":"Suriname",
+        "flag":"sr"
+    },
+    "74": {
+        "country":"Ethiopia",
+        "flag":"et"
+    },
+    "75": {
+        "country":"Rwanda",
+        "flag":"rw"
+    },
+    "76": {
+        "country":"Solomon Islands",
+        "flag":"sb"
+    },
+    "77": {
+        "country":"Turkmenistan",
+        "flag":"tm"
+    },
+    "78": {
+        "country":"Latvia",
+        "flag":"lv"
+    },
+    "79": {
+        "country":"Philippines",
+        "flag":"ph"
+    },
+    "80": {
+        "country":"Central African Republic",
+        "flag":"cf"
+    },
+    "81": {
+        "country":"Antigua and Barbuda",
+        "flag":"ag"
+    },
+    "82": {
+        "country":"Tanzania",
+        "flag":"tz"
+    },
+    "83": {
+        "country":"Comoros",
+        "flag":"km"
+    },
+    "84": {
+        "country":"Sudan",
+        "flag":"sd"
+    },
+    "85": {
+        "country":"Togo",
+        "flag":"tg"
+    },
+    "86": {
+        "country":"The Gambia",
+        "flag":"gm"
+    },
+    "87": {
+        "country":"Zimbabwe",
+        "flag":"zw"
+    },
+    "88": {
+        "country":"Malawi",
+        "flag":"mw"
+    },
+    "89": {
+        "country":"Azerbaijan",
+        "flag":"az"
+    },
+    "90": {
+        "country":"Faroe Islands",
+        "flag":"fo"
+    },
+    "91": {
+        "country":"Niger",
+        "flag":"ne"
+    },
+    "92": {
+        "country":"Libya",
+        "flag":"ly"
+    },
+    "93": {
+        "country":"Angola",
+        "flag":"ao"
+    },
+    "94": {
+        "country":"Guatemala",
+        "flag":"gt"
+    },
+    "95": {
+        "country":"Sierra Leone",
+        "flag":"sl"
+    },
+    "96": {
+        "country":"Guinea-Bissau",
+        "flag":"gw"
+    },
+    "97": {
+        "country":"Namibia",
+        "flag":"na"
+    },
+    "98": {
+        "country":"Mozambique",
+        "flag":"mz"
+    },
+    "99": {
+        "country":"Kazakhstan",
+        "flag":"kz"
+    },
+    "100": {
+        "country":"Korea DPR",
+        "flag":"kp"
+    },
+    "101": {
+        "country":"Thailand",
+        "flag":"th"
+    },
+    "102": {
+        "country":"Cyprus",
+        "flag":"cy"
+    },
+    "103": {
+        "country":"Estonia",
+        "flag":"ee"
+    },
+    "104": {
+        "country":"Tajikistan",
+        "flag":"tj"
+    },
+    "105": {
+        "country":"Kosovo",
+        "flag":"xk"
+    },
+    "106": {
+        "country":"India",
+        "flag":"in"
+    },
+    "107": {
+        "country":"New Zealand",
+        "flag":"nz"
+    },
+    "108": {
+        "country":"Trinidad and Tobago",
+        "flag":"tt"
+    },
+    "109": {
+        "country":"Mauritania",
+        "flag":"mr"
+    },
+    "110": {
+        "country":"Madagascar",
+        "flag":"mg"
+    },
+    "111": {
+        "country":"Kenya",
+        "flag":"ke"
+    },
+    "112": {
+        "country":"Congo",
+        "flag":"cg"
+    },
+    "113": {
+        "country":"Lebanon",
+        "flag":"lb"
+    },
+    "114": {
+        "country":"Equatorial Guinea",
+        "flag":"gq"
+    },
+    "115": {
+        "country":"Belarus",
+        "flag":"by"
+    },
+    "116": {
+        "country":"Vietnam",
+        "flag":"vn"
+    },
+    "117": {
+        "country":"Kyrgys Republic",
+        "flag":"kg"
+    },
+    "118": {
+        "country":"Palestine",
+        "flag":"ps"
+    },
+    "119": {
+        "country":"Armenia",
+        "flag":"am"
+    },
+    "120": {
+        "country":"Luxembourg",
+        "flag":"lu"
+    },
+    "121": {
+        "country":"Benin",
+        "flag":"bj"
+    },
+    "122": {
+        "country":"Syria",
+        "flag":"sy"
+    },
+    "123": {
+        "country":"Uganda",
+        "flag":"ug"
+    },
+    "124": {
+        "country":"Zambia",
+        "flag":"zm"
+    },
+    "125": {
+        "country":"Haiti",
+        "flag":"ht"
+    },
+    "126": {
+        "country":"Curaçao",
+        "flag":"cw"
+    },
+    "127": {
+        "country":"Bahrain",
+        "flag":"bh"
+    },
+    "128": {
+        "country":"Jordan",
+        "flag":"jo"
+    },
+    "129": {
+        "country":"Guinea",
+        "flag":"gn"
+    },
+    "130": {
+        "country":"Bolivia",
+        "flag":"bo"
+    },
+    "131": {
+        "country":"Gabon",
+        "flag":"ga"
+    },
+    "132": {
+        "country":"Honduras",
+        "flag":"hn"
+    },
+    "133": {
+        "country":"China PR",
+        "flag":"cn"
+    },
+    "134": {
+        "country":"Georgia",
+        "flag":"ge"
+    },
+    "135": {
+        "country":"Uzbekistan",
+        "flag":"uz"
+    },
+    "136": {
+        "country":"Israel",
+        "flag":"il"
+    },
+    "137": {
+        "country":"Oman",
+        "flag":"om"
+    },
+    "138": {
+        "country":"El Salvador",
+        "flag":"sv"
+    },
+    "139": {
+        "country":"Congo DR",
+        "flag":"cd"
+    },
+    "140": {
+        "country":"Bulgaria",
+        "flag":"bg"
+    },
+    "141": {
+        "country":"Cabo Verde",
+        "flag":"cv"
+    },
+    "142": {
+        "country":"United Arab Emirates",
+        "flag":"ae"
+    },
+    "143": {
+        "country":"Montenegro",
+        "flag":"me"
+    },
+    "144": {
+        "country":"Iraq",
+        "flag":"iq"
+    },
+    "145": {
+        "country":"South Africa",
+        "flag":"za"
+    },
+    "146": {
+        "country":"Albania",
+        "flag":"al"
+    },
+    "147": {
+        "country":"North Macedonia",
+        "flag":"mk"
+    },
+    "148": {
+        "country":"Jamaica",
+        "flag":"jm"
+    },
+    "149": {
+        "country":"Slovenia",
+        "flag":"si"
+    },
+    "150": {
+        "country":"Iceland",
+        "flag":"is"
+    },
+    "151": {
+        "country":"Ghana",
+        "flag":"gh"
+    },
+    "152": {
+        "country":"Panama",
+        "flag":"pa"
+    },
+    "153": {
+        "country":"Northern Ireland",
+        "flag":"gb-nir"
+    },
+    "154": {
+        "country":"Bosnia and Herzegovina",
+        "flag":"ba"
+    },
+    "155": {
+        "country":"Venezuela",
+        "flag":"ve"
+    },
+    "156": {
+        "country":"Finland",
+        "flag":"fi"
+    },
+    "157": {
+        "country":"Slovakia",
+        "flag":"sk"
+    },
+    "158": {
+        "country":"Burkina Faso",
+        "flag":"bf"
+    },
+    "159": {
+        "country":"Romania",
+        "flag":"ro"
+    },
+    "160": {
+        "country":"Greece",
+        "flag":"gr"
+    },
+    "161": {
+        "country":"Saudi Arabia",
+        "flag":"sa"
+    },
+    "162": {
+        "country":"Qatar",
+        "flag":"qa"
+    },
+    "163": {
+        "country":"Republic of Ireland",
+        "flag":"ie"
+    },
+    "164": {
+        "country":"Côte d'Ivoire",
+        "flag":"ci"
+    },
+    "165": {
+        "country":"Paraguay",
+        "flag":"py"
+    },
+    "166": {
+        "country":"Mali",
+        "flag":"ml"
+    },
+    "167": {
+        "country":"Türkiye",
+        "flag":"tr"
+    },
+    "168": {
+        "country":"Ecuador",
+        "flag":"ec"
+    },
+    "169": {
+        "country":"Cameroon",
+        "flag":"cm"
+    },
+    "170": {
+        "country":"Norway",
+        "flag":"no"
+    },
+    "171": {
+        "country":"Canada",
+        "flag":"ca"
+    },
+    "172": {
+        "country":"Scotland",
+        "flag":"gb-sct"
+    },
+    "173": {
+        "country":"Egypt",
+        "flag":"eg"
+    },
+    "174": {
+        "country":"Australia",
+        "flag":"au"
+    },
+    "175": {
+        "country":"Algeria",
+        "flag":"dz"
+    },
+    "176": {
+        "country":"Hungary",
+        "flag":"hu"
+    },
+    "177": {
+        "country":"Czechia",
+        "flag":"cz"
+    },
+    "178": {
+        "country":"Austria",
+        "flag":"at"
+    },
+    "179": {
+        "country":"Russia",
+        "flag":"ru"
+    },
+    "180": {
+        "country":"Nigeria",
+        "flag":"ng"
+    },
+    "181": {
+        "country":"Costa Rica",
+        "flag":"cr"
+    },
+    "182": {
+        "country":"Tunisia",
+        "flag":"tn"
+    },
+    "183": {
+        "country":"Chile",
+        "flag":"cl"
+    },
+    "184": {
+        "country":"Korea Republic",
+        "flag":"kr"
+    },
+    "185": {
+        "country":"Ukraine",
+        "flag":"ua"
+    },
+    "186": {
+        "country":"Poland",
+        "flag":"pl"
+    },
+    "187": {
+        "country":"Sweden",
+        "flag":"se"
+    },
+    "188": {
+        "country":"Japan",
+        "flag":"jp"
+    },
+    "189": {
+        "country":"Peru",
+        "flag":"pe"
+    },
+    "190": {
+        "country":"Morocco",
+        "flag":"ma"
+    },
+    "191": {
+        "country":"Serbia",
+        "flag":"rs"
+    },
+    "192": {
+        "country":"IR Iran",
+        "flag":"ir"
+    },
+    "193": {
+        "country":"Wales",
+        "flag":"gb-wls"
+    },
+    "194": {
+        "country":"Senegal",
+        "flag":"sn"
+    },
+    "195": {
+        "country":"Colombia",
+        "flag":"co"
+    },
+    "196": {
+        "country":"USA",
+        "flag":"us"
+    },
+    "197": {
+        "country":"Switzerland",
+        "flag":"ch"
+    },
+    "198": {
+        "country":"Uruguay",
+        "flag":"uy"
+    },
+    "199": {
+        "country":"Mexico",
+        "flag":"mx"
+    },
+    "200": {
+        "country":"Croatia",
+        "flag":"hr"
+    },
+    "201": {
+        "country":"Germany",
+        "flag":"de"
+    },
+    "202": {
+        "country":"Denmark",
+        "flag":"dk"
+    },
+    "203": {
+        "country":"Portugal",
+        "flag":"pt"
+    },
+    "204": {
+        "country":"Netherlands",
+        "flag":"nl"
+    },
+    "205": {
+        "country":"Spain",
+        "flag":"es"
+    },
+    "206": {
+        "country":"Italy",
+        "flag":"it"
+    },
+    "207": {
+        "country":"England",
+        "flag":"gb-eng"
+    },
+    "208": {
+        "country":"France",
+        "flag":"fr"
+    },
+    "209": {
+        "country":"Argentina",
+        "flag":"ar"
+    },
+    "210": {
+        "country":"Belgium",
+        "flag":"be"
+    },
+    "211": {
+        "country":"Brazil",
+        "flag":"br"
+    }
+}
