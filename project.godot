@@ -60,7 +60,7 @@ window/stretch/aspect="keep"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/FlexContainer/plugin.cfg", "res://addons/dockable_container/plugin.cfg" )
+enabled=PoolStringArray(  )
 
 [gui]
 
