@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://scripts/ball.gd" type="Script" id=1]
 [ext_resource path="res://art/football.svg" type="Texture" id=2]
 [ext_resource path="res://sound/kick.wav" type="AudioStream" id=3]
 [ext_resource path="res://art/flag/default.png" type="Texture" id=4]
+[ext_resource path="res://sound/super.mp3" type="AudioStream" id=5]
 
 [sub_resource type="PhysicsMaterial" id=4]
 friction = 0.7
@@ -19,7 +20,6 @@ collision_mask = 15
 input_pickable = true
 physics_material_override = SubResource( 4 )
 gravity_scale = 15.0
-continuous_cd = 2
 script = ExtResource( 1 )
 
 [node name="Football" type="Sprite" parent="."]
@@ -32,6 +32,9 @@ shape = SubResource( 1 )
 [node name="KickSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 3 )
 pitch_scale = 0.5
+
+[node name="SuperShot" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 5 )
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 5.0

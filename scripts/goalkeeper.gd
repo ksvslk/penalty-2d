@@ -5,6 +5,9 @@ var swish_scene = load("res://scenes/GSwish.tscn")
 onready var home_position = global_position
 var protecting_goal_in_progress = false
 onready var flag = $Flag
+var counter := 0.0
+var move_to_center_time_limit := 12
+
 
 func _physics_process(delta):
 	protecting_goal_in_progress = false
@@ -19,7 +22,12 @@ func _physics_process(delta):
 			protecting_goal_in_progress = true
 			_add_swish(global_position)
 	if not protecting_goal_in_progress:
-		move_and_collide(Vector2(home_position.x - global_position.x, 0) * delta * speed)
+		if counter < move_to_center_time_limit:
+			counter += delta * speed
+		elif counter >= move_to_center_time_limit:
+			move_and_collide(Vector2(home_position.x - global_position.x, 0) * delta * speed)
+	elif protecting_goal_in_progress:
+		counter = 0
 
 func _add_swish(pos):
 	var new_swish = swish_scene.instance() as Sprite

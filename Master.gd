@@ -23,3 +23,16 @@ func _switch_level(nr:int) -> void:
 
 func _on_Button_pressed():
 	level_scroller.visible = !level_scroller.visible
+
+
+func _on_AddBall_pressed():
+	mediator.ball_count += 1
+	mediator.add_ball()
+
+
+func _on_RemoveBall_pressed():
+	if mediator.ball_count > 1:
+		mediator.ball_count -= 1
+		mediator.remove_ball()
+		
+		

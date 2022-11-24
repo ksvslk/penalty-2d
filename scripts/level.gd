@@ -27,6 +27,7 @@ const SCORE_ADDED_BONUS = 3
 const BONUS_TIME = 15
 
 onready var opponent = $Opponent
+var holding_ball := false
 
 
 func _ready():
@@ -34,7 +35,6 @@ func _ready():
 	Data.connect("best_score_updated", highest, "set_text")
 	Data.connect("level_info_updated", self, "_update_level_info")
 	Data.set_level_info()
-	start_level()
 	for i in ball_count:
 		var ball = ball_scene.instance() as Ball
 		ball.mediator = self
@@ -43,6 +43,21 @@ func _ready():
 		balls.push_front(ball)
 	goal_keeper.balls = balls
 
+
+func add_ball():
+	var ball = ball_scene.instance() as Ball
+	ball.mediator = self
+	ball.scale = ball.scale / 2
+	add_child_below_node(whistle_sound, ball)
+	balls.push_front(ball)
+	goal_keeper.balls = balls
+
+
+func remove_ball():
+	var ball = balls.pop_front()
+	ball.queue_free()
+	goal_keeper.balls = balls
+	
 
 func _update_level_info(dict: Dictionary):
 	highest.text = str(dict[C.BEST_SCORE])
@@ -108,6 +123,7 @@ func start_level():
 	(time.timer as Timer).stop()
 	whistle_sound.play()
 	round_is_active = true
+	time.original_start_time = time_limit
 	time.start_time = time_limit
 	restart.visible = false
 	score.text = str(0)

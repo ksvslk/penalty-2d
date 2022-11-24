@@ -19,13 +19,13 @@
 [sub_resource type="PhysicsMaterial" id=4]
 
 [sub_resource type="RectangleShape2D" id=20]
-extents = Vector2( 539.5, 95.25 )
+extents = Vector2( 540, 276.5 )
 
 [sub_resource type="RectangleShape2D" id=23]
-extents = Vector2( 156.188, 1206.09 )
+extents = Vector2( 1644, 303.249 )
 
 [sub_resource type="RectangleShape2D" id=6]
-extents = Vector2( 156.188, 1205.41 )
+extents = Vector2( 1644.5, 301.002 )
 
 [sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 539.5, 15.125 )
@@ -35,7 +35,7 @@ bounce = 0.5
 absorbent = true
 
 [sub_resource type="RectangleShape2D" id=19]
-extents = Vector2( 1110, 97.5 )
+extents = Vector2( 539.5, 259.75 )
 
 [sub_resource type="DynamicFontData" id=7]
 font_path = "res://fonts/Alexandria-Bold.ttf"
@@ -117,16 +117,18 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="TopLine2" type="CollisionShape2D" parent="Level/Walls"]
-position = Vector2( 280.5, 2302.25 )
+[node name="BottomWall" type="CollisionShape2D" parent="Level/Walls"]
+position = Vector2( 280, 2483.5 )
 shape = SubResource( 20 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Level/Walls"]
-position = Vector2( -418, 1197.09 )
+[node name="LeftWall" type="CollisionShape2D" parent="Level/Walls"]
+position = Vector2( -563, 1116 )
+rotation = 1.57079
 shape = SubResource( 23 )
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Level/Walls"]
-position = Vector2( 977.625, 1196.41 )
+[node name="RightWall" type="CollisionShape2D" parent="Level/Walls"]
+position = Vector2( 1121, 1115.5 )
+rotation = -1.57079
 shape = SubResource( 6 )
 
 [node name="Goal" type="Area2D" parent="Level"]
@@ -135,7 +137,7 @@ collision_layer = 4
 space_override = 1
 
 [node name="TopLine" type="CollisionShape2D" parent="Level/Goal"]
-position = Vector2( 279.5, -27.875 )
+position = Vector2( 281, -8 )
 shape = SubResource( 5 )
 
 [node name="GoalStatic" type="StaticBody2D" parent="Level"]
@@ -143,8 +145,9 @@ position = Vector2( 260, 0 )
 collision_layer = 4
 physics_material_override = SubResource( 21 )
 
-[node name="TopLine" type="CollisionShape2D" parent="Level/GoalStatic"]
-position = Vector2( 245, -108 )
+[node name="TopWall" type="CollisionShape2D" parent="Level/GoalStatic"]
+position = Vector2( 279.5, -268 )
+rotation = -3.14159
 shape = SubResource( 19 )
 
 [node name="Display" type="HBoxContainer" parent="Level"]
@@ -360,8 +363,26 @@ margin_bottom = 2383.0
 custom_fonts/font = SubResource( 25 )
 text = "Levels"
 
+[node name="AddBall" type="Button" parent="CanvasLayer"]
+margin_left = 188.0
+margin_top = 2235.0
+margin_right = 320.0
+margin_bottom = 2364.0
+custom_fonts/font = SubResource( 25 )
+text = "+"
+
+[node name="RemoveBall" type="Button" parent="CanvasLayer"]
+margin_left = 335.0
+margin_top = 2235.0
+margin_right = 467.0
+margin_bottom = 2364.0
+custom_fonts/font = SubResource( 25 )
+text = "-"
+
 [connection signal="body_shape_entered" from="Level/Goal" to="Level" method="_on_Goal_body_shape_entered"]
 [connection signal="round_done" from="Level/Display/Time" to="Level" method="_on_Time_round_done"]
 [connection signal="timeout" from="Level/Display/Time/Timer" to="Level/Display/Time" method="_on_Timer_timeout"]
 [connection signal="gui_input" from="Level/Restart" to="Level" method="_on_Restart_gui_input"]
 [connection signal="pressed" from="CanvasLayer/Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="CanvasLayer/AddBall" to="." method="_on_AddBall_pressed"]
+[connection signal="pressed" from="CanvasLayer/RemoveBall" to="." method="_on_RemoveBall_pressed"]

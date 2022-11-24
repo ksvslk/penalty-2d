@@ -9,6 +9,7 @@ const DIFFICULTY: String = "DIFFICULTY"
 const PASS_SCORE: String = "PASS_SCORE"
 const PLAYER_SCORE: String = "PLAYER_SCORE"
 const BEST_SCORE: String = "BEST_SCORE"
+const UNLOCKED: String = "UNLOCKED"
 
 
 # global
