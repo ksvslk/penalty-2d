@@ -1,0 +1,25 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[sub_resource type="Shader" id=28]
+code = "shader_type canvas_item;
+
+uniform bool grayscale = false;
+
+void fragment()
+{
+	if (grayscale)
+	{
+		vec4 col = texture(TEXTURE, UV);
+		float grey = (col.r + col.g + col.b) * 0.333;
+		COLOR = vec4(grey, grey, grey, col.a);
+	}
+	else {
+		vec4 col = texture(TEXTURE, UV);
+		COLOR = vec4(col.r, col.g, col.b, col.a);
+	}
+}"
+
+[resource]
+resource_local_to_scene = true
+shader = SubResource( 28 )
+shader_param/grayscale = false

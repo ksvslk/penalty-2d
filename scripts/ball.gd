@@ -11,9 +11,11 @@ onready var super_shot = $SuperShot
 
 var current_y_velocity = 0.0
 var football_trail = load("res://scenes/FootballTrail.tscn")
-var trail_speed_limit := -5000
+var trail_speed_limit := -5500
 var did_get_over_limit := false
 
+func _ready():
+	use_parent_material = true
 
 func _input_event(viewport, event, shape_idx):
 	if event is InputEventScreenTouch and get_global_mouse_position().y > 1200 and mediator.round_is_active and not mediator.holding_ball: # check if left click is pressed on the body
@@ -33,7 +35,6 @@ func _add_trail() -> void:
 func _input(event): # check if left click is released even outside of the body
 	if event is InputEventScreenTouch and not event.pressed:
 		if held:
-			print("BALL SPEED: ", current_y_velocity)
 			if current_y_velocity < trail_speed_limit:
 				super_shot.play()
 				did_get_over_limit = true

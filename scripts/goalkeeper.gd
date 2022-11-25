@@ -7,6 +7,7 @@ var protecting_goal_in_progress = false
 onready var flag = $Flag
 var counter := 0.0
 var move_to_center_time_limit := 12
+onready var collision_polygon = $CollisionPolygon2D
 
 
 func _physics_process(delta):
@@ -43,3 +44,17 @@ func _remove_swish(swish):
 	tween.tween_property(swish, "modulate:a", 0.0,1)
 	tween.tween_callback(swish, "queue_free")
 	tween.play()
+
+
+func set_flag(texture):
+	flag.texture = texture
+	var width = flag.texture.get_size().x * 0.26
+	var height = flag.texture.get_size().y * 0.26
+	$CollisionPolygon2D.set_polygon(
+		[
+			Vector2(-width/2,-height/2),
+			Vector2(width/2, -height/2),
+			Vector2(width/2,height/2),
+			Vector2(-width/2, height/2),
+		]
+	)

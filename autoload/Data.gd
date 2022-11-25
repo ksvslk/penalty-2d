@@ -32,14 +32,40 @@ func _ready():
 func load_level(nr: int) -> void:
 	current_level = str(nr)
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, current_level)
+	_config.save(_path)
 	set_level_info(nr)
 
 
+func next_level() -> void:
+	var next = int(current_level) + 1
+	current_level = str(next)
+	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, current_level)
+	_config.save(_path)
+	set_level_info()
+	
+	
 func get_levels() -> Dictionary:
 	var info = Dictionary()
 	for i in range(1, _total_levels_plus_one):
-		info[_config.get_value(str(i), C.FLAG)]=_config.get_value(str(i), C.COUNTRY)
+		info[_config.get_value(str(i), C.FLAG)] = [
+			_config.get_value(str(i), C.COUNTRY),
+			_config.get_value(str(i), C.UNLOCKED)
+		]
 	return info
+	
+
+func unlock_next_level() -> bool:
+	var next = str(int(current_level) + 1)
+	if _config.get_value(next, C.UNLOCKED) as bool:
+		return false
+	else:
+		_config.set_value(next, C.UNLOCKED, true)
+		_config.save(_path)
+		return true
+
+
+func is_level_unlocked(nr: int) -> bool:
+	return _config.get_value(str(nr), C.UNLOCKED) as bool
 
 
 func set_level_info(level_nr: int = int(current_level)) -> void:

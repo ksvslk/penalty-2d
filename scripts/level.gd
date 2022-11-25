@@ -9,12 +9,19 @@ var swish_scene = load("res://scenes/Swish.tscn")
 var ball_scene = load("res://scenes/Ball.tscn")
 var ball_dict = {}
 var round_is_active = true
+
+onready var continue_button = $Continue
 onready var restart = $Restart
 onready var goal_indicator = $GoalIndicator
 onready var goal_sound = $GoalSound
 onready var bonus_goal_sound = $BonusGoalSound
 onready var whistle_sound = $WhistleSound
 onready var target_score = $TargetScore
+onready var level_passed = $LevelPassed
+onready var start_timer = $StartTimer
+onready var start_countdown = $StartCountdown
+onready var tick_sound = $TickSound
+onready var celebrate = $Celebrate
 
 onready var time = $Display/Time
 onready var score = $Display/Score
@@ -25,20 +32,26 @@ onready var goal_keeper = $GoalKeeper
 const SCORE_ADDED = 2
 const SCORE_ADDED_BONUS = 3
 const BONUS_TIME = 15
+var countdown = 3
 
 onready var opponent = $Opponent
 var holding_ball := false
-
+signal level_passed
+signal start_level
 
 func _ready():
+	round_is_active = false
 	get_tree().paused = true
 	Data.connect("best_score_updated", highest, "set_text")
 	Data.connect("level_info_updated", self, "_update_level_info")
 	Data.set_level_info()
 	for i in ball_count:
+		var even = i % 2 == 0
 		var ball = ball_scene.instance() as Ball
 		ball.mediator = self
 		ball.scale = ball.scale / 2
+		if even:
+			ball.position.x += 20
 		add_child_below_node(whistle_sound, ball)
 		balls.push_front(ball)
 	goal_keeper.balls = balls
@@ -60,9 +73,11 @@ func remove_ball():
 	
 
 func _update_level_info(dict: Dictionary):
+	restart.visible = false
+	continue_button.visible = false
 	highest.text = str(dict[C.BEST_SCORE])
 	time_limit = dict[C.TIME_LIMIT]
-	goal_keeper.flag.texture = load("res://art/flag/" + dict[C.FLAG] + ".png")
+	goal_keeper.set_flag(load("res://art/flag/" + dict[C.FLAG] + ".png"))
 	goal_keeper.speed = dict[C.DIFFICULTY]
 	target_score.text = "Target: " + str(dict[C.PASS_SCORE])
 	get_tree().paused = false
@@ -104,14 +119,27 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 		else:
 			goal_sound.play()
 			score.text = str(int(score.text) + SCORE_ADDED)
+		_play_fanfares_when_level_passed()
+
+
+func _play_fanfares_when_level_passed() -> void:
+	if int(score.text) >= int(target_score.text):
+		target_score.modulate = Color.greenyellow
+		if Data.unlock_next_level():
+			level_passed.play()
 
 
 func _on_Time_round_done():
+	_play_fanfares_when_level_passed()
 	Data.update_score(int(score.text))
 	whistle_sound.play()
 	round_is_active = false
+	var passed = int(score.text) >= int(target_score.text)
+	if passed:
+		celebrate.play()
+		emit_signal("level_passed")
+		continue_button.visible = true
 	restart.visible = true
-	restart.text = "SCORE: " + score.text + "\n RESTART?"
 
 
 func _on_Restart_gui_input(event):
@@ -120,11 +148,34 @@ func _on_Restart_gui_input(event):
 
 
 func start_level():
+	emit_signal("start_level")
+	start_countdown.visible = true
+	countdown = 3
+	start_countdown.text = str(countdown)
+	start_timer.start()
+
+
+func start_level_actions():
+	celebrate.stop()
 	(time.timer as Timer).stop()
 	whistle_sound.play()
 	round_is_active = true
 	time.original_start_time = time_limit
 	time.start_time = time_limit
 	restart.visible = false
+	continue_button.visible = false
 	score.text = str(0)
+	target_score.modulate = Color.yellow
 	time.restart_timer_for_next_round()
+
+
+func _on_StartTimer_timeout():
+	if countdown > 0:
+		countdown -= 1
+		tick_sound.play()
+		start_countdown.text = str(countdown)
+		start_timer.start()
+	else:
+		start_countdown.visible = false
+		start_timer.stop()
+		start_level_actions()
