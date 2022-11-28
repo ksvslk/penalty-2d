@@ -1,5 +1,26 @@
 extends Node
 
+# achievements
+const achievement_fast_shot: String = "CggIrImotG8QAhAC"
+const achievement_all_6_continents: String = "CggIrImotG8QAhAD"
+const achievement_last_second_pass: String = "CggIrImotG8QAhAE"
+const achievement_fast_shot_5x: String = "CggIrImotG8QAhAF"
+const achievement_same_country: String = "CggIrImotG8QAhAG"
+const achievement_goal_on_first_second: String = "CggIrImotG8QAhAH"
+const achievement_shot_to_corner: String = "CggIrImotG8QAhAI"
+const achievement_shot_to_center: String = "CggIrImotG8QAhAJ"
+const achievement_world_champion: String = "CggIrImotG8QAhAK"
+const achievement_50_second_rounds: String = "CggIrImotG8QAhAL"
+const achievement_60_second_rounds: String = "CggIrImotG8QAhAM"
+const achievement_70_second_rounds: String = "CggIrImotG8QAhAN"
+
+# leaderboard
+const leaderboard_goat: String = "CggIrImotG8QAhAB"
+
+# temp
+var fast_shot_unlocked := false
+var fast_shot_5x_counter := 0
+
 
 # level
 const FLAG: String = "FLAG"
@@ -15,6 +36,8 @@ const UNLOCKED: String = "UNLOCKED"
 # global
 const TOTAL_SCORE: String = "TOTAL_SCORE"
 const CURRENT_LEVEL: String = "CURRENT_LEVEL"
+const PLAYER_TEAM: String = "PLAYER_TEAM"
+const FIRST_TIME: String = "FIRST_TIME"
 
 
 const VARIOUS_SECTION: String = "VARIOUS_SECTION"
@@ -22,3 +45,22 @@ const VARIOUS_SECTION: String = "VARIOUS_SECTION"
 func vibrate(duration: int = 10):
 	if OS.has_feature("vibrate"):
 		Input.vibrate_handheld(duration)
+
+
+func get_language() -> String:
+	var locale = TranslationServer.get_locale()
+	if locale:
+		var language = locale.split("_")[0].to_lower()
+		return language
+	return "MISSING"
+	
+	
+func get_country() -> String:
+	var locale = TranslationServer.get_locale()
+	if locale.findn("_") != -1:
+		var country = locale.split("_")[1].to_lower()
+		return country
+	return "MISSING"
+	
+
+

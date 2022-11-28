@@ -8,7 +8,7 @@ func fade_out_text(country):
 	modulate.a = 1.0
 	text = country
 	visible = true
-	tween = create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN)
+	tween = create_tween().set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_IN)
 	tween.tween_property(self, "modulate:a", 0.0, 4.0)
 	tween.tween_callback(self, "set_visible", [false])
 	tween.play()

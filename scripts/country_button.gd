@@ -7,8 +7,9 @@ var is_activated = false
 onready var label = $Label
 onready var texture_button = $TextureButton
 
+
 func _ready():
-	texture_button.texture_normal = texture
+	texture_button.texture = texture
 	label.text = country
 	if is_activated:
 		activate_button()

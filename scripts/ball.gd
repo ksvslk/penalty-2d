@@ -14,8 +14,10 @@ var football_trail = load("res://scenes/FootballTrail.tscn")
 var trail_speed_limit := -5500
 var did_get_over_limit := false
 
+
 func _ready():
 	use_parent_material = true
+
 
 func _input_event(viewport, event, shape_idx):
 	if event is InputEventScreenTouch and get_global_mouse_position().y > 1200 and mediator.round_is_active and not mediator.holding_ball: # check if left click is pressed on the body
@@ -38,11 +40,23 @@ func _input(event): # check if left click is released even outside of the body
 			if current_y_velocity < trail_speed_limit:
 				super_shot.play()
 				did_get_over_limit = true
+				unlock_ball_related_achievements()
 			else:
+				C.fast_shot_5x_counter = 0
 				kick_sound.play()
 		held = false
 		mediator.holding_ball = false
 		mediator.remove_swish(name)
+
+
+func unlock_ball_related_achievements():
+	if not C.fast_shot_unlocked:
+		GPack.unlock_achievement(C.achievement_fast_shot)
+	C.fast_shot_unlocked = true
+	C.fast_shot_5x_counter += 1
+	if C.fast_shot_5x_counter == 5:
+		C.fast_shot_5x_counter = 0
+		GPack.unlock_achievement(C.achievement_fast_shot_5x)
 
 
 func _integrate_forces(state):
@@ -72,6 +86,11 @@ func _process(delta):
 		mediator.add_swish(name, [global_position, get_global_mouse_position()])
 
 
+func set_flag(country: String):
+	var flag_texture = load("res://art/flag/" + country + ".png")
+	$Flag.texture = flag_texture
+	
+	
 func is_in_bounds(pos: Vector2 = global_position) -> bool:
 	var c = collision_shape_2d.shape as CircleShape2D
 	var viewport_x = get_viewport().get_visible_rect().size.x

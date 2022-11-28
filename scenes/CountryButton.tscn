@@ -8,12 +8,13 @@
 font_path = "res://fonts/Alexandria-Bold.ttf"
 
 [sub_resource type="DynamicFont" id=26]
-size = 60
+size = 50
 outline_size = 5
 outline_color = Color( 0, 0, 0, 1 )
 font_data = SubResource( 25 )
 
 [node name="CountryButton" type="Button"]
+self_modulate = Color( 0, 0, 0, 0.784314 )
 material = ExtResource( 3 )
 margin_right = 1000.0
 margin_bottom = 240.0
@@ -41,15 +42,16 @@ valign = 1
 autowrap = true
 uppercase = true
 
-[node name="TextureButton" type="TextureButton" parent="."]
+[node name="TextureButton" type="TextureRect" parent="."]
 use_parent_material = true
 margin_left = 683.0
 margin_right = 980.0
 margin_bottom = 240.0
 rect_pivot_offset = Vector2( -421, -222 )
-mouse_filter = 1
-texture_normal = ExtResource( 1 )
+mouse_filter = 2
+texture = ExtResource( 1 )
 expand = true
+stretch_mode = 6
 __meta__ = {
 "_editor_description_": ""
 }

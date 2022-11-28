@@ -15,17 +15,21 @@ func _ready():
 	text = str(start_time)
 
 
+func get_seconds_passed() -> int:
+	return original_start_time - start_time
+
+
 func _on_Timer_timeout():
-	if start_time > 1:
+	if start_time >= 1:
 		start_time -= 1
-		if start_time < 17:
+		if start_time < 16:
 			if tick:
 				tick_sound.play()
 			else:
 				tock_sound.play()
 			tick = !tick
 			modulate = Color.red
-		text = str(start_time - 1)
+		text = str(start_time)
 		timer.start()
 	else:
 		emit_signal("round_done")

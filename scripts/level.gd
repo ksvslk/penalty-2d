@@ -9,6 +9,7 @@ var swish_scene = load("res://scenes/Swish.tscn")
 var ball_scene = load("res://scenes/Ball.tscn")
 var ball_dict = {}
 var round_is_active = true
+var new_high_score_announced = false
 
 onready var continue_button = $Continue
 onready var restart = $Restart
@@ -34,10 +35,11 @@ const SCORE_ADDED_BONUS = 3
 const BONUS_TIME = 15
 var countdown = 3
 
-onready var opponent = $Opponent
+onready var message = $Message
 var holding_ball := false
 signal level_passed
 signal start_level
+
 
 func _ready():
 	round_is_active = false
@@ -50,11 +52,19 @@ func _ready():
 		var ball = ball_scene.instance() as Ball
 		ball.mediator = self
 		ball.scale = ball.scale / 2
+		ball.set_flag(Data.get_player_team())
 		if even:
 			ball.position.x += 20
 		add_child_below_node(whistle_sound, ball)
 		balls.push_front(ball)
 	goal_keeper.balls = balls
+	Data.connect("team_changed", self, "_update_balls_flags")
+
+
+
+func _update_balls_flags(flag: String) -> void:
+	for b in balls:
+		b.set_flag(flag)
 
 
 func add_ball():
@@ -73,6 +83,8 @@ func remove_ball():
 	
 
 func _update_level_info(dict: Dictionary):
+	round_is_active = false
+	time.timer.stop()
 	restart.visible = false
 	continue_button.visible = false
 	highest.text = str(dict[C.BEST_SCORE])
@@ -82,7 +94,26 @@ func _update_level_info(dict: Dictionary):
 	target_score.text = "Target: " + str(dict[C.PASS_SCORE])
 	get_tree().paused = false
 	start_level()
-	opponent.fade_out_text(dict[C.COUNTRY])
+	message.fade_out_text(dict[C.COUNTRY])
+	_check_for_country_achievements(dict[C.COUNTRY], dict[C.FLAG])
+	_check_for_time_limit_achievements()
+
+
+func _check_for_country_achievements(country: String, flag: String):
+	if country == "Australia":
+		GPack.unlock_achievement(C.achievement_all_6_continents)
+	if flag == Data.get_player_team():
+		GPack.unlock_achievement(C.achievement_same_country)
+
+
+func _check_for_time_limit_achievements():
+	match int(Data.current_level):
+		50:
+			GPack.unlock_achievement(C.achievement_50_second_rounds)
+		60:
+			GPack.unlock_achievement(C.achievement_60_second_rounds)
+		70:
+			GPack.unlock_achievement(C.achievement_70_second_rounds)
 
 
 func add_swish(name: String, points: Array):
@@ -111,6 +142,7 @@ func remove_swish(name: String):
 
 func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
 	if round_is_active:
+		var time_left = time.start_time
 		var bonus = time.start_time <= BONUS_TIME
 		goal_indicator.goal(bonus)
 		if bonus:
@@ -119,27 +151,62 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 		else:
 			goal_sound.play()
 			score.text = str(int(score.text) + SCORE_ADDED)
-		_play_fanfares_when_level_passed()
+		_check_corner_shot(body)
+		_check_center_shot(body)
+		_play_fanfares_when_level_passed(time_left)
+		_check_high_score()
+		_check_first_second_goal_achievement()
+
+func _check_corner_shot(body):
+	if body.global_position.x <= 140 or body.global_position.x >= 940:
+		GPack.unlock_achievement(C.achievement_shot_to_corner)
+	
+	
+func _check_center_shot(body):
+	if body.global_position.x >= 500 and body.global_position.x <= 580:
+		GPack.unlock_achievement(C.achievement_shot_to_center)
 
 
-func _play_fanfares_when_level_passed() -> void:
+func _check_first_second_goal_achievement():
+	if time.get_seconds_passed() <= 1:
+		print("GOAL ON FIRST SECOND!")
+		GPack.unlock_achievement(C.achievement_goal_on_first_second)
+
+
+func _play_fanfares_when_level_passed(time_left = 1337) -> void:
 	if int(score.text) >= int(target_score.text):
 		target_score.modulate = Color.greenyellow
-		if Data.unlock_next_level():
+		var next_country = Data.unlock_next_level()
+		if not next_country.empty():
+			if time_left <= 1:
+				GPack.unlock_achievement(C.achievement_last_second_pass)
+			message.fade_out_text("Unlocked " + next_country + "!")
 			level_passed.play()
 
 
+func _check_high_score() -> void:
+	if int(score.text) > int(highest.text) and int(highest.text) != 0 and not new_high_score_announced:
+		new_high_score_announced = true
+		level_passed.play()
+		message.fade_out_text("New high score!")
+			
+
 func _on_Time_round_done():
-	_play_fanfares_when_level_passed()
 	Data.update_score(int(score.text))
 	whistle_sound.play()
 	round_is_active = false
 	var passed = int(score.text) >= int(target_score.text)
 	if passed:
+		_check_champion_achievement()
 		celebrate.play()
 		emit_signal("level_passed")
 		continue_button.visible = true
 	restart.visible = true
+
+
+func _check_champion_achievement():
+	if int(Data.current_level) == 211:
+		GPack.unlock_achievement(C.achievement_world_champion)
 
 
 func _on_Restart_gui_input(event):
@@ -149,28 +216,31 @@ func _on_Restart_gui_input(event):
 
 func start_level():
 	emit_signal("start_level")
+	celebrate.stop()
+	restart.visible = false
+	continue_button.visible = false
 	start_countdown.visible = true
 	countdown = 3
 	start_countdown.text = str(countdown)
 	start_timer.start()
-
+	tick_sound.play()
+	
 
 func start_level_actions():
-	celebrate.stop()
+	emit_signal("start_level")
 	(time.timer as Timer).stop()
 	whistle_sound.play()
 	round_is_active = true
+	new_high_score_announced = false
 	time.original_start_time = time_limit
 	time.start_time = time_limit
-	restart.visible = false
-	continue_button.visible = false
 	score.text = str(0)
 	target_score.modulate = Color.yellow
 	time.restart_timer_for_next_round()
 
 
 func _on_StartTimer_timeout():
-	if countdown > 0:
+	if countdown > 1:
 		countdown -= 1
 		tick_sound.play()
 		start_countdown.text = str(countdown)

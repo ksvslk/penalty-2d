@@ -11,6 +11,8 @@ var current_level := "-1"
 
 signal best_score_updated(new_score)
 signal level_info_updated(dict)
+signal level_select_updated(levels)
+signal team_changed(new_team)
 
 ########################
 #	 DATABASE PART	  #
@@ -54,14 +56,16 @@ func get_levels() -> Dictionary:
 	return info
 	
 
-func unlock_next_level() -> bool:
+func unlock_next_level() -> String:
 	var next = str(int(current_level) + 1)
 	if _config.get_value(next, C.UNLOCKED) as bool:
-		return false
+		return String()
 	else:
 		_config.set_value(next, C.UNLOCKED, true)
 		_config.save(_path)
-		return true
+		var next_country = _config.get_value(next, C.COUNTRY)
+		emit_signal("level_select_updated", get_levels())
+		return next_country
 
 
 func is_level_unlocked(nr: int) -> bool:
@@ -89,6 +93,10 @@ func update_score(score):
 	_config.save(_path)
 
 
+func is_first_time() -> bool:
+	return _config.get_value(C.VARIOUS_SECTION, C.FIRST_TIME)
+	
+
 func _set_best_results(new_score):
 	var best_score = _config.get_value(current_level, C.BEST_SCORE)
 	if new_score > best_score:
@@ -96,9 +104,23 @@ func _set_best_results(new_score):
 		_config.set_value(current_level, C.BEST_SCORE, new_score)
 
 
+func get_player_team() -> String:
+	return _config.get_value(C.VARIOUS_SECTION, C.PLAYER_TEAM)
+
+
+func change_player_team(team: String):
+	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, team)
+	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, false)
+	_config.save(_path)
+	emit_signal("team_changed", team)
+
+
 func _set_initial_launch_settings():
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, "1")
 	_config.set_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, 0)
+	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, "gb-eng")
+	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, true)
+	
 	var file = File.new()
 	file.open("res://assets/level_flag_mapping.json", File.READ)
 	var data = JSON.parse(file.get_as_text())
@@ -157,10 +179,3 @@ func _set_initial_launch_settings():
 	_config.save(_path)
 	file.close()
 
-
-const FLAG: String = "FLAG"
-const COUNTRY: String = "COUNTRY"
-const DIFFICULTY: String = "DIFFICULTY"
-const PASS_SCORE: String = "PASS_SCORE"
-const PLAYER_SCORE: String = "PLAYER_SCORE"
-const BEST_SCORE: String = "BEST_SCORE"
