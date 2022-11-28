@@ -48,7 +48,7 @@ func vibrate(duration: int = 10):
 
 
 func get_language() -> String:
-	var locale = TranslationServer.get_locale()
+	var locale = OS.get_locale()
 	if locale:
 		var language = locale.split("_")[0].to_lower()
 		return language
@@ -56,7 +56,7 @@ func get_language() -> String:
 	
 	
 func get_country() -> String:
-	var locale = TranslationServer.get_locale()
+	var locale = OS.get_locale()
 	if locale.findn("_") != -1:
 		var country = locale.split("_")[1].to_lower()
 		return country

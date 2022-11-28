@@ -585,20 +585,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -8.0
 margin_right = -1.0
-color = Color( 0.0509804, 0.0823529, 0, 0.980392 )
+color = Color( 0.0509804, 0.0823529, 0, 0.862745 )
 script = ExtResource( 26 )
 
 [node name="CountryScroller" type="ScrollContainer" parent="CanvasLayer/SelectCountry"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = 8.0
+margin_top = 160.0
 margin_bottom = -197.0
 scroll_horizontal_enabled = false
 scroll_deadzone = 25
 
 [node name="CountryList" type="VBoxContainer" parent="CanvasLayer/SelectCountry/CountryScroller"]
 margin_right = 1079.0
-margin_bottom = 2203.0
+margin_bottom = 2051.0
 mouse_default_cursor_shape = 8
 size_flags_horizontal = 3
 size_flags_vertical = 3

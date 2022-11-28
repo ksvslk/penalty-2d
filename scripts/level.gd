@@ -157,13 +157,14 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 		_check_high_score()
 		_check_first_second_goal_achievement()
 
+
 func _check_corner_shot(body):
-	if body.global_position.x <= 140 or body.global_position.x >= 940:
+	if body.global_position.x <= 105 or body.global_position.x >= 975:
 		GPack.unlock_achievement(C.achievement_shot_to_corner)
 	
 	
 func _check_center_shot(body):
-	if body.global_position.x >= 500 and body.global_position.x <= 580:
+	if body.global_position.x >= 530 and body.global_position.x <= 550:
 		GPack.unlock_achievement(C.achievement_shot_to_center)
 
 
