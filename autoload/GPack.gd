@@ -35,9 +35,9 @@ func submit_score(score: int) -> void:
 		plugin.submitScore(score)
 
 
-func show_leaderboard() -> void:
+func show_leaderboard(id: String) -> void:
 	if plugin:
-		plugin.showLeaderboard()
+		plugin.showLeaderboard(id)
 
 
 ################
