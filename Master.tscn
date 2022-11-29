@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=2]
+[gd_scene load_steps=59 format=2]
 
 [ext_resource path="res://sound/tick.wav" type="AudioStream" id=1]
 [ext_resource path="res://art/grass.png" type="Texture" id=2]
@@ -22,9 +22,12 @@
 [ext_resource path="res://scripts/lights.gd" type="Script" id=20]
 [ext_resource path="res://fonts/Alexandria-Bold.ttf" type="DynamicFontData" id=21]
 [ext_resource path="res://sound/celebrate.wav" type="AudioStream" id=22]
+[ext_resource path="res://art/football.svg" type="Texture" id=23]
 [ext_resource path="res://scripts/country_select_button.gd" type="Script" id=24]
 [ext_resource path="res://art/flag/np.png" type="Texture" id=25]
 [ext_resource path="res://scripts/select_country.gd" type="Script" id=26]
+[ext_resource path="res://scripts/options_container.gd" type="Script" id=27]
+[ext_resource path="res://scripts/level_scroller.gd" type="Script" id=28]
 
 [sub_resource type="CanvasItemMaterial" id=31]
 blend_mode = 1
@@ -55,8 +58,8 @@ extents = Vector2( 539.5, 259.75 )
 [sub_resource type="DynamicFontData" id=7]
 font_path = "res://fonts/Alexandria-Bold.ttf"
 
-[sub_resource type="DynamicFont" id=8]
-size = 100
+[sub_resource type="DynamicFont" id=43]
+size = 85
 font_data = SubResource( 7 )
 
 [sub_resource type="StyleBoxFlat" id=14]
@@ -77,6 +80,10 @@ expand_margin_bottom = 2.0
 [sub_resource type="DynamicFont" id=18]
 size = 32
 font_data = ExtResource( 13 )
+
+[sub_resource type="DynamicFont" id=42]
+size = 95
+font_data = SubResource( 7 )
 
 [sub_resource type="DynamicFont" id=28]
 size = 32
@@ -111,18 +118,15 @@ outline_size = 10
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 21 )
 
-[sub_resource type="DynamicFont" id=25]
-size = 100
-font_data = ExtResource( 13 )
-
-[sub_resource type="DynamicFontData" id=35]
-font_path = "res://fonts/Alexandria-Bold.ttf"
-
-[sub_resource type="DynamicFont" id=36]
+[sub_resource type="DynamicFont" id=8]
 size = 50
+font_data = SubResource( 7 )
+
+[sub_resource type="DynamicFont" id=40]
+size = 45
 outline_size = 5
 outline_color = Color( 0, 0, 0, 1 )
-font_data = SubResource( 35 )
+font_data = ExtResource( 13 )
 
 [sub_resource type="StyleBoxFlat" id=37]
 content_margin_left = 50.0
@@ -138,8 +142,26 @@ content_margin_left = 50.0
 content_margin_right = 50.0
 content_margin_top = 20.0
 content_margin_bottom = 20.0
-bg_color = Color( 0, 0, 0, 0.580392 )
+bg_color = Color( 0, 0, 0, 0.2 )
 shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="DynamicFont" id=25]
+size = 50
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 13 )
+
+[sub_resource type="StyleBoxLine" id=41]
+thickness = 3
+
+[sub_resource type="DynamicFontData" id=35]
+font_path = "res://fonts/Alexandria-Bold.ttf"
+
+[sub_resource type="DynamicFont" id=36]
+size = 50
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = SubResource( 35 )
 
 [sub_resource type="DynamicFont" id=39]
 size = 75
@@ -325,7 +347,7 @@ margin_right = 353.0
 margin_bottom = 127.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 43 )
 custom_styles/normal = SubResource( 14 )
 text = "0"
 align = 1
@@ -352,7 +374,7 @@ margin_right = 716.0
 margin_bottom = 127.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 42 )
 custom_styles/normal = SubResource( 14 )
 text = "60"
 align = 1
@@ -384,7 +406,7 @@ margin_right = 1080.0
 margin_bottom = 127.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 43 )
 custom_styles/normal = SubResource( 14 )
 text = "0"
 align = 1
@@ -528,11 +550,43 @@ text = "3"
 align = 1
 valign = 1
 
+[node name="BallPositions" type="Node2D" parent="Level"]
+
+[node name="Position2D" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 110, 2071 )
+
+[node name="Position2D2" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 328, 2071 )
+
+[node name="Position2D3" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 544, 2071 )
+
+[node name="Position2D4" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 760, 2071 )
+
+[node name="Position2D5" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 969, 2071 )
+
+[node name="Position2D6" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 969, 1834 )
+
+[node name="Position2D7" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 760, 1834 )
+
+[node name="Position2D8" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 544, 1834 )
+
+[node name="Position2D9" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 328, 1834 )
+
+[node name="Position2D10" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 110, 1834 )
+
 [node name="FPS" type="Label" parent="."]
-margin_left = 40.0
-margin_top = 2246.0
-margin_right = 162.0
-margin_bottom = 2369.0
+margin_left = 940.0
+margin_top = 74.0
+margin_right = 1062.0
+margin_bottom = 197.0
 custom_fonts/font = SubResource( 8 )
 text = "22"
 script = ExtResource( 4 )
@@ -540,44 +594,131 @@ script = ExtResource( 4 )
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 pause_mode = 2
 
-[node name="LevelScroller" type="ScrollContainer" parent="CanvasLayer"]
+[node name="OptionsContainer" type="Control" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 27 )
+
+[node name="LevelScroller" type="ScrollContainer" parent="CanvasLayer/OptionsContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_bottom = -205.0
+margin_top = -8.0
+margin_bottom = -193.0
 scroll_horizontal_enabled = false
 scroll_deadzone = 25
+script = ExtResource( 28 )
 
-[node name="LevelsList" type="VBoxContainer" parent="CanvasLayer/LevelScroller"]
+[node name="LevelsList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer/LevelScroller"]
 margin_right = 1080.0
-margin_bottom = 2195.0
+margin_bottom = 2215.0
 mouse_default_cursor_shape = 8
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Button" type="Button" parent="CanvasLayer"]
-margin_left = 495.0
-margin_top = 2219.0
-margin_right = 1035.0
-margin_bottom = 2383.0
+[node name="Options" type="Button" parent="CanvasLayer/OptionsContainer"]
+margin_left = 540.0
+margin_top = 2234.0
+margin_right = 1048.0
+margin_bottom = 2377.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 40 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/focus = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Options"
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="OptionsList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer"]
+visible = false
+margin_left = 406.0
+margin_top = 1756.0
+margin_right = 1050.0
+margin_bottom = 2190.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Levels" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_right = 644.0
+margin_bottom = 102.0
+mouse_filter = 1
+custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 25 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
 text = "Levels"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
 
-[node name="AddBall" type="Button" parent="CanvasLayer"]
-margin_left = 188.0
-margin_top = 2235.0
-margin_right = 320.0
-margin_bottom = 2364.0
-custom_fonts/font = SubResource( 25 )
-text = "+"
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 106.0
+margin_right = 644.0
+margin_bottom = 116.0
+custom_constants/separation = 10
+custom_styles/separator = SubResource( 41 )
 
-[node name="RemoveBall" type="Button" parent="CanvasLayer"]
-margin_left = 335.0
-margin_top = 2235.0
-margin_right = 467.0
-margin_bottom = 2364.0
+[node name="AddBall" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 120.0
+margin_right = 644.0
+margin_bottom = 222.0
+mouse_filter = 1
+custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 25 )
-text = "-"
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "Buy Ball"
+icon = ExtResource( 23 )
+align = 0
+icon_align = 2
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="RemoveAds" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 226.0
+margin_right = 644.0
+margin_bottom = 328.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 25 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "Remove Ads"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="RemoveAdsAnd2Balls" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 332.0
+margin_right = 644.0
+margin_bottom = 434.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 25 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "Remove Ads + 2 Balls"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
 
 [node name="SelectCountry" type="ColorRect" parent="CanvasLayer"]
 visible = false
@@ -669,9 +810,11 @@ __meta__ = {
 [connection signal="timeout" from="Level/Display/Time/Timer" to="Level/Display/Time" method="_on_Timer_timeout"]
 [connection signal="gui_input" from="Level/Restart" to="Level" method="_on_Restart_gui_input"]
 [connection signal="gui_input" from="Level/Continue" to="." method="_on_Continue_gui_input"]
-[connection signal="pressed" from="CanvasLayer/Button" to="." method="_on_Button_pressed"]
-[connection signal="pressed" from="CanvasLayer/AddBall" to="." method="_on_AddBall_pressed"]
-[connection signal="pressed" from="CanvasLayer/RemoveBall" to="." method="_on_RemoveBall_pressed"]
+[connection signal="add_ball" from="CanvasLayer/OptionsContainer" to="." method="_on_OptionsContainer_add_ball"]
+[connection signal="switch_level" from="CanvasLayer/OptionsContainer" to="." method="_on_OptionsContainer_switch_level"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/Options" to="CanvasLayer/OptionsContainer" method="_on_Options_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/Levels" to="CanvasLayer/OptionsContainer" method="_on_Levels_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/AddBall" to="CanvasLayer/OptionsContainer" method="_on_AddBall_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectCountry/VBoxContainer/SelectedCountry" to="CanvasLayer/SelectCountry" method="_on_SelectedCountry_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectCountry/VBoxContainer/ConfirmButton" to="CanvasLayer/SelectCountry" method="_on_ConfirmButton_pressed"]
 

@@ -47,19 +47,8 @@ func _ready():
 	Data.connect("best_score_updated", highest, "set_text")
 	Data.connect("level_info_updated", self, "_update_level_info")
 	Data.set_level_info()
-	for i in ball_count:
-		var even = i % 2 == 0
-		var ball = ball_scene.instance() as Ball
-		ball.mediator = self
-		ball.scale = ball.scale / 2
-		ball.set_flag(Data.get_player_team())
-		if even:
-			ball.position.x += 20
-		add_child_below_node(whistle_sound, ball)
-		balls.push_front(ball)
-	goal_keeper.balls = balls
+	_add_all_balls()
 	Data.connect("team_changed", self, "_update_balls_flags")
-
 
 
 func _update_balls_flags(flag: String) -> void:
@@ -67,10 +56,19 @@ func _update_balls_flags(flag: String) -> void:
 		b.set_flag(flag)
 
 
-func add_ball():
+func _add_all_balls():
+	var ball_positions = $BallPositions.get_children()
+	for i in ball_count:
+		add_ball(ball_positions[i])
+
+
+func add_ball(pos = $BallPositions.get_children()[0]):
 	var ball = ball_scene.instance() as Ball
 	ball.mediator = self
 	ball.scale = ball.scale / 2
+	ball.set_flag(Data.get_player_team())
+	# position
+	ball.global_position = pos.position
 	add_child_below_node(whistle_sound, ball)
 	balls.push_front(ball)
 	goal_keeper.balls = balls
