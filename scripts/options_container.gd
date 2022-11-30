@@ -11,7 +11,6 @@ onready var options = $HBoxContainer/Options
 onready var level_scroller = $LevelScroller
 var currently_visible_suboption = null
 
-signal add_ball
 signal switch_level
 
 func _on_Options_pressed():
@@ -26,11 +25,6 @@ func _on_Levels_pressed():
 	options_list.hide()
 	currently_visible_suboption = level_scroller
 
-
-func _on_AddBall_pressed():
-	options_list.hide()
-	emit_signal("add_ball")
-	
 
 func switch_level(index):
 	_on_BackButton_pressed()
@@ -72,11 +66,12 @@ func _on_BackButton_pressed():
 
 func _on_ShowLeaderboard_pressed():
 	GPack.show_leaderboard(C.leaderboard_goat)
+	_on_BackButton_pressed()
 
 
 func _on_ShowAchievements_pressed():
 	GPack.show_achievements()
-
+	_on_BackButton_pressed()
 
 
 func _on_BackButton_gui_input(event):

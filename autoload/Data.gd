@@ -5,6 +5,7 @@ onready var _config := ConfigFile.new()
 const _path: String = "user://data.cfg"
 const _total_levels_plus_one := 212 # each level has its own section: "1", "2" etc.
 const _initial_best_score := 0
+const _max_balls_allowed_in_one_level := 5
 
 var current_level := "-1"
 
@@ -80,6 +81,8 @@ func set_level_info(level_nr: int = int(current_level)) -> void:
 	info[C.DIFFICULTY]= _config.get_value(str(level_nr), C.DIFFICULTY)
 	info[C.PASS_SCORE]= _config.get_value(str(level_nr), C.PASS_SCORE)
 	info[C.BEST_SCORE]= _config.get_value(str(level_nr), C.BEST_SCORE)
+	info[C.REWARDED_BALLS] = _config.get_value(str(level_nr), C.REWARDED_BALLS)
+	info[C.ETERNAL_BALLS] = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
 	emit_signal("level_info_updated", info)
 	
 	
@@ -115,11 +118,30 @@ func change_player_team(team: String):
 	emit_signal("team_changed", team)
 
 
+func get_max_balls_to_add_count() -> int:
+	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS)
+	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+	return C.MAX_BALLS_ALLOWED - (rewarded + eternal + C.default_balls_count)
+
+
+func add_rewarded_ball():
+	var current_balls = _config.get_value(current_level, C.REWARDED_BALLS)
+	_config.set_value(current_level, C.REWARDED_BALLS, current_balls + 1)
+	_config.save(_path)
+
+
+func add_eternal_ball():
+	var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, current_balls + 1)
+	_config.save(_path)
+	
+
 func _set_initial_launch_settings():
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, "1")
 	_config.set_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, 0)
 	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, "gb-eng")
 	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, true)
+	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
 	
 	var file = File.new()
 	file.open("res://assets/level_flag_mapping.json", File.READ)
@@ -171,6 +193,7 @@ func _set_initial_launch_settings():
 		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)
 		_config.set_value(String(i), C.PLAYER_SCORE, 0)
 		_config.set_value(String(i), C.BEST_SCORE, 0)
+		_config.set_value(String(i), C.REWARDED_BALLS, 0)
 		if i == 1:
 			_config.set_value(String(i), C.UNLOCKED, true)
 		else:

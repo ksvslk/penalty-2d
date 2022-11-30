@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://art/random_selection.png" type="Texture" id=1]
+[ext_resource path="res://scripts/shine_effect.gd" type="Script" id=2]
+
+[sub_resource type="CanvasItemMaterial" id=7]
+blend_mode = 1
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Curve" id=8]
+_data = [ Vector2( 0, 0 ), 0.0, 2.49166, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Gradient" id=9]
+offsets = PoolRealArray( 0, 0.497453, 1 )
+colors = PoolColorArray( 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1 )
+
+[node name="SpeedlinesShineEffect" type="CPUParticles2D"]
+modulate = Color( 1, 0.690196, 0, 1 )
+material = SubResource( 7 )
+amount = 6
+lifetime = 3.0
+texture = ExtResource( 1 )
+gravity = Vector2( 0, 0 )
+angle = 360.0
+angle_random = 1.0
+scale_amount = 6.0
+scale_amount_random = 0.3
+scale_amount_curve = SubResource( 8 )
+color_ramp = SubResource( 9 )
+hue_variation = 0.02
+hue_variation_random = 1.0
+anim_offset = 1.0
+anim_offset_random = 1.0
+script = ExtResource( 2 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 7.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

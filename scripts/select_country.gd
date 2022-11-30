@@ -7,6 +7,15 @@ onready var v_box_container = $VBoxContainer
 onready var country_scroller = $CountryScroller
 
 
+func _ready():
+	get_tree().paused = true
+	if Data.is_first_time() == true:
+		initialize_select_country()
+		visible = true
+	else:
+		get_tree().paused = false
+
+
 func initialize_select_country():
 	var select_country_buttons = []
 	var language = C.get_language()

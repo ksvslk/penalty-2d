@@ -21,6 +21,10 @@ const leaderboard_goat: String = "CggIrImotG8QAhAB"
 var fast_shot_unlocked := false
 var fast_shot_5x_counter := 0
 
+# ...
+var default_balls_count := 3
+const MAX_BALLS_ALLOWED := 10
+
 
 # level
 const FLAG: String = "FLAG"
@@ -31,6 +35,7 @@ const PASS_SCORE: String = "PASS_SCORE"
 const PLAYER_SCORE: String = "PLAYER_SCORE"
 const BEST_SCORE: String = "BEST_SCORE"
 const UNLOCKED: String = "UNLOCKED"
+const REWARDED_BALLS: String = "REWARDED_BALLS"
 
 
 # global
@@ -38,6 +43,7 @@ const TOTAL_SCORE: String = "TOTAL_SCORE"
 const CURRENT_LEVEL: String = "CURRENT_LEVEL"
 const PLAYER_TEAM: String = "PLAYER_TEAM"
 const FIRST_TIME: String = "FIRST_TIME"
+const ETERNAL_BALLS: String = "ETERNAL_BALLS"
 
 
 const VARIOUS_SECTION: String = "VARIOUS_SECTION"

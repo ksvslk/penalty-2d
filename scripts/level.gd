@@ -7,6 +7,7 @@ export var time_limit := 40
 
 var swish_scene = load("res://scenes/Swish.tscn")
 var ball_scene = load("res://scenes/Ball.tscn")
+var add_ball_effect = load("res://scenes/SpeedlinesShineEffect.tscn")
 var ball_dict = {}
 var round_is_active = true
 var new_high_score_announced = false
@@ -29,6 +30,7 @@ onready var score = $Display/Score
 onready var highest = $Display/Highest
 var balls = []
 onready var goal_keeper = $GoalKeeper
+onready var watch_ad = $WatchAd
 
 const SCORE_ADDED = 2
 const SCORE_ADDED_BONUS = 3
@@ -46,8 +48,8 @@ func _ready():
 	get_tree().paused = true
 	Data.connect("best_score_updated", highest, "set_text")
 	Data.connect("level_info_updated", self, "_update_level_info")
-	Data.set_level_info()
-	_add_all_balls()
+	if not Data.is_first_time():
+		Data.set_level_info()
 	Data.connect("team_changed", self, "_update_balls_flags")
 
 
@@ -56,7 +58,15 @@ func _update_balls_flags(flag: String) -> void:
 		b.set_flag(flag)
 
 
+func _remove_all_balls():
+	var balls_container = $BallsContainer
+	balls.clear()
+	for b in balls_container.get_children():
+		balls_container.remove_child(b)
+
+	
 func _add_all_balls():
+	_remove_all_balls()
 	var ball_positions = $BallPositions.get_children()
 	for i in ball_count:
 		add_ball(ball_positions[i])
@@ -67,9 +77,8 @@ func add_ball(pos = $BallPositions.get_children()[0]):
 	ball.mediator = self
 	ball.scale = ball.scale / 2
 	ball.set_flag(Data.get_player_team())
-	# position
 	ball.global_position = pos.position
-	add_child_below_node(whistle_sound, ball)
+	$BallsContainer.add_child(ball)
 	balls.push_front(ball)
 	goal_keeper.balls = balls
 
@@ -81,6 +90,9 @@ func remove_ball():
 	
 
 func _update_level_info(dict: Dictionary):
+	print("_update_level_info", round_is_active)
+	ball_count = min(C.default_balls_count + dict[C.REWARDED_BALLS] + dict[C.ETERNAL_BALLS], 10)
+	_add_all_balls()
 	round_is_active = false
 	time.timer.stop()
 	restart.visible = false
@@ -200,6 +212,9 @@ func _on_Time_round_done():
 		celebrate.play()
 		emit_signal("level_passed")
 		continue_button.visible = true
+	else:
+		if Data.get_max_balls_to_add_count() > 0 and GPack.is_rewarded_ad_loaded():
+			watch_ad.visible = true
 	restart.visible = true
 
 

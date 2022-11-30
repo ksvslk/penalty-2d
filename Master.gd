@@ -1,20 +1,15 @@
 extends Node
 class_name Master
 
-
 var scrolling := false
 onready var mediator = get_node("Level")
-onready var select_country = $CanvasLayer/SelectCountry
+onready var watch_ad = $Level/WatchAd
 
 
 func _ready():
-	get_tree().paused = true
-	if Data.is_first_time() == true:
-		select_country.initialize_select_country()
-		select_country.visible = true
-	else:
-		get_tree().paused = false
-
+	if GPack.plugin:
+		GPack.plugin.connect(GPack.s_reward_earned, self, "_on_BonusList_add_ball")
+	
 
 func _on_RemoveBall_pressed():
 	if mediator.ball_count > 1:
@@ -27,11 +22,17 @@ func _on_Continue_gui_input(event):
 		Data.next_level()
 
 
-func _on_OptionsContainer_add_ball():
+func _on_OptionsContainer_switch_level(nr):
+	get_tree().paused = true
+	Data.load_level(nr)
+
+
+func _on_BonusList_add_ball(rewardType:String = "", rewardAmount:int = -1):
+	Data.add_eternal_ball()
 	mediator.ball_count += 1
 	mediator.add_ball()
 
 
-func _on_OptionsContainer_switch_level(nr):
-	get_tree().paused = true
-	Data.load_level(nr)
+func _on_WatchAd_pressed():
+	GPack.show_rewarded_ad()
+	watch_ad.visible = false
