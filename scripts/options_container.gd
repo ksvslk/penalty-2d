@@ -8,6 +8,8 @@ onready var bonus = $HBoxContainer/Bonus
 onready var bonus_list = $BonusList
 onready var options_list = $OptionsList
 onready var options = $HBoxContainer/Options
+onready var total_score = $OptionsList/TotalScore
+
 onready var level_scroller = $LevelScroller
 var currently_visible_suboption = null
 
@@ -17,6 +19,7 @@ func _on_Options_pressed():
 	options_list.visible = true
 	currently_visible_suboption = options_list
 	back_button.visible = true
+	total_score.text = "Total score: " + str(Data.get_total_score())
 	_hide_all_menu_buttons()
 
 

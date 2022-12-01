@@ -2,6 +2,7 @@ extends Node2D
 class_name Mediator
 
 export var ball_count := 15
+export var eternal_balls := 0
 export var time_limit := 40
 
 
@@ -43,19 +44,11 @@ signal level_passed
 signal start_level
 
 
-func _ready():
+func start_game():
 	round_is_active = false
-	get_tree().paused = true
 	Data.connect("best_score_updated", highest, "set_text")
 	Data.connect("level_info_updated", self, "_update_level_info")
-	if not Data.is_first_time():
-		Data.set_level_info()
-	Data.connect("team_changed", self, "_update_balls_flags")
-
-
-func _update_balls_flags(flag: String) -> void:
-	for b in balls:
-		b.set_flag(flag)
+	Data.set_level_info()
 
 
 func _remove_all_balls():
@@ -69,15 +62,24 @@ func _add_all_balls():
 	_remove_all_balls()
 	var ball_positions = $BallPositions.get_children()
 	for i in ball_count:
-		add_ball(ball_positions[i])
+		if eternal_balls > 0:
+			add_ball(true, ball_positions[i])
+			eternal_balls -= 1
+		else:
+			add_ball(false, ball_positions[i])
 
 
-func add_ball(pos = $BallPositions.get_children()[0]):
+func add_ball(eternal_ball = false, pos = $BallPositions.get_children()[0]):
 	var ball = ball_scene.instance() as Ball
 	ball.mediator = self
 	ball.scale = ball.scale / 2
 	ball.set_flag(Data.get_player_team())
 	ball.global_position = pos.position
+	if eternal_ball:
+		ball.modulate.r = 1.8
+		ball.modulate.g = 1.9
+		ball.modulate.b = 1.9
+		ball.global_position = $BallPositions/SpecialPosition.global_position
 	$BallsContainer.add_child(ball)
 	balls.push_front(ball)
 	goal_keeper.balls = balls
@@ -92,6 +94,7 @@ func remove_ball():
 func _update_level_info(dict: Dictionary):
 	print("_update_level_info", round_is_active)
 	ball_count = min(C.default_balls_count + dict[C.REWARDED_BALLS] + dict[C.ETERNAL_BALLS], 10)
+	eternal_balls = dict[C.ETERNAL_BALLS] + dict[C.REWARDED_BALLS]
 	_add_all_balls()
 	round_is_active = false
 	time.timer.stop()
@@ -102,7 +105,6 @@ func _update_level_info(dict: Dictionary):
 	goal_keeper.set_flag(load("res://art/flag/" + dict[C.FLAG] + ".png"))
 	goal_keeper.speed = dict[C.DIFFICULTY]
 	target_score.text = "Target: " + str(dict[C.PASS_SCORE])
-	get_tree().paused = false
 	start_level()
 	message.fade_out_text(dict[C.COUNTRY])
 	_check_for_country_achievements(dict[C.COUNTRY], dict[C.FLAG])
@@ -232,6 +234,7 @@ func start_level():
 	emit_signal("start_level")
 	celebrate.stop()
 	restart.visible = false
+	watch_ad.visible = false
 	continue_button.visible = false
 	start_countdown.visible = true
 	countdown = 3

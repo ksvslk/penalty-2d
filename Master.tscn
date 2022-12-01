@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=2]
+[gd_scene load_steps=75 format=2]
 
 [ext_resource path="res://sound/tick.wav" type="AudioStream" id=1]
 [ext_resource path="res://art/grass.png" type="Texture" id=2]
@@ -36,6 +36,9 @@
 [ext_resource path="res://art/games_achievements.png" type="Texture" id=34]
 [ext_resource path="res://scripts/purchases.gd" type="Script" id=35]
 [ext_resource path="res://art/play_button.svg" type="Texture" id=36]
+[ext_resource path="res://fonts/DynamicFont.tres" type="DynamicFont" id=37]
+[ext_resource path="res://scenes/LoadingScreen.tscn" type="PackedScene" id=38]
+[ext_resource path="res://scripts/loading_screen.gd" type="Script" id=39]
 
 [sub_resource type="CanvasItemMaterial" id=31]
 blend_mode = 1
@@ -161,11 +164,29 @@ bg_color = Color( 0, 0, 0, 0.882353 )
 border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
 shadow_color = Color( 0, 0, 0, 0.470588 )
 
-[sub_resource type="DynamicFont" id=25]
-size = 50
-outline_size = 5
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 13 )
+[sub_resource type="StyleBoxFlat" id=50]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 20.0
+content_margin_bottom = 20.0
+bg_color = Color( 0, 0, 0, 0.529412 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="StyleBoxLine" id=48]
+color = Color( 1, 1, 1, 1 )
+thickness = 5
+
+[sub_resource type="StyleBoxFlat" id=49]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 1, 1, 1, 0.376471 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0 )
+anti_aliasing = false
+anti_aliasing_size = 0.01
 
 [sub_resource type="StyleBoxFlat" id=44]
 content_margin_left = 10.0
@@ -411,7 +432,6 @@ script = ExtResource( 5 )
 start_time = 40
 
 [node name="Timer" type="Timer" parent="Level/Display/Time"]
-autostart = true
 
 [node name="TickSound" type="AudioStreamPlayer2D" parent="Level/Display/Time"]
 stream = ExtResource( 1 )
@@ -476,6 +496,7 @@ align = 1
 valign = 1
 
 [node name="WatchAd" type="Button" parent="Level"]
+visible = false
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
@@ -491,13 +512,21 @@ custom_styles/hover = SubResource( 47 )
 custom_styles/pressed = SubResource( 47 )
 custom_styles/focus = SubResource( 47 )
 custom_styles/normal = SubResource( 47 )
-text = "Add extra ball (ad)"
+text = "Add extra ball"
 icon = ExtResource( 36 )
 align = 0
 expand_icon = true
 __meta__ = {
 "_editor_description_": ""
 }
+
+[node name="Label" type="Label" parent="Level/WatchAd"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 808.0
+margin_top = 76.0
+margin_right = 887.0
+margin_bottom = 126.0
+text = "(ad)"
 
 [node name="Continue" type="Label" parent="Level"]
 visible = false
@@ -627,8 +656,8 @@ position = Vector2( 969, 1834 )
 [node name="Position2D7" type="Position2D" parent="Level/BallPositions"]
 position = Vector2( 760, 1834 )
 
-[node name="Position2D8" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 544, 1834 )
+[node name="SpecialPosition" type="Position2D" parent="Level/BallPositions"]
+position = Vector2( 544, 1496 )
 
 [node name="Position2D9" type="Position2D" parent="Level/BallPositions"]
 position = Vector2( 328, 1834 )
@@ -777,17 +806,37 @@ visible = false
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -362.0
-margin_bottom = -186.0
+margin_top = -474.0
+margin_bottom = -194.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Levels" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+[node name="TotalScore" type="Label" parent="CanvasLayer/OptionsContainer/OptionsList"]
 margin_right = 1080.0
-margin_bottom = 162.0
+margin_bottom = 102.0
+focus_mode = 2
+mouse_filter = 1
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 37 )
+custom_styles/normal = SubResource( 50 )
+text = "Total score: 0"
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 106.0
+margin_right = 1080.0
+margin_bottom = 110.0
+custom_styles/separator = SubResource( 48 )
+
+[node name="Levels" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 114.0
+margin_right = 1080.0
+margin_bottom = 276.0
 mouse_filter = 1
 custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/focus = SubResource( 37 )
@@ -804,21 +853,66 @@ visible = false
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -694.0
-margin_bottom = -192.0
+margin_top = -868.0
+margin_bottom = -200.0
+mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+alignment = 2
 script = ExtResource( 35 )
 
-[node name="Ball" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+[node name="WatchRewarded" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+margin_top = 166.0
 margin_right = 1080.0
-margin_bottom = 162.0
+margin_bottom = 328.0
 mouse_filter = 1
+custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
 custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/focus = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
+custom_styles/normal = SubResource( 37 )
+text = "+1 Ball for Ad"
+icon = ExtResource( 36 )
+align = 0
+icon_align = 2
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="MaximumRewReached" type="Label" parent="CanvasLayer/OptionsContainer/BonusList/WatchRewarded"]
+visible = false
+margin_left = 10.0
+margin_top = 9.0
+margin_right = 1072.0
+margin_bottom = 158.0
+custom_fonts/font = ExtResource( 37 )
+custom_styles/normal = SubResource( 44 )
+text = "LEVEL BALLS LIMIT REACHED"
+align = 1
+valign = 1
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/OptionsContainer/BonusList"]
+margin_top = 332.0
+margin_right = 1080.0
+margin_bottom = 336.0
+custom_styles/separator = SubResource( 48 )
+
+[node name="Ball" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+margin_top = 340.0
+margin_right = 1080.0
+margin_bottom = 502.0
+mouse_filter = 1
+custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 37 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/focus = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
 disabled = true
 text = "..."
@@ -836,22 +930,24 @@ margin_left = 10.0
 margin_top = 9.0
 margin_right = 1072.0
 margin_bottom = 158.0
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/normal = SubResource( 44 )
 text = "LEVEL BALLS LIMIT REACHED"
 align = 1
 valign = 1
 
 [node name="IntermediateAds" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 166.0
+margin_top = 506.0
 margin_right = 1080.0
-margin_bottom = 328.0
+margin_bottom = 668.0
 mouse_filter = 1
+custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
 custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/focus = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
 disabled = true
 text = "..."
@@ -862,15 +958,17 @@ __meta__ = {
 }
 
 [node name="TwoBallsNoAds" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 332.0
+margin_top = 506.0
 margin_right = 1080.0
-margin_bottom = 494.0
+margin_bottom = 668.0
 mouse_filter = 1
+custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
 custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/focus = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
 disabled = true
 text = "..."
@@ -886,7 +984,7 @@ margin_left = 10.0
 margin_top = 10.0
 margin_right = 1072.0
 margin_bottom = 159.0
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/normal = SubResource( 44 )
 text = "LEVEL BALLS LIMIT REACHED"
 align = 1
@@ -907,7 +1005,7 @@ margin_right = 1080.0
 margin_bottom = 162.0
 mouse_filter = 1
 custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/focus = SubResource( 37 )
@@ -926,7 +1024,7 @@ margin_right = 1080.0
 margin_bottom = 328.0
 mouse_filter = 1
 custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 25 )
+custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/focus = SubResource( 37 )
@@ -938,6 +1036,9 @@ expand_icon = true
 __meta__ = {
 "_editor_description_": ""
 }
+
+[node name="LoadingScreen" parent="CanvasLayer/OptionsContainer" instance=ExtResource( 38 )]
+script = ExtResource( 39 )
 
 [node name="SelectCountry" type="ColorRect" parent="CanvasLayer/OptionsContainer"]
 visible = false
@@ -1018,6 +1119,13 @@ __meta__ = {
 "_editor_description_": ""
 }
 
+[node name="SavingGame" type="Label" parent="CanvasLayer"]
+margin_left = 24.0
+margin_top = 2128.0
+margin_right = 464.0
+margin_bottom = 2202.0
+valign = 1
+
 [connection signal="timeout" from="StadiumLights/Timer" to="StadiumLights" method="_on_Timer_timeout"]
 [connection signal="lights_completely_off" from="StadiumLights/Lights" to="StadiumLights" method="_on_Lights_lights_completely_off"]
 [connection signal="lights_completely_on" from="StadiumLights/Lights" to="StadiumLights" method="_on_Lights_lights_completely_on"]
@@ -1036,12 +1144,16 @@ __meta__ = {
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/HBoxContainer/Bonus" to="CanvasLayer/OptionsContainer" method="_on_Bonus_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/HBoxContainer/Options" to="CanvasLayer/OptionsContainer" method="_on_Options_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/Levels" to="CanvasLayer/OptionsContainer" method="_on_Levels_pressed"]
+[connection signal="add_2_balls_disable_ads" from="CanvasLayer/OptionsContainer/BonusList" to="." method="_on_BonusList_add_2_balls_disable_ads"]
 [connection signal="add_ball" from="CanvasLayer/OptionsContainer/BonusList" to="." method="_on_BonusList_add_ball"]
+[connection signal="disable_intermediate_ads" from="CanvasLayer/OptionsContainer/BonusList" to="." method="_on_BonusList_disable_intermediate_ads"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/WatchRewarded" to="CanvasLayer/OptionsContainer/BonusList" method="_on_WatchRewarded_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/Ball" to="CanvasLayer/OptionsContainer/BonusList" method="_on_Ball_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/IntermediateAds" to="CanvasLayer/OptionsContainer/BonusList" method="_on_IntermediateAds_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/TwoBallsNoAds" to="CanvasLayer/OptionsContainer/BonusList" method="_on_TwoBallsNoAds_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/PlayGamesList/ShowLeaderboard" to="CanvasLayer/OptionsContainer" method="_on_ShowLeaderboard_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/PlayGamesList/ShowAchievements" to="CanvasLayer/OptionsContainer" method="_on_ShowAchievements_pressed"]
+[connection signal="team_selection_done" from="CanvasLayer/OptionsContainer/SelectCountry" to="." method="_on_SelectCountry_team_selection_done"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer/SelectedCountry" to="CanvasLayer/OptionsContainer/SelectCountry" method="_on_SelectedCountry_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer/ConfirmButton" to="CanvasLayer/OptionsContainer/SelectCountry" method="_on_ConfirmButton_pressed"]
 

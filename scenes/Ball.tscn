@@ -27,6 +27,7 @@ scale = Vector2( 0.68, 0.68 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource( 1 )
 
 [node name="KickSound" type="AudioStreamPlayer2D" parent="."]

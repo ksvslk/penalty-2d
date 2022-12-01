@@ -13,31 +13,16 @@ var SKUS = [
 ]
 
 
-func _set(property, value):
-	if property == "visible":
-		var max_balls_count = Data.get_max_balls_to_add_count()
-		if value == true and max_balls_count == 0:
-			ball.disabled = true
-			maximum_reached.visible = true
-			two_balls_no_ads.disabled = true
-			maximum_reached_ads.visible = true
-		elif value == true and max_balls_count == 1:
-			two_balls_no_ads.disabled = true
-			maximum_reached_ads.visible = true
-		else:
-			ball.disabled = false
-			maximum_reached.visible = false
-			two_balls_no_ads.disabled = false
-			maximum_reached_ads.visible = false
-
-
+onready var maximum_rew_reached = $WatchRewarded/MaximumRewReached
+onready var watch_rewarded = $WatchRewarded
 onready var maximum_reached_ads = $TwoBallsNoAds/MaximumReachedAds
 onready var maximum_reached = $Ball/MaximumReached
 onready var ball = $Ball
 onready var intermediate_ads = $IntermediateAds
 onready var two_balls_no_ads = $TwoBallsNoAds
 
-
+signal disable_intermediate_ads
+signal add_2_balls_disable_ads
 signal add_ball
 
 func _ready():
@@ -72,6 +57,69 @@ func _ready():
 		payment.startConnection()
 	else:
 		print("Android IAP support is not enabled. Make sure you have enabled 'Custom Build' and installed and enabled the GodotGooglePlayBilling plugin in your Android export settings! This application will not work.")
+	if GPack.plugin:
+		GPack.plugin.connect(GPack.s_rewarded_ad_loaded, self, "_set_rewarded_ad_button_state")
+
+
+func _set_rewarded_ad_button_state(max_balls_count: int = -1):
+	if max_balls_count == -1:
+		max_balls_count = Data.get_max_balls_to_add_count()
+	match GPack.is_rewarded_ad_loaded():
+		true:
+			if max_balls_count > 0:
+				watch_rewarded.disabled = false
+				maximum_rew_reached.visible = false
+				watch_rewarded.get_font("font").outline_size = 5
+			else:
+				watch_rewarded.disabled = true
+				maximum_rew_reached.visible = true
+				watch_rewarded.get_font("font").outline_size = 1
+		false:
+			watch_rewarded.disabled = true
+			maximum_rew_reached.visible = false
+			watch_rewarded.get_font("font").outline_size = 1
+
+
+func _set_intermediate_button_state():
+	if not Data.is_intermediate_ads_enabled():
+		intermediate_ads.visible = false
+		two_balls_no_ads.visible = false
+
+
+func _set_two_balls_button_state(max_balls_count: int):
+	if max_balls_count < 2:
+		two_balls_no_ads.disabled = true
+		maximum_reached_ads.visible = true
+		two_balls_no_ads.get_font("font").outline_size = 1
+	else:
+		two_balls_no_ads.disabled = false
+		maximum_reached_ads.visible = false
+		two_balls_no_ads.get_font("font").outline_size = 5
+		
+	if not Data.is_intermediate_ads_enabled():
+		two_balls_no_ads.visible = false
+		intermediate_ads.visible = false
+
+
+func _set_eternal_ball_button_state(max_balls_count: int):
+	if max_balls_count < 1:
+		ball.disabled = true
+		maximum_reached.visible = true
+		ball.get_font("font").outline_size = 1
+	else:
+		ball.disabled = false
+		maximum_reached.visible = false
+		ball.get_font("font").outline_size = 5
+
+
+
+func _set(property, value):
+	if property == "visible":
+		var max_balls_count = Data.get_max_balls_to_add_count()
+		if value == true:
+			_set_eternal_ball_button_state(max_balls_count)
+			_set_rewarded_ad_button_state(max_balls_count)
+			_set_two_balls_button_state(max_balls_count)
 
 
 func _on_connected():
@@ -87,11 +135,9 @@ func _on_billing_resume():
 func _on_query_purchases_response(query_result):
 	if query_result.status == OK:
 		for purchase in query_result.purchases:
-			# We must acknowledge all puchases.
+			# We must acknowledge all purchases.
 			# See https://developer.android.com/google/play/billing/integrate#process for more information
-			if not purchase.is_acknowledged:
-				print("Purchase " + str(purchase.sku) + " has not been acknowledged. Acknowledging...")
-				payment.acknowledgePurchase(purchase.purchase_token)
+			_handle_purchase(purchase, true)
 	else:
 		print("queryPurchases failed, response code: ",
 				query_result.response_code,
@@ -137,10 +183,10 @@ func _on_product_details_query_completed(sku_details):
 #"quantity":1,
 #"signature":"REMOVED
 
-func _handle_purchase(purchase):
+func _handle_purchase(purchase, ignore_ball = false):
 	if purchase.purchase_state == 1:
 		_give_content(purchase.products[0])
-		if purchase.products[0] == BALL:
+		if purchase.products[0] == BALL and not ignore_ball:
 			_consume(purchase.purchase_token)
 		else:
 			if !purchase.is_acknowledged:
@@ -153,9 +199,13 @@ func _give_content(sku):
 		BALL:
 			emit_signal("add_ball")
 		INTERMEDIATE_ADS:
-			pass
+			intermediate_ads.visible = false
+			two_balls_no_ads.visible = false
+			emit_signal("disable_intermediate_ads")
 		TWO_BALLS_NO_ADS:
-			pass
+			two_balls_no_ads.visible = false
+			intermediate_ads.visible = false
+			emit_signal("add_2_balls_disable_ads")
 
 
 func _on_purchases_updated(purchases):
@@ -222,3 +272,9 @@ func _on_IntermediateAds_pressed():
 func _on_TwoBallsNoAds_pressed():
 	get_parent()._on_BackButton_pressed()
 	_purchase(TWO_BALLS_NO_ADS)
+
+
+func _on_WatchRewarded_pressed():
+	get_parent()._on_BackButton_pressed()
+	if GPack.is_rewarded_ad_loaded():
+		GPack.show_rewarded_ad()

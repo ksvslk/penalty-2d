@@ -30,9 +30,9 @@ func show_achievements() -> void:
 # LEADERBOARD  #
 ################
 
-func submit_score(score: int) -> void:
+func submit_score(score: int, leaderboard: String) -> void:
 	if plugin:
-		plugin.submitScore(score)
+		plugin.submitScore(score, leaderboard)
 
 
 func show_leaderboard(id: String) -> void:
@@ -76,6 +76,7 @@ func save_game(data: Dictionary, progress: int) -> void:
 func load_game() -> void:
 	if plugin:
 		plugin.loadGame()
+
 
 
 # Signals you can connect to in the Android plugin.
