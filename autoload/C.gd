@@ -1,25 +1,31 @@
 extends Node
 
+# firebase event
+const event_next_level: String = "next_level"
+const event_fail_level: String = "fail_level"
+const event_ball_rewarded: String = "ball_rewarded"
+const event_ball_bought: String = "ball_bought"
+
 # achievements
-const achievement_fast_shot: String = "CggIrImotG8QAhAC"
-const achievement_all_6_continents: String = "CggIrImotG8QAhAD"
-const achievement_last_second_pass: String = "CggIrImotG8QAhAE"
-const achievement_fast_shot_5x: String = "CggIrImotG8QAhAF"
-const achievement_same_country: String = "CggIrImotG8QAhAG"
-const achievement_goal_on_first_second: String = "CggIrImotG8QAhAH"
-const achievement_shot_to_corner: String = "CggIrImotG8QAhAI"
-const achievement_shot_to_center: String = "CggIrImotG8QAhAJ"
-const achievement_world_champion: String = "CggIrImotG8QAhAK"
-const achievement_50_second_rounds: String = "CggIrImotG8QAhAL"
-const achievement_60_second_rounds: String = "CggIrImotG8QAhAM"
-const achievement_70_second_rounds: String = "CggIrImotG8QAhAN"
+const achievement_15_x_fast_shot: String = "CgkI5q-mtaQOEAIQAg"
+const achievement_all_6_continents: String = "CgkI5q-mtaQOEAIQAw"
+const achievement_last_second_pass: String = "CgkI5q-mtaQOEAIQBA"
+const achievement_fast_shot_5x: String = "CgkI5q-mtaQOEAIQBQ"
+const achievement_same_country: String = "CgkI5q-mtaQOEAIQBg"
+const achievement_goal_on_first_second: String = "CgkI5q-mtaQOEAIQBw"
+const achievement_shot_to_corner_100_plus: String = "CgkI5q-mtaQOEAIQCA"
+const achievement_shot_to_center_50_plus: String = "CgkI5q-mtaQOEAIQCQ"
+const achievement_world_champion: String = "CgkI5q-mtaQOEAIQDg"
+const achievement_50_second_rounds: String = "CgkI5q-mtaQOEAIQCg"
+const achievement_60_second_rounds: String = "CgkI5q-mtaQOEAIQCw"
+const achievement_70_second_rounds: String = "CgkI5q-mtaQOEAIQDA"
+const achievement_only_goals: String = "CgkI5q-mtaQOEAIQDQ"
 
 # leaderboard
-const leaderboard_goat: String = "CggIrImotG8QAhAB"
+const leaderboard_goat: String = "CgkI5q-mtaQOEAIQAQ"
 
 # temp
-var fast_shot_unlocked := false
-var fast_shot_5x_counter := 0
+var fast_shot_counter := 0
 
 # ...
 var default_balls_count := 3
@@ -32,7 +38,6 @@ const COUNTRY: String = "COUNTRY"
 const TIME_LIMIT: String = "TIME_LIMIT"
 const DIFFICULTY: String = "DIFFICULTY"
 const PASS_SCORE: String = "PASS_SCORE"
-const PLAYER_SCORE: String = "PLAYER_SCORE"
 const BEST_SCORE: String = "BEST_SCORE"
 const UNLOCKED: String = "UNLOCKED"
 const REWARDED_BALLS: String = "REWARDED_BALLS"
@@ -64,7 +69,6 @@ const level_section_dictionary_keys = [
 	 TIME_LIMIT,
 	 DIFFICULTY,
 	 PASS_SCORE,
-	 PLAYER_SCORE,
 	 BEST_SCORE,
 	 UNLOCKED,
 	 REWARDED_BALLS

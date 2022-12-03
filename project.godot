@@ -61,13 +61,13 @@ config/icon="res://art/icon/icon.png"
 
 Data="*res://autoload/Data.gd"
 C="*res://autoload/C.gd"
-DebugLine="*res://scenes/DebugLine.tscn"
 GPack="*res://autoload/GPack.gd"
 
 [display]
 
 window/size/width=1080
 window/size/height=2400
+window/size/always_on_top=true
 window/size/test_width=800
 window/size/test_height=1280
 window/handheld/orientation="portrait"
@@ -96,7 +96,6 @@ pointing/emulate_touch_from_mouse=true
 
 [locale]
 
-test="et_EE"
 translation_remaps={
 }
 

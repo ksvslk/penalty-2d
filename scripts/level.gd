@@ -2,7 +2,7 @@ extends Node2D
 class_name Mediator
 
 export var ball_count := 15
-export var eternal_balls := 0
+export var bonus_balls := 0
 export var time_limit := 40
 
 
@@ -12,6 +12,10 @@ var add_ball_effect = load("res://scenes/SpeedlinesShineEffect.tscn")
 var ball_dict = {}
 var round_is_active = true
 var new_high_score_announced = false
+var goal_counter := 0
+var swipe_counter := 0
+var ad_shown_counter := 0
+
 
 onready var continue_button = $Continue
 onready var restart = $Restart
@@ -43,8 +47,21 @@ var holding_ball := false
 signal level_passed
 signal start_level
 
+func _try_to_show_ad():
+	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased():
+		print("_try_to_show_ad")
+		ad_shown_counter += 1
+		if ad_shown_counter == 1:
+			print("5")
+			if int(Data.current_level) >= 10:
+				print("over level 10")
+				GPack.show_interstitial_ad()
+			ad_shown_counter = 0
+
 
 func start_game():
+	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased() and int(Data.current_level) >= 10:
+		GPack.load_interstitial_ad()
 	round_is_active = false
 	Data.connect("best_score_updated", highest, "set_text")
 	Data.connect("level_info_updated", self, "_update_level_info")
@@ -61,25 +78,24 @@ func _remove_all_balls():
 func _add_all_balls():
 	_remove_all_balls()
 	var ball_positions = $BallPositions.get_children()
-	for i in ball_count:
-		if eternal_balls > 0:
-			add_ball(true, ball_positions[i])
-			eternal_balls -= 1
+	for i in range(0, ball_count):
+		if bonus_balls > 0 and i > 2:
+			add_ball(true, true, ball_positions[i])
+			bonus_balls -= 1
 		else:
-			add_ball(false, ball_positions[i])
+			add_ball(false, true, ball_positions[i])
 
 
-func add_ball(eternal_ball = false, pos = $BallPositions.get_children()[0]):
+func add_ball(eternal_ball = false, adding_all_balls = false, pos = $BallPositions.get_children()[0]):
 	var ball = ball_scene.instance() as Ball
 	ball.mediator = self
 	ball.scale = ball.scale / 2
 	ball.set_flag(Data.get_player_team())
 	ball.global_position = pos.position
 	if eternal_ball:
-		ball.modulate.r = 1.8
-		ball.modulate.g = 1.9
-		ball.modulate.b = 1.9
-		ball.global_position = $BallPositions/SpecialPosition.global_position
+		ball.activate_bonus_patch()
+		if not adding_all_balls:
+			ball.global_position = $BallPositions/SpecialPosition.global_position - Vector2(0, 400)
 	$BallsContainer.add_child(ball)
 	balls.push_front(ball)
 	goal_keeper.balls = balls
@@ -90,11 +106,11 @@ func remove_ball():
 	ball.queue_free()
 	goal_keeper.balls = balls
 	
+	
 
 func _update_level_info(dict: Dictionary):
-	print("_update_level_info", round_is_active)
 	ball_count = min(C.default_balls_count + dict[C.REWARDED_BALLS] + dict[C.ETERNAL_BALLS], 10)
-	eternal_balls = dict[C.ETERNAL_BALLS] + dict[C.REWARDED_BALLS]
+	bonus_balls = dict[C.ETERNAL_BALLS] + dict[C.REWARDED_BALLS]
 	_add_all_balls()
 	round_is_active = false
 	time.timer.stop()
@@ -105,7 +121,7 @@ func _update_level_info(dict: Dictionary):
 	goal_keeper.set_flag(load("res://art/flag/" + dict[C.FLAG] + ".png"))
 	goal_keeper.speed = dict[C.DIFFICULTY]
 	target_score.text = "Target: " + str(dict[C.PASS_SCORE])
-	start_level()
+	level_start_countdown()
 	message.fade_out_text(dict[C.COUNTRY])
 	_check_for_country_achievements(dict[C.COUNTRY], dict[C.FLAG])
 	_check_for_time_limit_achievements()
@@ -154,6 +170,7 @@ func remove_swish(name: String):
 
 func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
 	if round_is_active:
+		goal_counter += 1
 		var time_left = time.start_time
 		var bonus = time.start_time <= BONUS_TIME
 		goal_indicator.goal(bonus)
@@ -171,18 +188,19 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 
 
 func _check_corner_shot(body):
-	if body.global_position.x <= 105 or body.global_position.x >= 975:
+	var eligible = int(Data.current_level) > 99
+	if eligible and body.global_position.x <= 105 or body.global_position.x >= 975:
 		GPack.unlock_achievement(C.achievement_shot_to_corner)
 	
 	
 func _check_center_shot(body):
-	if body.global_position.x >= 530 and body.global_position.x <= 550:
+	var eligible = int(Data.current_level) > 49
+	if eligible and body.global_position.x >= 530 and body.global_position.x <= 550:
 		GPack.unlock_achievement(C.achievement_shot_to_center)
 
 
 func _check_first_second_goal_achievement():
 	if time.get_seconds_passed() <= 1:
-		print("GOAL ON FIRST SECOND!")
 		GPack.unlock_achievement(C.achievement_goal_on_first_second)
 
 
@@ -205,19 +223,33 @@ func _check_high_score() -> void:
 			
 
 func _on_Time_round_done():
+	_try_to_show_ad()
 	Data.update_score(int(score.text))
 	whistle_sound.play()
 	round_is_active = false
 	var passed = int(score.text) >= int(target_score.text)
 	if passed:
 		_check_champion_achievement()
+		_check_all_goals_achievement()
 		celebrate.play()
 		emit_signal("level_passed")
-		continue_button.visible = true
+		if int(Data.current_level) != 211:
+			continue_button.visible = true
 	else:
 		if Data.get_max_balls_to_add_count() > 0 and GPack.is_rewarded_ad_loaded():
 			watch_ad.visible = true
+		GPack.log_event(C.event_fail_level, {
+			"level":int(Data.current_level),
+			"score":int(score.text)
+		}) 
 	restart.visible = true
+	if not GPack.is_rewarded_ad_loaded():
+		GPack.load_rewarded_ad()
+
+
+func _check_all_goals_achievement():
+	if goal_counter >= swipe_counter:
+		GPack.unlock_achievement(C.achievement_only_goals)
 
 
 func _check_champion_achievement():
@@ -227,23 +259,25 @@ func _check_champion_achievement():
 
 func _on_Restart_gui_input(event):
 	if event.is_pressed():
-		start_level()
+		level_start_countdown()
 
 
-func start_level():
+func level_start_countdown():
 	emit_signal("start_level")
 	celebrate.stop()
 	restart.visible = false
 	watch_ad.visible = false
 	continue_button.visible = false
 	start_countdown.visible = true
+	swipe_counter = 0
+	goal_counter = 0
 	countdown = 3
 	start_countdown.text = str(countdown)
 	start_timer.start()
 	tick_sound.play()
 	
 
-func start_level_actions():
+func round_start_actions():
 	emit_signal("start_level")
 	(time.timer as Timer).stop()
 	whistle_sound.play()
@@ -265,4 +299,4 @@ func _on_StartTimer_timeout():
 	else:
 		start_countdown.visible = false
 		start_timer.stop()
-		start_level_actions()
+		round_start_actions()

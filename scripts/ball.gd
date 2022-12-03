@@ -14,7 +14,6 @@ var football_trail = load("res://scenes/FootballTrail.tscn")
 var trail_speed_limit := -5500
 var did_get_over_limit := false
 
-
 func _ready():
 	use_parent_material = true
 
@@ -25,6 +24,10 @@ func _input_event(viewport, event, shape_idx):
 		held = event.pressed
 		timer.start()
 		did_get_over_limit = false
+
+
+func activate_bonus_patch():
+	$BonusPatch.visible = true
 
 
 func _add_trail() -> void:
@@ -42,21 +45,20 @@ func _input(event): # check if left click is released even outside of the body
 				did_get_over_limit = true
 				unlock_ball_related_achievements()
 			else:
-				C.fast_shot_5x_counter = 0
+				C.fast_shot_counter = 0
 				kick_sound.play()
+			mediator.swipe_counter += 1
 		held = false
 		mediator.holding_ball = false
 		mediator.remove_swish(name)
 
 
 func unlock_ball_related_achievements():
-	if not C.fast_shot_unlocked:
-		GPack.unlock_achievement(C.achievement_fast_shot)
-	C.fast_shot_unlocked = true
-	C.fast_shot_5x_counter += 1
-	if C.fast_shot_5x_counter == 5:
-		C.fast_shot_5x_counter = 0
+	C.fast_shot_counter += 1
+	if C.fast_shot_counter == 5:
 		GPack.unlock_achievement(C.achievement_fast_shot_5x)
+	if C.fast_shot_counter == 15:
+		GPack.unlock_achievement(C.achievement_15_x_fast_shot)
 
 
 func _integrate_forces(state):

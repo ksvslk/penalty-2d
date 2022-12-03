@@ -19,5 +19,5 @@ func _update_level_select(levels:Dictionary):
 	for country_button in levels_list.get_children():
 		if country_button is CountryButton:
 			var ccode = country_button.texture.get_path().get_file().get_slice(".", 0)
-			if levels.get(ccode)[1] == true:
+			if levels.get(ccode)[1]:
 				country_button.activate_button() 

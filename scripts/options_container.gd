@@ -15,6 +15,7 @@ var currently_visible_suboption = null
 
 signal switch_level
 
+
 func _on_Options_pressed():
 	options_list.visible = true
 	currently_visible_suboption = options_list

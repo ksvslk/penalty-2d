@@ -57,4 +57,10 @@ texture = ExtResource( 4 )
 expand = true
 stretch_mode = 6
 
+[node name="BonusPatch" type="Polygon2D" parent="."]
+visible = false
+position = Vector2( 0, 14 )
+color = Color( 1, 0.74902, 0, 1 )
+polygon = PoolVector2Array( -20, 21, -23, 12, -14, 17, -6, 11, -7, 22, 1, 28, -9, 30, -12, 38, -17, 29, -27, 28 )
+
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

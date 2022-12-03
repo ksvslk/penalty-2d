@@ -13,7 +13,6 @@ func _ready():
 
 
 func enable_stadium_lights() -> void:
-	print("enable_stadium_lights")
 	visible = true
 	timer.start()
 	set_process(true)
@@ -23,7 +22,6 @@ func enable_stadium_lights() -> void:
 
 
 func disable_stadium_lights() -> void:
-	print("disable_stadium_lights")
 	if not lights.lights_off:
 		lights.off()
 
@@ -50,7 +48,6 @@ func _on_Level_start_level():
 
 
 func _on_Lights_lights_completely_off():
-	print("_on_Lights_lights_completely_off")
 	visible = false
 	timer.stop()
 	set_process(false)

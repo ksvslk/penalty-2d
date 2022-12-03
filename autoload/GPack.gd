@@ -2,10 +2,10 @@ extends Node
 
 var plugin = null
 
-
 func _ready():
 	if Engine.has_singleton("GPack"):
 		plugin = Engine.get_singleton("GPack")
+
 
 ################
 # ACHIEVEMENTS #
@@ -53,6 +53,11 @@ func log_event(event_name: String, dictionary: Dictionary) -> void:
 #    ADMOB     #
 ################
 
+func load_rewarded_ad() -> void:
+	if plugin:
+		plugin.loadRewardedAd()
+
+
 func is_rewarded_ad_loaded() -> bool:
 	if plugin:
 		return plugin.isRewardedAdLoaded()
@@ -62,6 +67,29 @@ func is_rewarded_ad_loaded() -> bool:
 func show_rewarded_ad() -> void:
 	if plugin:
 		plugin.showRewardedAd()
+
+
+func load_interstitial_ad() -> void:
+	if plugin:
+		plugin.loadInterstitialAd()
+
+
+func is_interstitial_ad_loaded() -> bool:
+	if plugin:
+		return plugin.isInterstitialAdLoaded()
+	return false
+
+
+func show_interstitial_ad() -> void:
+	if plugin:
+		var is_loaded = is_interstitial_ad_loaded()
+		if is_loaded:
+			print("show")
+			plugin.showInterstitialAd()
+		else:
+			print("load")
+			plugin.loadInterstitialAd()
+		
 	
 	
 ################
@@ -93,4 +121,7 @@ const s_on_start_loading_saved_game = "on_start_loading_saved_game"
 const s_on_loading_saved_game_complete = "on_loading_saved_game_complete"
 const s_on_start_saving_game = "on_start_saving_game"
 const s_on_saving_game_complete = "on_saving_game_complete"
+
+const s_on_signed_in_status_changed = "on_signed_in_status_changed"
+
 

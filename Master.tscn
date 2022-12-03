@@ -1,9 +1,8 @@
-[gd_scene load_steps=75 format=2]
+[gd_scene load_steps=78 format=2]
 
 [ext_resource path="res://sound/tick.wav" type="AudioStream" id=1]
 [ext_resource path="res://art/grass.png" type="Texture" id=2]
 [ext_resource path="res://scripts/level.gd" type="Script" id=3]
-[ext_resource path="res://scripts/fps.gd" type="Script" id=4]
 [ext_resource path="res://scripts/time.gd" type="Script" id=5]
 [ext_resource path="res://scripts/goal_indicator.gd" type="Script" id=6]
 [ext_resource path="res://scenes/GoalKeeper.tscn" type="PackedScene" id=7]
@@ -39,6 +38,9 @@
 [ext_resource path="res://fonts/DynamicFont.tres" type="DynamicFont" id=37]
 [ext_resource path="res://scenes/LoadingScreen.tscn" type="PackedScene" id=38]
 [ext_resource path="res://scripts/loading_screen.gd" type="Script" id=39]
+[ext_resource path="res://sound/click.wav" type="AudioStream" id=40]
+[ext_resource path="res://art/Twitter social icons - circle - white.png" type="Texture" id=42]
+[ext_resource path="res://scripts/play_games.gd" type="Script" id=43]
 
 [sub_resource type="CanvasItemMaterial" id=31]
 blend_mode = 1
@@ -145,10 +147,6 @@ outline_size = 10
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 21 )
 
-[sub_resource type="DynamicFont" id=8]
-size = 50
-font_data = SubResource( 7 )
-
 [sub_resource type="DynamicFont" id=40]
 size = 45
 outline_size = 5
@@ -164,6 +162,15 @@ bg_color = Color( 0, 0, 0, 0.882353 )
 border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
 shadow_color = Color( 0, 0, 0, 0.470588 )
 
+[sub_resource type="StyleBoxFlat" id=52]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 0.180392, 0.176471, 0.176471, 0.882353 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
 [sub_resource type="StyleBoxFlat" id=50]
 content_margin_left = 50.0
 content_margin_right = 50.0
@@ -176,6 +183,15 @@ shadow_color = Color( 0, 0, 0, 0.470588 )
 [sub_resource type="StyleBoxLine" id=48]
 color = Color( 1, 1, 1, 1 )
 thickness = 5
+
+[sub_resource type="StyleBoxFlat" id=51]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 0.294118, 0.294118, 0.294118, 0.882353 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
 
 [sub_resource type="StyleBoxFlat" id=49]
 content_margin_left = 50.0
@@ -607,8 +623,6 @@ margin_top = 152.0
 margin_right = 980.0
 margin_bottom = 981.0
 custom_fonts/font = SubResource( 27 )
-text = "
-"
 align = 1
 valign = 1
 autowrap = true
@@ -651,28 +665,19 @@ position = Vector2( 760, 2071 )
 position = Vector2( 969, 2071 )
 
 [node name="Position2D6" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 969, 1834 )
+position = Vector2( 979, 1834 )
 
 [node name="Position2D7" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 760, 1834 )
+position = Vector2( 770, 1834 )
 
 [node name="SpecialPosition" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 544, 1496 )
+position = Vector2( 554, 1834 )
 
 [node name="Position2D9" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 328, 1834 )
+position = Vector2( 338, 1834 )
 
 [node name="Position2D10" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 110, 1834 )
-
-[node name="FPS" type="Label" parent="."]
-margin_left = 940.0
-margin_top = 74.0
-margin_right = 1062.0
-margin_bottom = 197.0
-custom_fonts/font = SubResource( 8 )
-text = "22"
-script = ExtResource( 4 )
+position = Vector2( 120, 1834 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 pause_mode = 2
@@ -750,12 +755,13 @@ custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 40 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
+custom_styles/disabled = SubResource( 52 )
 custom_styles/normal = SubResource( 37 )
 text = "Play Games"
 icon = ExtResource( 30 )
 align = 0
 expand_icon = true
+script = ExtResource( 43 )
 __meta__ = {
 "_editor_description_": ""
 }
@@ -771,7 +777,6 @@ custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 40 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/normal = SubResource( 37 )
 text = "Bonus"
 icon = ExtResource( 31 )
@@ -792,7 +797,6 @@ custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 40 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/normal = SubResource( 37 )
 icon = ExtResource( 29 )
 icon_align = 1
@@ -806,8 +810,8 @@ visible = false
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -474.0
-margin_bottom = -194.0
+margin_top = -808.0
+margin_bottom = -200.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -848,6 +852,68 @@ __meta__ = {
 "_editor_description_": ""
 }
 
+[node name="FollowTwitter" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 280.0
+margin_right = 1080.0
+margin_bottom = 442.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 37 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/focus = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Follow Me"
+icon = ExtResource( 42 )
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="BallManagement" type="HBoxContainer" parent="CanvasLayer/OptionsContainer/OptionsList"]
+margin_top = 446.0
+margin_right = 1080.0
+margin_bottom = 608.0
+
+[node name="AddBall" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList/BallManagement"]
+margin_right = 538.0
+margin_bottom = 162.0
+mouse_filter = 1
+size_flags_horizontal = 3
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 37 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 51 )
+custom_styles/normal = SubResource( 37 )
+disabled = true
+text = "Add Ball"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="RemoveBall" type="Button" parent="CanvasLayer/OptionsContainer/OptionsList/BallManagement"]
+margin_left = 542.0
+margin_right = 1080.0
+margin_bottom = 162.0
+mouse_filter = 1
+size_flags_horizontal = 3
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 37 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 51 )
+custom_styles/normal = SubResource( 37 )
+text = "Remove Ball"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
 [node name="BonusList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer"]
 visible = false
 anchor_top = 1.0
@@ -862,19 +928,17 @@ alignment = 2
 script = ExtResource( 35 )
 
 [node name="WatchRewarded" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 166.0
 margin_right = 1080.0
-margin_bottom = 328.0
+margin_bottom = 162.0
 mouse_filter = 1
-custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
 custom_constants/hseparation = 20
 custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
-text = "+1 Ball for Ad"
+text = "+1 Ball for Level"
 icon = ExtResource( 36 )
 align = 0
 icon_align = 2
@@ -896,22 +960,21 @@ align = 1
 valign = 1
 
 [node name="HSeparator" type="HSeparator" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 332.0
+margin_top = 166.0
 margin_right = 1080.0
-margin_bottom = 336.0
+margin_bottom = 170.0
 custom_styles/separator = SubResource( 48 )
 
 [node name="Ball" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 340.0
+margin_top = 174.0
 margin_right = 1080.0
-margin_bottom = 502.0
+margin_bottom = 336.0
 mouse_filter = 1
-custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
 custom_constants/hseparation = 20
 custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
 disabled = true
@@ -937,16 +1000,15 @@ align = 1
 valign = 1
 
 [node name="IntermediateAds" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 506.0
+margin_top = 340.0
 margin_right = 1080.0
-margin_bottom = 668.0
+margin_bottom = 502.0
 mouse_filter = 1
-custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
 custom_constants/hseparation = 20
 custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
 disabled = true
@@ -962,12 +1024,11 @@ margin_top = 506.0
 margin_right = 1080.0
 margin_bottom = 668.0
 mouse_filter = 1
-custom_colors/font_color_disabled = Color( 0, 0, 0, 0.0392157 )
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
 custom_constants/hseparation = 20
 custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/disabled = SubResource( 49 )
 custom_styles/normal = SubResource( 37 )
 disabled = true
@@ -1008,7 +1069,6 @@ custom_constants/hseparation = 20
 custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/normal = SubResource( 37 )
 text = "Leaderboard"
 icon = ExtResource( 33 )
@@ -1027,7 +1087,6 @@ custom_constants/hseparation = 20
 custom_fonts/font = ExtResource( 37 )
 custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
-custom_styles/focus = SubResource( 37 )
 custom_styles/normal = SubResource( 37 )
 text = "Achievements"
 icon = ExtResource( 34 )
@@ -1119,12 +1178,8 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="SavingGame" type="Label" parent="CanvasLayer"]
-margin_left = 24.0
-margin_top = 2128.0
-margin_right = 464.0
-margin_bottom = 2202.0
-valign = 1
+[node name="ClickSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 40 )
 
 [connection signal="timeout" from="StadiumLights/Timer" to="StadiumLights" method="_on_Timer_timeout"]
 [connection signal="lights_completely_off" from="StadiumLights/Lights" to="StadiumLights" method="_on_Lights_lights_completely_off"]
@@ -1144,6 +1199,9 @@ valign = 1
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/HBoxContainer/Bonus" to="CanvasLayer/OptionsContainer" method="_on_Bonus_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/HBoxContainer/Options" to="CanvasLayer/OptionsContainer" method="_on_Options_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/Levels" to="CanvasLayer/OptionsContainer" method="_on_Levels_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/FollowTwitter" to="." method="_on_FollowTwitter_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/BallManagement/AddBall" to="." method="_on_AddBall_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/OptionsList/BallManagement/RemoveBall" to="." method="_on_RemoveBall_pressed"]
 [connection signal="add_2_balls_disable_ads" from="CanvasLayer/OptionsContainer/BonusList" to="." method="_on_BonusList_add_2_balls_disable_ads"]
 [connection signal="add_ball" from="CanvasLayer/OptionsContainer/BonusList" to="." method="_on_BonusList_add_ball"]
 [connection signal="disable_intermediate_ads" from="CanvasLayer/OptionsContainer/BonusList" to="." method="_on_BonusList_disable_intermediate_ads"]

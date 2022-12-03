@@ -59,25 +59,23 @@ func _ready():
 		print("Android IAP support is not enabled. Make sure you have enabled 'Custom Build' and installed and enabled the GodotGooglePlayBilling plugin in your Android export settings! This application will not work.")
 	if GPack.plugin:
 		GPack.plugin.connect(GPack.s_rewarded_ad_loaded, self, "_set_rewarded_ad_button_state")
+		GPack.plugin.connect(GPack.s_rewarded_ad_failed_to_load, self, "_rewarded_failed_to_load")
+
+
+func _rewarded_failed_to_load(s):
+	watch_rewarded.disabled = true
+	maximum_rew_reached.visible = false
 
 
 func _set_rewarded_ad_button_state(max_balls_count: int = -1):
 	if max_balls_count == -1:
 		max_balls_count = Data.get_max_balls_to_add_count()
-	match GPack.is_rewarded_ad_loaded():
-		true:
-			if max_balls_count > 0:
-				watch_rewarded.disabled = false
-				maximum_rew_reached.visible = false
-				watch_rewarded.get_font("font").outline_size = 5
-			else:
-				watch_rewarded.disabled = true
-				maximum_rew_reached.visible = true
-				watch_rewarded.get_font("font").outline_size = 1
-		false:
-			watch_rewarded.disabled = true
-			maximum_rew_reached.visible = false
-			watch_rewarded.get_font("font").outline_size = 1
+	if max_balls_count > 0 and GPack.is_rewarded_ad_loaded():
+		watch_rewarded.disabled = false
+		maximum_rew_reached.visible = false
+	elif max_balls_count <= 0:
+		watch_rewarded.disabled = true
+		maximum_rew_reached.visible = true
 
 
 func _set_intermediate_button_state():
@@ -90,11 +88,9 @@ func _set_two_balls_button_state(max_balls_count: int):
 	if max_balls_count < 2:
 		two_balls_no_ads.disabled = true
 		maximum_reached_ads.visible = true
-		two_balls_no_ads.get_font("font").outline_size = 1
 	else:
 		two_balls_no_ads.disabled = false
 		maximum_reached_ads.visible = false
-		two_balls_no_ads.get_font("font").outline_size = 5
 		
 	if not Data.is_intermediate_ads_enabled():
 		two_balls_no_ads.visible = false
@@ -105,12 +101,9 @@ func _set_eternal_ball_button_state(max_balls_count: int):
 	if max_balls_count < 1:
 		ball.disabled = true
 		maximum_reached.visible = true
-		ball.get_font("font").outline_size = 1
 	else:
 		ball.disabled = false
 		maximum_reached.visible = false
-		ball.get_font("font").outline_size = 5
-
 
 
 func _set(property, value):
@@ -161,7 +154,6 @@ func _on_product_details_query_completed(sku_details):
 		elif available_sku["id"] == TWO_BALLS_NO_ADS:
 			two_balls_no_ads.text = available_sku["title"].get_slice("(", 0) + " - " + price
 			two_balls_no_ads.disabled = false
-		print(to_json(available_sku))
 
 
 #{"is_acknowledged":false,
@@ -246,16 +238,18 @@ func _on_disconnected():
 	
 
 func _purchase(sku):
-	var response = payment.purchase(sku)
-	if response.status != OK:
-		print("Purchase error %s: %s" % [response.response_code, response.debug_message])
+	if payment:
+		var response = payment.purchase(sku)
+		if response.status != OK:
+			print("Purchase error %s: %s" % [response.response_code, response.debug_message])
 
 
 func _consume(sku_token):
-	if sku_token == null:
-		print("You need to set 'test_item_purchase_token' first! (either by hand or in code)")
-		return
-	payment.consumePurchase(sku_token)
+	if payment:
+		if sku_token == null:
+			print("You need to set 'test_item_purchase_token' first! (either by hand or in code)")
+			return
+		payment.consumePurchase(sku_token)
 
 
 # GUI

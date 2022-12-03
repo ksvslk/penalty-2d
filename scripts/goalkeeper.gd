@@ -30,6 +30,7 @@ func _physics_process(delta):
 	elif protecting_goal_in_progress:
 		counter = 0
 
+
 func _add_swish(pos):
 	var new_swish = swish_scene.instance() as Sprite
 	new_swish.set_as_toplevel(true)

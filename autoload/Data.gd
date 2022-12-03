@@ -7,7 +7,6 @@ const _total_levels_plus_one := 212 # each level has its own section: "1", "2" e
 const _initial_best_score := 0
 var current_level := "-1"
 
-
 signal best_score_updated(new_score)
 signal level_info_updated(dict)
 signal level_select_updated(levels)
@@ -32,7 +31,6 @@ func _ready():
 ######################################
 
 func load_level(nr: int) -> void:
-	print("Load level: ", nr)
 	current_level = str(nr)
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, current_level)
 	_config.save(_path)
@@ -41,6 +39,10 @@ func load_level(nr: int) -> void:
 
 func next_level() -> void:
 	var next = int(current_level) + 1
+	GPack.log_event(C.event_next_level, {
+		"level":int(current_level),
+		"score":_config.get_value(current_level, C.BEST_SCORE)
+	}) 
 	current_level = str(next)
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, current_level)
 	_config.save(_path)
@@ -67,6 +69,13 @@ func unlock_next_level() -> String:
 		var next_country = _config.get_value(next, C.COUNTRY)
 		emit_signal("level_select_updated", get_levels())
 		return next_country
+
+
+func get_maximum_ball_count() -> int:
+	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS)
+	var regular = C.default_balls_count
+	return rewarded + eternal + regular
 
 
 func is_level_unlocked(nr: int) -> bool:
@@ -139,6 +148,7 @@ func set_two_balls_purchased(b: bool) -> void:
 	_config.set_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, b as int)
 	_config.save(_path)
 
+
 func is_two_balls_purchased() -> bool:
 	return _config.get_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED)
 
@@ -169,13 +179,21 @@ func add_rewarded_ball():
 	var current_balls = _config.get_value(current_level, C.REWARDED_BALLS)
 	_config.set_value(current_level, C.REWARDED_BALLS, current_balls + 1)
 	_config.save(_path)
+	Data.save_game()
+	GPack.log_event(C.event_ball_rewarded, {
+		"level":int(current_level)
+	}) 
 
 
 func add_eternal_ball(count: int = 1):
 	var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
 	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, current_balls + count)
 	_config.save(_path)
-	
+	Data.save_game()
+	GPack.log_event(C.event_ball_bought, {
+		"level":int(current_level)
+	}) 
+
 
 func _set_initial_launch_settings():
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, "1")
@@ -193,10 +211,10 @@ func _set_initial_launch_settings():
 		push_error("Unexpected results.")
 	
 	var difficulty = 1
-	var current_pass_score := 10
-	var pass_score_to_50 = 10
-	var pass_score_50_to_100 = 30
-	var pass_score_100_to_150 = 50
+	var current_pass_score := 20
+	var pass_score_to_50 = 40
+	var pass_score_50_to_100 = 60
+	var pass_score_100_to_150 = 65
 	var pass_score_150_and_up = 70
 	var time_limit = 40
 	var count = 3
@@ -234,7 +252,6 @@ func _set_initial_launch_settings():
 		_config.set_value(String(i), C.TIME_LIMIT, time_limit)
 		_config.set_value(String(i), C.DIFFICULTY, difficulty)
 		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)
-		_config.set_value(String(i), C.PLAYER_SCORE, 0)
 		_config.set_value(String(i), C.BEST_SCORE, 0)
 		if i == 1:
 			_config.set_value(String(i), C.UNLOCKED, 1)
@@ -290,6 +307,6 @@ func load_game(game_data: Dictionary) -> void:
 				_config.set_value(level, key, sliced[index].strip_edges() as int)
 	_config.save(_path)
 	emit_signal("level_select_updated", get_levels())
-	var current = _config.get_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL)
+	var current = get_max_level()
 	load_level(int(current))
 

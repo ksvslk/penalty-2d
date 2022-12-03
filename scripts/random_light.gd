@@ -12,7 +12,6 @@ func _process(delta):
 
 
 func appear():
-	print("appear")
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_property(self, "color:a", 1.0, 2)
 	tween.tween_callback(get_parent(), "light_on")
@@ -20,7 +19,6 @@ func appear():
 
 
 func disappear():
-	print("DISAPPEAR")
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self, "color:a", 0.0, 1.5)
 	tween.tween_callback(get_parent(), "light_off")
