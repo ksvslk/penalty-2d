@@ -14,7 +14,6 @@ var round_is_active = true
 var new_high_score_announced = false
 var goal_counter := 0
 var swipe_counter := 0
-var ad_shown_counter := 0
 
 
 onready var continue_button = $Continue
@@ -30,6 +29,7 @@ onready var start_countdown = $StartCountdown
 onready var tick_sound = $TickSound
 onready var celebrate = $Celebrate
 
+
 onready var time = $Display/Time
 onready var score = $Display/Score
 onready var highest = $Display/Highest
@@ -37,30 +37,34 @@ var balls = []
 onready var goal_keeper = $GoalKeeper
 onready var watch_ad = $WatchAd
 
+const LAST_LEVEL = 211
 const SCORE_ADDED = 2
 const SCORE_ADDED_BONUS = 3
 const BONUS_TIME = 15
+const SHOW_ADS_INTERVAL = 5
+const SHOW_ADS_LEVEL_AND_UP = 10
+var ad_shown_counter := 0
+
 var countdown = 3
 
 onready var message = $Message
 var holding_ball := false
 signal level_passed
 signal start_level
+signal commercial_break
+
 
 func _try_to_show_ad():
 	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased():
-		print("_try_to_show_ad")
 		ad_shown_counter += 1
-		if ad_shown_counter == 1:
-			print("5")
-			if int(Data.current_level) >= 10:
-				print("over level 10")
-				GPack.show_interstitial_ad()
+		if ad_shown_counter == SHOW_ADS_INTERVAL:
+			if int(Data.current_level) >= SHOW_ADS_LEVEL_AND_UP and GPack.is_interstitial_ad_loaded():
+				emit_signal("commercial_break")
 			ad_shown_counter = 0
 
 
 func start_game():
-	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased() and int(Data.current_level) >= 10:
+	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased() and int(Data.current_level) >= SHOW_ADS_LEVEL_AND_UP:
 		GPack.load_interstitial_ad()
 	round_is_active = false
 	Data.connect("best_score_updated", highest, "set_text")
@@ -109,6 +113,8 @@ func remove_ball():
 	
 
 func _update_level_info(dict: Dictionary):
+	if get_node_or_null("Trophy"):
+		remove_child(get_node_or_null("Trophy"))
 	ball_count = min(C.default_balls_count + dict[C.REWARDED_BALLS] + dict[C.ETERNAL_BALLS], 10)
 	bonus_balls = dict[C.ETERNAL_BALLS] + dict[C.REWARDED_BALLS]
 	_add_all_balls()
@@ -168,6 +174,10 @@ func remove_swish(name: String):
 		tween.play()
 
 
+func vibrate(duration: int = 50):
+	Input.vibrate_handheld(duration)
+
+
 func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
 	if round_is_active:
 		goal_counter += 1
@@ -175,6 +185,7 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 		var bonus = time.start_time <= BONUS_TIME
 		goal_indicator.goal(bonus)
 		if bonus:
+			vibrate()
 			bonus_goal_sound.play()
 			score.text = str(int(score.text) + SCORE_ADDED_BONUS)
 		else:
@@ -190,13 +201,13 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 func _check_corner_shot(body):
 	var eligible = int(Data.current_level) > 99
 	if eligible and body.global_position.x <= 105 or body.global_position.x >= 975:
-		GPack.unlock_achievement(C.achievement_shot_to_corner)
+		GPack.unlock_achievement(C.achievement_shot_to_corner_100_plus)
 	
 	
 func _check_center_shot(body):
 	var eligible = int(Data.current_level) > 49
 	if eligible and body.global_position.x >= 530 and body.global_position.x <= 550:
-		GPack.unlock_achievement(C.achievement_shot_to_center)
+		GPack.unlock_achievement(C.achievement_shot_to_center_50_plus)
 
 
 func _check_first_second_goal_achievement():
@@ -223,7 +234,6 @@ func _check_high_score() -> void:
 			
 
 func _on_Time_round_done():
-	_try_to_show_ad()
 	Data.update_score(int(score.text))
 	whistle_sound.play()
 	round_is_active = false
@@ -233,7 +243,7 @@ func _on_Time_round_done():
 		_check_all_goals_achievement()
 		celebrate.play()
 		emit_signal("level_passed")
-		if int(Data.current_level) != 211:
+		if int(Data.current_level) != LAST_LEVEL:
 			continue_button.visible = true
 	else:
 		if Data.get_max_balls_to_add_count() > 0 and GPack.is_rewarded_ad_loaded():
@@ -245,6 +255,7 @@ func _on_Time_round_done():
 	restart.visible = true
 	if not GPack.is_rewarded_ad_loaded():
 		GPack.load_rewarded_ad()
+	_try_to_show_ad()
 
 
 func _check_all_goals_achievement():
@@ -253,7 +264,9 @@ func _check_all_goals_achievement():
 
 
 func _check_champion_achievement():
-	if int(Data.current_level) == 211:
+	if int(Data.current_level) == LAST_LEVEL:
+		var trophy = load("res://scenes/Trophy.tscn").instance()
+		add_child_below_node($TargetScore, trophy)
 		GPack.unlock_achievement(C.achievement_world_champion)
 
 

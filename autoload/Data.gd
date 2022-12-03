@@ -61,14 +61,16 @@ func get_levels() -> Dictionary:
 
 func unlock_next_level() -> String:
 	var next = str(int(current_level) + 1)
-	if _config.get_value(next, C.UNLOCKED) as bool:
-		return String()
-	else:
-		_config.set_value(next, C.UNLOCKED, 1)
-		_config.save(_path)
-		var next_country = _config.get_value(next, C.COUNTRY)
-		emit_signal("level_select_updated", get_levels())
-		return next_country
+	if _config.has_section(next):
+		if _config.get_value(next, C.UNLOCKED) as bool:
+			return String()
+		else:
+			_config.set_value(next, C.UNLOCKED, 1)
+			_config.save(_path)
+			var next_country = _config.get_value(next, C.COUNTRY)
+			emit_signal("level_select_updated", get_levels())
+			return next_country
+	return String()
 
 
 func get_maximum_ball_count() -> int:
@@ -256,7 +258,7 @@ func _set_initial_launch_settings():
 		if i == 1:
 			_config.set_value(String(i), C.UNLOCKED, 1)
 		else:
-			_config.set_value(String(i), C.UNLOCKED, 0)
+			_config.set_value(String(i), C.UNLOCKED, 1)
 		_config.set_value(String(i), C.REWARDED_BALLS, 0)
 		difficulty += 0.1
 	_config.save(_path)

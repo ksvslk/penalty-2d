@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://art/flag/gb.png" type="Texture" id=1]
+[ext_resource path="res://art/flag/gb-eng.png" type="Texture" id=1]
 [ext_resource path="res://scripts/goalkeeper.gd" type="Script" id=3]
 
 [node name="GoalKeeper" type="KinematicBody2D"]

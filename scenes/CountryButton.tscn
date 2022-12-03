@@ -56,9 +56,10 @@ uppercase = true
 
 [node name="TextureButton" type="TextureRect" parent="."]
 use_parent_material = true
-margin_left = 683.0
-margin_right = 980.0
-margin_bottom = 240.0
+margin_left = 782.0
+margin_top = 42.0
+margin_right = 984.0
+margin_bottom = 205.0
 rect_pivot_offset = Vector2( -421, -222 )
 mouse_filter = 2
 texture = ExtResource( 1 )

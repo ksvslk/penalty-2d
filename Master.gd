@@ -11,6 +11,7 @@ onready var remove_ball = $CanvasLayer/OptionsContainer/OptionsList/BallManageme
 onready var click_sound = $ClickSound
 onready var play_games = $CanvasLayer/OptionsContainer/HBoxContainer/PlayGames
 onready var bonus = $CanvasLayer/OptionsContainer/HBoxContainer/Bonus
+onready var commercial_break = $CanvasLayer/OptionsContainer/CommercialBreak
 
 
 func _ready():
@@ -113,3 +114,7 @@ func _on_AddBall_pressed():
 
 func _on_FollowTwitter_pressed():
 	OS.shell_open("https://twitter.com/IndestGames")
+
+
+func _on_Level_commercial_break():
+	commercial_break.visible = true

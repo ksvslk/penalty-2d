@@ -17,13 +17,14 @@ func _ready():
 		emit_signal("team_selection_done")
 
 
+
 func initialize_select_country():
 	var select_country_buttons = []
 	var language = C.get_language()
 	var current_country = C.get_country()
 	var default_option = -1
 	var levels = Data.get_levels()
-	
+
 	for i in range(0, levels.keys().size()):
 		var country = levels.keys()[i]
 		var texture = load("res://art/flag/" + country + ".png") as Texture

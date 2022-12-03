@@ -7,6 +7,12 @@ func _ready():
 		plugin = Engine.get_singleton("GPack")
 
 
+func is_signed_in() -> bool:
+	if plugin:
+		return plugin.isSignedIn()
+	return false
+	
+	
 ################
 # ACHIEVEMENTS #
 ################
