@@ -1,6 +1,8 @@
 extends VBoxContainer
 
 var payment = null
+var ios_payment = null
+
 const BALL = "ball"
 const INTERMEDIATE_ADS = "intermediate_ads"
 const TWO_BALLS_NO_ADS = "two_balls_and_remove_ads"
@@ -12,6 +14,15 @@ var SKUS = [
 	TWO_BALLS_NO_ADS
 ]
 
+var IOS_PRODUCT_IDS = [
+	"com.indest.ball",
+	"intermediate_ads",
+	"two_balls_and_remove_ads"
+]
+
+var max_retries = 5
+var retry = 0
+var seconds = [10, 20, 40, 80, 160]
 
 onready var maximum_rew_reached = $WatchRewarded/MaximumRewReached
 onready var watch_rewarded = $WatchRewarded
@@ -20,6 +31,7 @@ onready var maximum_reached = $Ball/MaximumReached
 onready var ball = $Ball
 onready var intermediate_ads = $IntermediateAds
 onready var two_balls_no_ads = $TwoBallsNoAds
+onready var appstore_timer = $AppstoreTimer
 
 signal disable_intermediate_ads
 signal add_2_balls_disable_ads
@@ -60,24 +72,90 @@ func _ready():
 	if GPack.plugin:
 		GPack.plugin.connect(GPack.s_rewarded_ad_loaded, self, "_set_rewarded_ad_button_state")
 		GPack.plugin.connect(GPack.s_rewarded_ad_failed_to_load, self, "_rewarded_failed_to_load")
+	elif MobileAds:
+		MobileAds.connect("rewarded_ad_loaded", self, "_set_rewarded_ad_button_state")
+		MobileAds.connect("rewarded_ad_failed_to_load", self, "_rewarded_failed_to_load")
+		
+	if Engine.has_singleton("InAppStore"):
+		ios_payment = Engine.get_singleton('InAppStore')
+		var result = ios_payment.request_product_info( { "product_ids": IOS_PRODUCT_IDS } )
+		if result == OK:
+			print("Successfully started product info request")
+			ios_payment.set_auto_finish_transaction(true)
+			appstore_timer.start()
+		else:
+			print("failed requesting product info")
+	else:
+		print("no app store plugin")
 
 
-func _rewarded_failed_to_load(s):
+func _on_AppstoreTimer_timeout():
+	check_events()
+	appstore_timer.start()
+
+
+func check_events():
+	while ios_payment.get_pending_event_count() > 0:
+		appstore_timer.stop()
+		var event = ios_payment.pop_pending_event()
+		print(event)
+		if event.result=="ok": # other possible values are "progress", "error", "unhandled"
+			match event.type:
+				'product_info':
+					print(event.titles)
+					print(event.descriptions)
+					print(event.localized_prices)
+					# fields: titles, descriptions, prices, ids, localized_prices, currency_codes, invalid_ids
+				'purchase':
+					pass
+					# fields: product_id, transaction_id, receipt		
+				'restore':
+					pass
+					# fields: product_id, transaction_id, receipt		
+
+
+func _on_connect_error(response_code, debug_message):
+	print(response_code, ": ", debug_message)
+	if retry < max_retries:
+		yield(get_tree().create_timer(seconds[retry]), "timeout")
+		print("Retrying to connect..")
+		retry += 1
+		payment.startConnection()
+	else:
+		print("Retries reached maximum.")
+		retry = 0
+
+
+func _rewarded_failed_to_load(error):
+	print("_rewarded_failed_to_load", error)
 	watch_rewarded.disabled = true
 	maximum_rew_reached.visible = false
 
 
 func _set_rewarded_ad_button_state(max_balls_count: int = -1):
+	print("_set_rewarded_ad_button_state. Should be rewarded loaded here.")
 	if max_balls_count == -1:
 		max_balls_count = Data.get_max_balls_to_add_count()
-	if max_balls_count > 0 and GPack.is_rewarded_ad_loaded():
+	if max_balls_count > 0:
 		watch_rewarded.disabled = false
 		maximum_rew_reached.visible = false
 	elif max_balls_count <= 0:
 		watch_rewarded.disabled = true
 		maximum_rew_reached.visible = true
+		
 
-
+func _set_rewarded_ad_button_state_on_load(max_balls_count: int = -1):
+	if max_balls_count > 0 and GPack.is_rewarded_ad_loaded():
+		watch_rewarded.disabled = false
+		maximum_rew_reached.visible = false
+	elif max_balls_count >= 0 and not GPack.is_rewarded_ad_loaded():
+		watch_rewarded.disabled = true
+		maximum_rew_reached.visible = false
+	elif max_balls_count <= 0:
+		watch_rewarded.disabled = true
+		maximum_rew_reached.visible = true
+	
+		
 func _set_intermediate_button_state():
 	if not Data.is_intermediate_ads_enabled():
 		intermediate_ads.visible = false
@@ -111,7 +189,7 @@ func _set(property, value):
 		var max_balls_count = Data.get_max_balls_to_add_count()
 		if value == true:
 			_set_eternal_ball_button_state(max_balls_count)
-			_set_rewarded_ad_button_state(max_balls_count)
+			_set_rewarded_ad_button_state_on_load(max_balls_count)
 			_set_two_balls_button_state(max_balls_count)
 
 
@@ -272,3 +350,5 @@ func _on_WatchRewarded_pressed():
 	get_parent()._on_BackButton_pressed()
 	if GPack.is_rewarded_ad_loaded():
 		GPack.show_rewarded_ad()
+
+

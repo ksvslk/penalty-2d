@@ -14,16 +14,63 @@ onready var bonus = $CanvasLayer/OptionsContainer/HBoxContainer/Bonus
 onready var commercial_break = $CanvasLayer/OptionsContainer/CommercialBreak
 
 
+func _load_ios_game_data():
+	if Engine.has_singleton("ICloud"):
+		var singleton = Engine.get_singleton("ICloud")
+		var game_data = singleton.get_all_key_values()
+		if not game_data.empty():
+			Data.load_game(game_data)
+
 func _ready():
-	loading_screen.visible = true
+	_disable_playing()
 	if OS.get_name() == "Android":
-		GPack.plugin.connect(GPack.s_on_start_loading_saved_game, self, "_show_loading_game")
+		GPack.plugin.connect(GPack.s_on_start_loading_saved_game, self, "_disable_playing")
 		GPack.plugin.connect(GPack.s_on_loading_saved_game_complete, self, "_show_loading_game_result")
+	if OS.get_name() == "iOS":
+		_load_ios_game_data()
+		_enable_playing()
 	if GPack.plugin:
 		GPack.plugin.connect(GPack.s_reward_earned, self, "_reward_with_ball")
-	else:
-		loading_screen.visible = false
-		mediator.start_game()
+	if MobileAds:
+		MobileAds.connect("user_earned_rewarded", self, "_reward_with_ball")
+	if OS.get_name() == "OSX":
+		_enable_playing()
+	_print_license()
+
+
+func _disable_playing():
+	loading_screen.visible = true
+
+
+func _enable_playing(select_country_flag = false):
+	if (select_country and not select_country.visible) or select_country_flag:
+		if loading_screen:
+			loading_screen.visible = false
+		if mediator:
+			mediator.start_game()
+
+
+func _print_license():
+	print("Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur."\
++"Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md)."\
+
++"Permission is hereby granted, free of charge, to any person obtaining a copy"\
++"of this software and associated documentation files (the 'Software'), to deal"\
++"in the Software without restriction, including without limitation the rights"\
++"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell"\
++"copies of the Software, and to permit persons to whom the Software is"\
++"furnished to do so, subject to the following conditions:"\
+
++"The above copyright notice and this permission notice shall be included in all"\
++"copies or substantial portions of the Software."\
+
++"THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR"\
++"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,"\
++"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE"\
++"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER"\
++"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,"\
++"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE"\
++"SOFTWARE.")
 
 
 func _on_RemoveBall_pressed():
@@ -38,8 +85,8 @@ func _on_RemoveBall_pressed():
 			remove_ball.disabled = true
 		if mediator.ball_count > 1:
 			remove_ball.disabled = false
-			
-		
+
+
 
 func _on_Continue_gui_input(event):
 	if event.is_pressed():
@@ -67,7 +114,7 @@ func _reward_with_ball(rewardType:String = "", rewardAmount:int = -1):
 func _on_WatchAd_pressed():
 	GPack.show_rewarded_ad()
 	watch_ad.visible = false
-	
+
 
 func _on_BonusList_add_2_balls_disable_ads():
 	if not Data.is_two_balls_purchased():
@@ -81,23 +128,20 @@ func _on_BonusList_disable_intermediate_ads():
 		Data.set_intermediate_ads(false)
 
 
-func _show_loading_game():
-	loading_screen.visible = true
-
-
 func _show_loading_game_result(game_data: Dictionary, result: bool):
 	if result:
 		Data.load_game(game_data)
 		print("Successfully loaded a game!")
 	else:
 		print("Something went wrong when loading game... :(")
-	loading_screen.visible = false
-	mediator.start_game()
+	_enable_playing()
 
 
 func _on_SelectCountry_team_selection_done():
 	if GPack.plugin:
 		GPack.load_game()
+	if OS.get_name() == "iOS":
+		_enable_playing(true)
 
 
 func _on_AddBall_pressed():
@@ -118,3 +162,4 @@ func _on_FollowTwitter_pressed():
 
 func _on_Level_commercial_break():
 	commercial_break.visible = true
+

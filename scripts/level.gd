@@ -8,7 +8,6 @@ export var time_limit := 40
 
 var swish_scene = load("res://scenes/Swish.tscn")
 var ball_scene = load("res://scenes/Ball.tscn")
-var add_ball_effect = load("res://scenes/SpeedlinesShineEffect.tscn")
 var ball_dict = {}
 var round_is_active = true
 var new_high_score_announced = false
@@ -64,6 +63,7 @@ func _try_to_show_ad():
 
 
 func start_game():
+	_add_tutorial()
 	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased() and int(Data.current_level) >= SHOW_ADS_LEVEL_AND_UP:
 		GPack.load_interstitial_ad()
 	round_is_active = false
@@ -144,9 +144,9 @@ func _check_for_time_limit_achievements():
 	match int(Data.current_level):
 		50:
 			GPack.unlock_achievement(C.achievement_50_second_rounds)
-		60:
+		100:
 			GPack.unlock_achievement(C.achievement_60_second_rounds)
-		70:
+		150:
 			GPack.unlock_achievement(C.achievement_70_second_rounds)
 
 
@@ -200,13 +200,13 @@ func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_i
 
 func _check_corner_shot(body):
 	var eligible = int(Data.current_level) > 99
-	if eligible and body.global_position.x <= 105 or body.global_position.x >= 975:
+	if eligible and (body.global_position.x <= 100 or body.global_position.x >= 980):
 		GPack.unlock_achievement(C.achievement_shot_to_corner_100_plus)
 	
 	
 func _check_center_shot(body):
 	var eligible = int(Data.current_level) > 49
-	if eligible and body.global_position.x >= 530 and body.global_position.x <= 550:
+	if eligible and (body.global_position.x >= 530 and body.global_position.x <= 550):
 		GPack.unlock_achievement(C.achievement_shot_to_center_50_plus)
 
 
@@ -313,3 +313,11 @@ func _on_StartTimer_timeout():
 		start_countdown.visible = false
 		start_timer.stop()
 		round_start_actions()
+
+
+func _add_tutorial():
+	if int(Data.current_level) == 1:
+		get_tree().paused = true
+		var tutorial_scene = load("res://scenes/Tut.tscn").instance()
+		tutorial_scene.z_index = 3
+		add_child_below_node($BallPositions, tutorial_scene)

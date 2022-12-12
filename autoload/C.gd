@@ -6,7 +6,7 @@ const event_fail_level: String = "fail_level"
 const event_ball_rewarded: String = "ball_rewarded"
 const event_ball_bought: String = "ball_bought"
 
-# achievements
+# android achievements
 const achievement_15_x_fast_shot: String = "CgkI5q-mtaQOEAIQAg"
 const achievement_all_6_continents: String = "CgkI5q-mtaQOEAIQAw"
 const achievement_last_second_pass: String = "CgkI5q-mtaQOEAIQBA"
@@ -21,8 +21,30 @@ const achievement_60_second_rounds: String = "CgkI5q-mtaQOEAIQCw"
 const achievement_70_second_rounds: String = "CgkI5q-mtaQOEAIQDA"
 const achievement_only_goals: String = "CgkI5q-mtaQOEAIQDQ"
 
-# leaderboard
+
+# ios achievements
+const ios_achievement_fast_shot_5x: String = "fast_5"
+const ios_achievement_15_x_fast_shot: String = "fast15"
+const ios_achievement_last_second_pass: String = "last_second"
+const ios_achievement_goal_on_first_second: String = "first_second"
+const ios_achievement_50_second_rounds: String = "sec_50"
+const ios_achievement_shot_to_center_50_plus: String = "center"
+const ios_achievement_shot_to_corner_100_plus: String = "corner"
+const ios_achievement_same_country: String = "same_country"
+const ios_achievement_60_second_rounds: String = "sec_60"
+const ios_achievement_only_goals: String = "percent_goals_100"
+const ios_achievement_70_second_rounds: String = "sec_70"
+const ios_achievement_all_6_continents: String = "all_6"
+const ios_achievement_world_champion: String = "champion"
+
+
+# android leaderboard
 const leaderboard_goat: String = "CgkI5q-mtaQOEAIQAQ"
+
+# ios leaderboard
+const ios_leaderboard_goat: String = "goat"
+
+
 
 # temp
 var fast_shot_counter := 0
@@ -79,7 +101,11 @@ const VARIOUS_SECTION: String = "VARIOUS_SECTION"
 
 func vibrate(duration: int = 10):
 	if OS.has_feature("vibrate"):
-		Input.vibrate_handheld(duration)
+		match OS.get_name():
+			"Android":
+				Input.vibrate_handheld(duration)
+			"iOS":
+				Input.vibrate_handheld(duration / 2)
 
 
 func get_language() -> String:

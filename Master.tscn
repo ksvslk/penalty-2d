@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=2]
+[gd_scene load_steps=82 format=2]
 
 [ext_resource path="res://sound/tick.wav" type="AudioStream" id=1]
 [ext_resource path="res://art/grass.png" type="Texture" id=2]
@@ -24,11 +24,12 @@
 [ext_resource path="res://sound/celebrate.wav" type="AudioStream" id=22]
 [ext_resource path="res://art/football.svg" type="Texture" id=23]
 [ext_resource path="res://scripts/country_select_button.gd" type="Script" id=24]
+[ext_resource path="res://scripts/buy_button.gd" type="Script" id=25]
 [ext_resource path="res://scripts/select_country.gd" type="Script" id=26]
 [ext_resource path="res://scripts/options_container.gd" type="Script" id=27]
 [ext_resource path="res://scripts/level_scroller.gd" type="Script" id=28]
 [ext_resource path="res://art/gear.svg" type="Texture" id=29]
-[ext_resource path="res://art/games_controller_grey.png" type="Texture" id=30]
+[ext_resource path="res://art/ios/game_center.png" type="Texture" id=30]
 [ext_resource path="res://art/bonus.svg" type="Texture" id=31]
 [ext_resource path="res://art/back.svg" type="Texture" id=32]
 [ext_resource path="res://art/games_leaderboards.png" type="Texture" id=33]
@@ -39,8 +40,11 @@
 [ext_resource path="res://scenes/LoadingScreen.tscn" type="PackedScene" id=38]
 [ext_resource path="res://scripts/loading_screen.gd" type="Script" id=39]
 [ext_resource path="res://sound/click.wav" type="AudioStream" id=40]
+[ext_resource path="res://scripts/os_game_center_button.gd" type="Script" id=41]
 [ext_resource path="res://art/Twitter social icons - circle - white.png" type="Texture" id=42]
 [ext_resource path="res://scripts/play_games.gd" type="Script" id=43]
+[ext_resource path="res://art/ios/leaderboard.png" type="Texture" id=44]
+[ext_resource path="res://art/ios/achievements.png" type="Texture" id=45]
 
 [sub_resource type="CanvasItemMaterial" id=31]
 blend_mode = 1
@@ -148,7 +152,7 @@ outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 21 )
 
 [sub_resource type="DynamicFont" id=40]
-size = 45
+size = 40
 outline_size = 5
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 13 )
@@ -331,6 +335,7 @@ position = Vector2( 840, 256 )
 position = Vector2( 200, 240 )
 
 [node name="Level" type="Node2D" parent="."]
+pause_mode = 1
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_group_": true,
@@ -684,7 +689,7 @@ pause_mode = 2
 [node name="OptionsContainer" type="Control" parent="CanvasLayer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = 16.0
+margin_top = -48.0
 margin_bottom = 16.0
 mouse_filter = 2
 script = ExtResource( 27 )
@@ -723,15 +728,16 @@ __meta__ = {
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = -8.0
-margin_bottom = -193.0
+margin_left = 1.0
+margin_top = 114.0
+margin_bottom = -185.0
 scroll_horizontal_enabled = false
 scroll_deadzone = 25
 script = ExtResource( 28 )
 
 [node name="LevelsList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer/LevelScroller"]
-margin_right = 1080.0
-margin_bottom = 2215.0
+margin_right = 1079.0
+margin_bottom = 2165.0
 mouse_default_cursor_shape = 8
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -751,6 +757,7 @@ margin_right = 412.0
 margin_bottom = 156.0
 mouse_filter = 1
 size_flags_horizontal = 3
+size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 40 )
@@ -758,7 +765,7 @@ custom_styles/hover = SubResource( 37 )
 custom_styles/pressed = SubResource( 37 )
 custom_styles/disabled = SubResource( 52 )
 custom_styles/normal = SubResource( 37 )
-text = "Play Games"
+text = "Game Center"
 icon = ExtResource( 30 )
 align = 0
 expand_icon = true
@@ -929,8 +936,9 @@ alignment = 2
 script = ExtResource( 35 )
 
 [node name="WatchRewarded" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+margin_top = 498.0
 margin_right = 1080.0
-margin_bottom = 162.0
+margin_bottom = 660.0
 mouse_filter = 1
 custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
 custom_constants/hseparation = 20
@@ -961,12 +969,13 @@ align = 1
 valign = 1
 
 [node name="HSeparator" type="HSeparator" parent="CanvasLayer/OptionsContainer/BonusList"]
-margin_top = 166.0
+margin_top = 664.0
 margin_right = 1080.0
-margin_bottom = 170.0
+margin_bottom = 668.0
 custom_styles/separator = SubResource( 48 )
 
 [node name="Ball" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+visible = false
 margin_top = 174.0
 margin_right = 1080.0
 margin_bottom = 336.0
@@ -984,6 +993,7 @@ icon = ExtResource( 23 )
 align = 0
 icon_align = 2
 expand_icon = true
+script = ExtResource( 25 )
 __meta__ = {
 "_editor_description_": ""
 }
@@ -1001,6 +1011,7 @@ align = 1
 valign = 1
 
 [node name="IntermediateAds" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+visible = false
 margin_top = 340.0
 margin_right = 1080.0
 margin_bottom = 502.0
@@ -1016,11 +1027,13 @@ disabled = true
 text = "..."
 align = 0
 expand_icon = true
+script = ExtResource( 25 )
 __meta__ = {
 "_editor_description_": ""
 }
 
 [node name="TwoBallsNoAds" type="Button" parent="CanvasLayer/OptionsContainer/BonusList"]
+visible = false
 margin_top = 506.0
 margin_right = 1080.0
 margin_bottom = 668.0
@@ -1036,6 +1049,7 @@ disabled = true
 text = "..."
 align = 0
 expand_icon = true
+script = ExtResource( 25 )
 __meta__ = {
 "_editor_description_": ""
 }
@@ -1051,6 +1065,8 @@ custom_styles/normal = SubResource( 44 )
 text = "LEVEL BALLS LIMIT REACHED"
 align = 1
 valign = 1
+
+[node name="AppstoreTimer" type="Timer" parent="CanvasLayer/OptionsContainer/BonusList"]
 
 [node name="PlayGamesList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer"]
 visible = false
@@ -1075,9 +1091,12 @@ text = "Leaderboard"
 icon = ExtResource( 33 )
 align = 0
 expand_icon = true
+script = ExtResource( 41 )
 __meta__ = {
 "_editor_description_": ""
 }
+android_icon = ExtResource( 33 )
+iphone_icon = ExtResource( 44 )
 
 [node name="ShowAchievements" type="Button" parent="CanvasLayer/OptionsContainer/PlayGamesList"]
 margin_top = 166.0
@@ -1093,9 +1112,12 @@ text = "Achievements"
 icon = ExtResource( 34 )
 align = 0
 expand_icon = true
+script = ExtResource( 41 )
 __meta__ = {
 "_editor_description_": ""
 }
+android_icon = ExtResource( 34 )
+iphone_icon = ExtResource( 45 )
 
 [node name="LoadingScreen" parent="CanvasLayer/OptionsContainer" instance=ExtResource( 38 )]
 script = ExtResource( 39 )
@@ -1119,7 +1141,7 @@ scroll_deadzone = 25
 
 [node name="CountryList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer/SelectCountry/CountryScroller"]
 margin_right = 1079.0
-margin_bottom = 2051.0
+margin_bottom = 2115.0
 mouse_default_cursor_shape = 8
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -1233,6 +1255,7 @@ stream = ExtResource( 40 )
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/Ball" to="CanvasLayer/OptionsContainer/BonusList" method="_on_Ball_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/IntermediateAds" to="CanvasLayer/OptionsContainer/BonusList" method="_on_IntermediateAds_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/BonusList/TwoBallsNoAds" to="CanvasLayer/OptionsContainer/BonusList" method="_on_TwoBallsNoAds_pressed"]
+[connection signal="timeout" from="CanvasLayer/OptionsContainer/BonusList/AppstoreTimer" to="CanvasLayer/OptionsContainer/BonusList" method="_on_AppstoreTimer_timeout"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/PlayGamesList/ShowLeaderboard" to="CanvasLayer/OptionsContainer" method="_on_ShowLeaderboard_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/PlayGamesList/ShowAchievements" to="CanvasLayer/OptionsContainer" method="_on_ShowAchievements_pressed"]
 [connection signal="team_selection_done" from="CanvasLayer/OptionsContainer/SelectCountry" to="." method="_on_SelectCountry_team_selection_done"]

@@ -10,12 +10,12 @@ onready var country_scroller = $CountryScroller
 signal team_selection_done
 
 func _ready():
+	get_tree().paused = true
 	if Data.is_first_time():
 		initialize_select_country()
 		visible = true
 	else:
 		emit_signal("team_selection_done")
-
 
 
 func initialize_select_country():

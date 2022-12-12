@@ -17,6 +17,7 @@ signal team_changed(new_team)
 ########################	
 
 func _ready():
+	print("Data ready")
 	var err := _config.load(_path)
 	if err == ERR_FILE_NOT_FOUND:
 		 # This should be done ONLY ONCE when also cloud has no info!!!
@@ -25,6 +26,15 @@ func _ready():
 		printerr("Could not load local data. ", err)
 	var current = _config.get_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL)
 	load_level(int(current))
+	sync_cloud_with_app()
+
+
+func sync_cloud_with_app():
+	if OS.get_name() == "iOS":
+		if Engine.has_singleton("ICloud"):
+			var cloud = Engine.get_singleton("ICloud")
+			var synced = cloud.synchronize_key_values()
+			print("SYNCED KEY VALUES: ", synced)
 
 ######################################
 #	REPOSITORY/VIEWMODEL PART	    #
@@ -208,7 +218,9 @@ func _set_initial_launch_settings():
 	
 	var file = File.new()
 	file.open("res://assets/level_flag_mapping.json", File.READ)
-	var data = JSON.parse(file.get_as_text())
+	print("DID FILE OPEN: ", file.get_error())
+	var initial_info = file.get_as_text()
+	var data = JSON.parse(initial_info)
 	if typeof(data.result) != TYPE_DICTIONARY:
 		push_error("Unexpected results.")
 	
@@ -258,7 +270,7 @@ func _set_initial_launch_settings():
 		if i == 1:
 			_config.set_value(String(i), C.UNLOCKED, 1)
 		else:
-			_config.set_value(String(i), C.UNLOCKED, 1)
+			_config.set_value(String(i), C.UNLOCKED, 0)
 		_config.set_value(String(i), C.REWARDED_BALLS, 0)
 		difficulty += 0.1
 	_config.save(_path)
@@ -266,49 +278,49 @@ func _set_initial_launch_settings():
 
 
 func save_game() -> void:
-	if OS.get_name() == "Android":
-		var game_data = Dictionary()
-		for key in C.various_section_dictionary_keys:
-			game_data[key] = str(_config.get_value(C.VARIOUS_SECTION, key))
-		for level_nr in range(1, _total_levels_plus_one):
-			var level = str(level_nr)
-			var level_info = []
-			for level_info_key in _config.get_section_keys(level):
-				if level_info_key == C.FLAG or level_info_key == C.COUNTRY:
-					level_info.push_back(str(_config.get_value(level, level_info_key)))
-				else:
-					level_info.push_back(_config.get_value(level, level_info_key))
-			game_data[level] = str(level_info)
-		var max_level = get_max_level()
-		GPack.save_game(game_data, max_level)
+	var game_data = Dictionary()
+	for key in C.various_section_dictionary_keys:
+		game_data[key] = str(_config.get_value(C.VARIOUS_SECTION, key))
+	for level_nr in range(1, _total_levels_plus_one):
+		var level = str(level_nr)
+		var level_info = []
+		for level_info_key in _config.get_section_keys(level):
+			if level_info_key == C.FLAG or level_info_key == C.COUNTRY:
+				level_info.push_back(str(_config.get_value(level, level_info_key)))
+			else:
+				level_info.push_back(_config.get_value(level, level_info_key))
+		game_data[level] = str(level_info)
+	var max_level = get_max_level()
+	GPack.save_game(game_data, max_level)
 
 
 func load_game(game_data: Dictionary) -> void:
-	for key in C.various_section_dictionary_keys:
-		if key == C.CURRENT_LEVEL:
-			_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as String)
-		elif key == C.PLAYER_TEAM:
-			var current_team = _config.get_value(C.VARIOUS_SECTION, C.PLAYER_TEAM)
-			if current_team != game_data[key]:
-				_config.set_value(C.VARIOUS_SECTION, key, current_team)
-		else:
-			_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as int)
-		
-	for level_nr in range(1, _total_levels_plus_one):
-		var level = str(level_nr)
-		var level_info = game_data[level] as String
-		level_info = level_info.substr(1, level_info.length() - 2)
-		var sliced = level_info.split(",", false)
-		for index in range(0, sliced.size()):
-			var key = C.level_section_dictionary_keys[index]
-			if key == C.DIFFICULTY:
-				_config.set_value(level, key, sliced[index].strip_edges() as float)
-			elif key == C.FLAG or key == C.COUNTRY:
-				_config.set_value(level, key, sliced[index].strip_edges() as String)
+	if OS.get_name() == "Android" or OS.get_name() == "iOS":
+		for key in C.various_section_dictionary_keys:
+			if key == C.CURRENT_LEVEL:
+				_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as String)
+			elif key == C.PLAYER_TEAM:
+				var current_team = _config.get_value(C.VARIOUS_SECTION, C.PLAYER_TEAM)
+				if current_team != game_data[key]:
+					_config.set_value(C.VARIOUS_SECTION, key, current_team)
 			else:
-				_config.set_value(level, key, sliced[index].strip_edges() as int)
-	_config.save(_path)
-	emit_signal("level_select_updated", get_levels())
-	var current = get_max_level()
-	load_level(int(current))
+				_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as int)
+			
+		for level_nr in range(1, _total_levels_plus_one):
+			var level = str(level_nr)
+			var level_info = game_data[level] as String
+			level_info = level_info.substr(1, level_info.length() - 2)
+			var sliced = level_info.split(",", false)
+			for index in range(0, sliced.size()):
+				var key = C.level_section_dictionary_keys[index]
+				if key == C.DIFFICULTY:
+					_config.set_value(level, key, sliced[index].strip_edges() as float)
+				elif key == C.FLAG or key == C.COUNTRY:
+					_config.set_value(level, key, sliced[index].strip_edges() as String)
+				else:
+					_config.set_value(level, key, sliced[index].strip_edges() as int)
+		_config.save(_path)
+		emit_signal("level_select_updated", get_levels())
+		var current = get_max_level()
+		load_level(int(current))
 

@@ -1,10 +1,35 @@
 extends Node
 
 var plugin = null
+var gc = null
 
 func _ready():
+	print("GPack ready")
 	if Engine.has_singleton("GPack"):
 		plugin = Engine.get_singleton("GPack")
+	elif Engine.has_singleton("GameCenter"):
+		gc = Engine.get_singleton("GameCenter")
+		gc.authenticate()
+	if MobileAds:
+		MobileAds.connect("initialization_complete", self, "_load_ads")
+
+
+func _load_ads(status: int, adapter_name: String):
+	print("initialization_complete", status, adapter_name)
+	MobileAds.request_user_consent()
+	MobileAds.load_interstitial()
+	MobileAds.load_rewarded()
+	MobileAds.connect("rewarded_ad_closed", self, "load_rewarded_ad")
+
+
+# ios game center
+func has_game_center() -> bool:
+	return gc and gc.is_authenticated()
+
+
+func show_game_center():
+	if has_game_center():
+		gc.show_game_center(Dictionary())
 
 
 func is_signed_in() -> bool:
@@ -17,9 +42,93 @@ func is_signed_in() -> bool:
 # ACHIEVEMENTS #
 ################
 
+func unlock_ios_achievement(id: String) -> void:
+	match id:
+		C.achievement_fast_shot_5x:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_fast_shot_5x,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_15_x_fast_shot:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_15_x_fast_shot,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_last_second_pass:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_last_second_pass,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_goal_on_first_second:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_goal_on_first_second,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_50_second_rounds:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_50_second_rounds,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_shot_to_center_50_plus:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_shot_to_center_50_plus,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_shot_to_corner_100_plus:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_shot_to_corner_100_plus,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_same_country:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_same_country,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_60_second_rounds:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_60_second_rounds,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_only_goals:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_only_goals,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_70_second_rounds:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_70_second_rounds,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_all_6_continents:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_all_6_continents,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+		C.achievement_world_champion:
+			gc.award_achievement({ 
+				"name":C.ios_achievement_world_champion,
+				"progress":100.0,
+				"show_completion_banner":true
+			})
+
+
 func unlock_achievement(id: String) -> void:
 	if plugin:
 		plugin.unlockAchievement(id)
+	elif gc:
+		unlock_ios_achievement(id)
 
 
 func increment_achievement(id: String, num_steps: int) -> void:
@@ -30,20 +139,35 @@ func increment_achievement(id: String, num_steps: int) -> void:
 func show_achievements() -> void:
 	if plugin:
 		plugin.showAchievements()
+	elif gc:
+		gc.show_game_center({ "view":"achievements" })
 
 
 ################
 # LEADERBOARD  #
 ################
 
+func submit_ios_score(score: int, leaderboard: String) -> void:
+	match leaderboard:
+		C.leaderboard_goat:
+			gc.post_score({
+				"score":score,
+				"category":C.ios_leaderboard_goat
+			})
+
+
 func submit_score(score: int, leaderboard: String) -> void:
 	if plugin:
 		plugin.submitScore(score, leaderboard)
-
+	elif gc:
+		submit_ios_score(score, leaderboard)
+	
 
 func show_leaderboard(id: String) -> void:
 	if plugin:
 		plugin.showLeaderboard(id)
+	elif gc:
+		gc.show_game_center({ "view":"leaderboards" })
 
 
 ################
@@ -62,27 +186,41 @@ func log_event(event_name: String, dictionary: Dictionary) -> void:
 func load_rewarded_ad() -> void:
 	if plugin:
 		plugin.loadRewardedAd()
+	elif MobileAds:
+		print("load_rewarded_ad")
+		MobileAds.load_rewarded()
 
 
 func is_rewarded_ad_loaded() -> bool:
 	if plugin:
 		return plugin.isRewardedAdLoaded()
+	elif MobileAds:
+		print("is_rewarded_ad_loaded: ", MobileAds.get_is_rewarded_loaded())
+		return MobileAds.get_is_rewarded_loaded()
 	return false
 
 
 func show_rewarded_ad() -> void:
 	if plugin:
+		print("ANDROID: show_rewarded_ad")
 		plugin.showRewardedAd()
+	elif MobileAds:
+		print("IOS: show_rewarded_ad")
+		MobileAds.show_rewarded()
 
 
 func load_interstitial_ad() -> void:
 	if plugin:
 		plugin.loadInterstitialAd()
+	elif MobileAds:
+		MobileAds.load_interstitial()
 
 
 func is_interstitial_ad_loaded() -> bool:
 	if plugin:
 		return plugin.isInterstitialAdLoaded()
+	elif MobileAds:
+		return MobileAds.get_is_interstitial_loaded()
 	return false
 
 
@@ -90,12 +228,15 @@ func show_interstitial_ad() -> void:
 	if plugin:
 		var is_loaded = is_interstitial_ad_loaded()
 		if is_loaded:
-			print("show")
 			plugin.showInterstitialAd()
 		else:
-			print("load")
 			plugin.loadInterstitialAd()
-		
+	elif MobileAds:
+		var is_loaded = MobileAds.get_is_interstitial_loaded()
+		if is_loaded:
+			MobileAds.show_interstitial()
+		else:
+			MobileAds.load_interstitial()
 	
 	
 ################
@@ -105,6 +246,10 @@ func show_interstitial_ad() -> void:
 func save_game(data: Dictionary, progress: int) -> void:
 	if plugin:
 		plugin.saveGame(data, progress)
+	elif Engine.has_singleton("ICloud"):
+		data["progress"] = progress
+		var cloud = Engine.get_singleton("ICloud")
+		var result = cloud.set_key_values(data)
 
 
 func load_game() -> void:
