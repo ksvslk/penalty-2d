@@ -3,23 +3,14 @@ extends Node
 var plugin = null
 var gc = null
 
+
 func _ready():
-	print("GPack ready")
 	if Engine.has_singleton("GPack"):
 		plugin = Engine.get_singleton("GPack")
 	elif Engine.has_singleton("GameCenter"):
 		gc = Engine.get_singleton("GameCenter")
 		gc.authenticate()
-	if MobileAds:
-		MobileAds.connect("initialization_complete", self, "_load_ads")
-
-
-func _load_ads(status: int, adapter_name: String):
-	print("initialization_complete", status, adapter_name)
-	MobileAds.request_user_consent()
-	MobileAds.load_interstitial()
-	MobileAds.load_rewarded()
-	MobileAds.connect("rewarded_ad_closed", self, "load_rewarded_ad")
+	print("GPack ready")
 
 
 # ios game center
@@ -186,17 +177,11 @@ func log_event(event_name: String, dictionary: Dictionary) -> void:
 func load_rewarded_ad() -> void:
 	if plugin:
 		plugin.loadRewardedAd()
-	elif MobileAds:
-		print("load_rewarded_ad")
-		MobileAds.load_rewarded()
 
 
 func is_rewarded_ad_loaded() -> bool:
 	if plugin:
 		return plugin.isRewardedAdLoaded()
-	elif MobileAds:
-		print("is_rewarded_ad_loaded: ", MobileAds.get_is_rewarded_loaded())
-		return MobileAds.get_is_rewarded_loaded()
 	return false
 
 
@@ -204,23 +189,16 @@ func show_rewarded_ad() -> void:
 	if plugin:
 		print("ANDROID: show_rewarded_ad")
 		plugin.showRewardedAd()
-	elif MobileAds:
-		print("IOS: show_rewarded_ad")
-		MobileAds.show_rewarded()
 
 
 func load_interstitial_ad() -> void:
 	if plugin:
 		plugin.loadInterstitialAd()
-	elif MobileAds:
-		MobileAds.load_interstitial()
 
 
 func is_interstitial_ad_loaded() -> bool:
 	if plugin:
 		return plugin.isInterstitialAdLoaded()
-	elif MobileAds:
-		return MobileAds.get_is_interstitial_loaded()
 	return false
 
 
@@ -231,12 +209,6 @@ func show_interstitial_ad() -> void:
 			plugin.showInterstitialAd()
 		else:
 			plugin.loadInterstitialAd()
-	elif MobileAds:
-		var is_loaded = MobileAds.get_is_interstitial_loaded()
-		if is_loaded:
-			MobileAds.show_interstitial()
-		else:
-			MobileAds.load_interstitial()
 	
 	
 ################
@@ -275,4 +247,5 @@ const s_on_saving_game_complete = "on_saving_game_complete"
 
 const s_on_signed_in_status_changed = "on_signed_in_status_changed"
 
-
+const s_on_start_showing_review = "on_start_showing_review"
+const s_on_ending_review = "on_ending_review"

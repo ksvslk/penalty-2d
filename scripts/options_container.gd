@@ -15,6 +15,10 @@ var currently_visible_suboption = null
 
 signal switch_level
 
+func _ready():
+	if OS.get_name() == "iOS":
+		bonus.hide()
+
 
 func _on_Options_pressed():
 	options_list.visible = true
@@ -57,7 +61,8 @@ func _hide_all_menu_buttons():
 
 func _show_all_menu_buttons():
 	play_games.visible = true
-	bonus.visible = true
+	if OS.get_name() != "iOS":
+		bonus.visible = true
 	options.visible = true
 
 

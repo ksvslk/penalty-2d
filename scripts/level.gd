@@ -36,6 +36,7 @@ var balls = []
 onready var goal_keeper = $GoalKeeper
 onready var watch_ad = $WatchAd
 
+const SHOW_REVIEW_LEVEL = 7
 const LAST_LEVEL = 211
 const SCORE_ADDED = 2
 const SCORE_ADDED_BONUS = 3
@@ -239,14 +240,17 @@ func _on_Time_round_done():
 	round_is_active = false
 	var passed = int(score.text) >= int(target_score.text)
 	if passed:
+		var clevel = int(Data.current_level)
+		if clevel == SHOW_REVIEW_LEVEL:
+			get_parent().show_review()
 		_check_champion_achievement()
 		_check_all_goals_achievement()
 		celebrate.play()
 		emit_signal("level_passed")
-		if int(Data.current_level) != LAST_LEVEL:
+		if clevel != LAST_LEVEL:
 			continue_button.visible = true
 	else:
-		if Data.get_max_balls_to_add_count() > 0 and GPack.is_rewarded_ad_loaded():
+		if Data.get_max_balls_to_add_count() > 0 and GPack.is_rewarded_ad_loaded() and OS.get_name() != "iOS":
 			watch_ad.visible = true
 		GPack.log_event(C.event_fail_level, {
 			"level":int(Data.current_level),

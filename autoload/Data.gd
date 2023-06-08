@@ -31,10 +31,12 @@ func _ready():
 
 func sync_cloud_with_app():
 	if OS.get_name() == "iOS":
+		set_intermediate_ads(false)
 		if Engine.has_singleton("ICloud"):
 			var cloud = Engine.get_singleton("ICloud")
 			var synced = cloud.synchronize_key_values()
-			print("SYNCED KEY VALUES: ", synced)
+			set_intermediate_ads(false)
+			
 
 ######################################
 #	REPOSITORY/VIEWMODEL PART	    #
@@ -94,6 +96,24 @@ func is_level_unlocked(nr: int) -> bool:
 	return _config.get_value(str(nr), C.UNLOCKED) as bool
 
 
+func has_purchase_token(token: String) -> bool:
+	if _config.has_section_key(C.VARIOUS_SECTION, C.TOKENS):
+		var tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
+		return tokens.has(token)
+	return false
+	
+
+func add_purchase_token(token: String) -> void:
+	if _config.has_section_key(C.VARIOUS_SECTION, C.TOKENS):
+		var tokens := _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
+		tokens.push_back(token)
+		_config.set_value(C.VARIOUS_SECTION, C.TOKENS, tokens)
+		_config.save(_path)
+	else:
+		_config.set_value(C.VARIOUS_SECTION, C.TOKENS, [token])
+		_config.save(_path)
+
+
 func set_level_info(level_nr: int = int(current_level)) -> void:
 	var info = Dictionary()
 	info[C.FLAG]= _config.get_value(str(level_nr), C.FLAG)
@@ -103,6 +123,13 @@ func set_level_info(level_nr: int = int(current_level)) -> void:
 	info[C.PASS_SCORE]= _config.get_value(str(level_nr), C.PASS_SCORE)
 	info[C.BEST_SCORE]= _config.get_value(str(level_nr), C.BEST_SCORE)
 	info[C.REWARDED_BALLS] = _config.get_value(str(level_nr), C.REWARDED_BALLS)
+	if OS.get_name() == "iOS":
+		var current_balls_count = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+		if current_balls_count == 0 and level_nr >= 75:
+			_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 1)
+		elif current_balls_count <= 1 and level_nr >= 150:
+			_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 2)
+		_config.save(_path)
 	info[C.ETERNAL_BALLS] = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
 	emit_signal("level_info_updated", info)
 	
@@ -201,10 +228,8 @@ func add_eternal_ball(count: int = 1):
 	var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
 	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, current_balls + count)
 	_config.save(_path)
+	print("Added ball.")
 	Data.save_game()
-	GPack.log_event(C.event_ball_bought, {
-		"level":int(current_level)
-	}) 
 
 
 func _set_initial_launch_settings():
@@ -218,7 +243,6 @@ func _set_initial_launch_settings():
 	
 	var file = File.new()
 	file.open("res://assets/level_flag_mapping.json", File.READ)
-	print("DID FILE OPEN: ", file.get_error())
 	var initial_info = file.get_as_text()
 	var data = JSON.parse(initial_info)
 	if typeof(data.result) != TYPE_DICTIONARY:
@@ -280,7 +304,8 @@ func _set_initial_launch_settings():
 func save_game() -> void:
 	var game_data = Dictionary()
 	for key in C.various_section_dictionary_keys:
-		game_data[key] = str(_config.get_value(C.VARIOUS_SECTION, key))
+		if _config.has_section_key(C.VARIOUS_SECTION, key):
+			game_data[key] = str(_config.get_value(C.VARIOUS_SECTION, key))
 	for level_nr in range(1, _total_levels_plus_one):
 		var level = str(level_nr)
 		var level_info = []
@@ -303,6 +328,23 @@ func load_game(game_data: Dictionary) -> void:
 				var current_team = _config.get_value(C.VARIOUS_SECTION, C.PLAYER_TEAM)
 				if current_team != game_data[key]:
 					_config.set_value(C.VARIOUS_SECTION, key, current_team)
+			elif key == C.TOKENS:
+				var cloud_tokens = []
+				if game_data.has(key):
+					var array_string = str(game_data[key])
+					var sliced = array_string.substr(1, array_string.length()-2).split(",", false)
+					for index in range(0, sliced.size()):
+						cloud_tokens.push_back(sliced[index].strip_edges())
+				if _config.has_section_key(C.VARIOUS_SECTION, C.TOKENS):
+					var current_tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
+					for t in current_tokens:
+						if not cloud_tokens.has(t):
+							cloud_tokens.push_back(t)
+				_config.set_value(C.VARIOUS_SECTION, key, cloud_tokens)
+			elif key == C.ETERNAL_BALLS:
+				var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS) as int
+				if current_balls < game_data[key] as int:
+					_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as int)
 			else:
 				_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as int)
 			
@@ -320,6 +362,7 @@ func load_game(game_data: Dictionary) -> void:
 				else:
 					_config.set_value(level, key, sliced[index].strip_edges() as int)
 		_config.save(_path)
+		print("Loading game, Saved new info")
 		emit_signal("level_select_updated", get_levels())
 		var current = get_max_level()
 		load_level(int(current))

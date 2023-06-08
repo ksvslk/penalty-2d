@@ -27,13 +27,13 @@ const ios_achievement_fast_shot_5x: String = "fast_5"
 const ios_achievement_15_x_fast_shot: String = "fast15"
 const ios_achievement_last_second_pass: String = "last_second"
 const ios_achievement_goal_on_first_second: String = "first_second"
-const ios_achievement_50_second_rounds: String = "sec_50"
+const ios_achievement_50_second_rounds: String = "50_sec"
 const ios_achievement_shot_to_center_50_plus: String = "center"
 const ios_achievement_shot_to_corner_100_plus: String = "corner"
 const ios_achievement_same_country: String = "same_country"
-const ios_achievement_60_second_rounds: String = "sec_60"
-const ios_achievement_only_goals: String = "percent_goals_100"
-const ios_achievement_70_second_rounds: String = "sec_70"
+const ios_achievement_60_second_rounds: String = "60_sec"
+const ios_achievement_only_goals: String = "100_percent_goals"
+const ios_achievement_70_second_rounds: String = "70_sec"
 const ios_achievement_all_6_continents: String = "all_6"
 const ios_achievement_world_champion: String = "champion"
 
@@ -73,9 +73,11 @@ const FIRST_TIME: String = "FIRST_TIME"
 const ETERNAL_BALLS: String = "ETERNAL_BALLS"
 const INTERMEDIATE_ADS: String = "INTERMEDIATE_ADS"
 const TWO_BALLS_PURCHASED: String = "TWO_BALLS_PURCHASED"
+const TOKENS: String = "TOKENS"
 
 
 const various_section_dictionary_keys = [
+	TOKENS,
 	CURRENT_LEVEL,
 	TOTAL_SCORE,
 	PLAYER_TEAM,

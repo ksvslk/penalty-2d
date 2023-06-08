@@ -1,0 +1,682 @@
+[gd_scene load_steps=36 format=2]
+
+[ext_resource path="res://scenes/LoadingScreen.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/football.svg" type="Texture" id=2]
+[ext_resource path="res://fonts/inside_label_font.tres" type="DynamicFontData" id=3]
+[ext_resource path="res://scripts/purchases.gd" type="Script" id=4]
+[ext_resource path="res://scripts/options_container.gd" type="Script" id=5]
+[ext_resource path="res://scripts/play_games.gd" type="Script" id=6]
+[ext_resource path="res://scripts/commercial_break.gd" type="Script" id=7]
+[ext_resource path="res://scripts/country_select_button.gd" type="Script" id=8]
+[ext_resource path="res://scripts/buy_button.gd" type="Script" id=9]
+[ext_resource path="res://scripts/select_country.gd" type="Script" id=10]
+[ext_resource path="res://art/gear.svg" type="Texture" id=11]
+[ext_resource path="res://scripts/level_scroller.gd" type="Script" id=12]
+[ext_resource path="res://art/bonus.svg" type="Texture" id=13]
+[ext_resource path="res://art/back.svg" type="Texture" id=14]
+[ext_resource path="res://art/games_leaderboards.png" type="Texture" id=15]
+[ext_resource path="res://art/games_achievements.png" type="Texture" id=16]
+[ext_resource path="res://art/play_button.svg" type="Texture" id=17]
+[ext_resource path="res://fonts/DynamicFont.tres" type="DynamicFont" id=18]
+[ext_resource path="res://scripts/loading_screen.gd" type="Script" id=19]
+[ext_resource path="res://scripts/os_game_center_button.gd" type="Script" id=20]
+[ext_resource path="res://art/Twitter social icons - circle - white.png" type="Texture" id=21]
+
+[sub_resource type="DynamicFont" id=40]
+size = 40
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 3 )
+
+[sub_resource type="StyleBoxFlat" id=37]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 0, 0, 0, 0.882353 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="StyleBoxFlat" id=52]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 0.180392, 0.176471, 0.176471, 0.882353 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="StyleBoxFlat" id=50]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 20.0
+content_margin_bottom = 20.0
+bg_color = Color( 0, 0, 0, 0.529412 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="StyleBoxLine" id=48]
+color = Color( 1, 1, 1, 1 )
+thickness = 5
+
+[sub_resource type="StyleBoxFlat" id=51]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 0.294118, 0.294118, 0.294118, 0.882353 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="StyleBoxFlat" id=49]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 50.0
+content_margin_bottom = 50.0
+bg_color = Color( 1, 1, 1, 0.376471 )
+border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
+shadow_color = Color( 0, 0, 0, 0 )
+anti_aliasing = false
+anti_aliasing_size = 0.01
+
+[sub_resource type="StyleBoxFlat" id=44]
+content_margin_left = 10.0
+content_margin_right = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+bg_color = Color( 0.568627, 0, 1, 0.631373 )
+
+[sub_resource type="DynamicFontData" id=35]
+font_path = "res://fonts/Alexandria-Bold.ttf"
+
+[sub_resource type="DynamicFont" id=36]
+size = 50
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = SubResource( 35 )
+
+[sub_resource type="StyleBoxFlat" id=38]
+content_margin_left = 50.0
+content_margin_right = 50.0
+content_margin_top = 20.0
+content_margin_bottom = 20.0
+bg_color = Color( 0, 0, 0, 0.2 )
+shadow_color = Color( 0, 0, 0, 0.470588 )
+
+[sub_resource type="DynamicFont" id=39]
+size = 75
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = SubResource( 35 )
+
+[sub_resource type="DynamicFontData" id=26]
+font_path = "res://fonts/Alexandria-Bold.ttf"
+
+[sub_resource type="DynamicFont" id=27]
+size = 70
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = SubResource( 26 )
+
+[node name="CanvasLayer" type="CanvasLayer"]
+pause_mode = 2
+
+[node name="OptionsContainer" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -48.0
+margin_bottom = 16.0
+mouse_filter = 2
+script = ExtResource( 5 )
+
+[node name="BackButton" type="Control" parent="OptionsContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Graphics" type="Button" parent="OptionsContainer/BackButton"]
+modulate = Color( 0.00784314, 1, 0, 1 )
+show_behind_parent = true
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -172.0
+margin_bottom = -19.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 40 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/focus = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Back"
+icon = ExtResource( 14 )
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="LevelScroller" type="ScrollContainer" parent="OptionsContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1.0
+margin_top = 114.0
+margin_bottom = -185.0
+scroll_horizontal_enabled = false
+scroll_deadzone = 25
+script = ExtResource( 12 )
+
+[node name="LevelsList" type="VBoxContainer" parent="OptionsContainer/LevelScroller"]
+margin_right = 1079.0
+margin_bottom = 2165.0
+mouse_default_cursor_shape = 8
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="OptionsContainer"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -177.0
+margin_bottom = -21.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PlayGames" type="Button" parent="OptionsContainer/HBoxContainer"]
+margin_right = 412.0
+margin_bottom = 156.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 40 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 52 )
+custom_styles/normal = SubResource( 37 )
+text = "Game Center"
+align = 0
+expand_icon = true
+script = ExtResource( 6 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Bonus" type="Button" parent="OptionsContainer/HBoxContainer"]
+margin_left = 416.0
+margin_right = 911.0
+margin_bottom = 156.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 40 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Bonus"
+icon = ExtResource( 13 )
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Options" type="Button" parent="OptionsContainer/HBoxContainer"]
+margin_left = 915.0
+margin_right = 1080.0
+margin_bottom = 156.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 40 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+icon = ExtResource( 11 )
+icon_align = 1
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="OptionsList" type="VBoxContainer" parent="OptionsContainer"]
+visible = false
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -808.0
+margin_bottom = -200.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TotalScore" type="Label" parent="OptionsContainer/OptionsList"]
+margin_right = 1080.0
+margin_bottom = 102.0
+focus_mode = 2
+mouse_filter = 1
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 18 )
+custom_styles/normal = SubResource( 50 )
+text = "Total score: 0"
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="HSeparator" type="HSeparator" parent="OptionsContainer/OptionsList"]
+margin_top = 106.0
+margin_right = 1080.0
+margin_bottom = 110.0
+custom_styles/separator = SubResource( 48 )
+
+[node name="Levels" type="Button" parent="OptionsContainer/OptionsList"]
+margin_top = 114.0
+margin_right = 1080.0
+margin_bottom = 276.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/focus = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Levels"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="FollowTwitter" type="Button" parent="OptionsContainer/OptionsList"]
+margin_top = 280.0
+margin_right = 1080.0
+margin_bottom = 442.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/focus = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Follow Me"
+icon = ExtResource( 21 )
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="BallManagement" type="HBoxContainer" parent="OptionsContainer/OptionsList"]
+margin_top = 446.0
+margin_right = 1080.0
+margin_bottom = 608.0
+
+[node name="AddBall" type="Button" parent="OptionsContainer/OptionsList/BallManagement"]
+margin_right = 538.0
+margin_bottom = 162.0
+mouse_filter = 1
+size_flags_horizontal = 3
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 51 )
+custom_styles/normal = SubResource( 37 )
+disabled = true
+text = "Add Ball"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="RemoveBall" type="Button" parent="OptionsContainer/OptionsList/BallManagement"]
+margin_left = 542.0
+margin_right = 1080.0
+margin_bottom = 162.0
+mouse_filter = 1
+size_flags_horizontal = 3
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 51 )
+custom_styles/normal = SubResource( 37 )
+text = "Remove Ball"
+align = 0
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="BonusList" type="VBoxContainer" parent="OptionsContainer"]
+visible = false
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -868.0
+margin_bottom = -200.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+script = ExtResource( 4 )
+
+[node name="WatchRewarded" type="Button" parent="OptionsContainer/BonusList"]
+margin_top = 498.0
+margin_right = 1080.0
+margin_bottom = 660.0
+mouse_filter = 1
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
+custom_styles/normal = SubResource( 37 )
+text = "+1 Ball for Level"
+icon = ExtResource( 17 )
+align = 0
+icon_align = 2
+expand_icon = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="MaximumRewReached" type="Label" parent="OptionsContainer/BonusList/WatchRewarded"]
+visible = false
+margin_left = 10.0
+margin_top = 9.0
+margin_right = 1072.0
+margin_bottom = 158.0
+custom_fonts/font = ExtResource( 18 )
+custom_styles/normal = SubResource( 44 )
+text = "LEVEL BALLS LIMIT REACHED"
+align = 1
+valign = 1
+
+[node name="HSeparator" type="HSeparator" parent="OptionsContainer/BonusList"]
+margin_top = 664.0
+margin_right = 1080.0
+margin_bottom = 668.0
+custom_styles/separator = SubResource( 48 )
+
+[node name="Ball" type="Button" parent="OptionsContainer/BonusList"]
+visible = false
+margin_top = 174.0
+margin_right = 1080.0
+margin_bottom = 336.0
+mouse_filter = 1
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
+custom_styles/normal = SubResource( 37 )
+disabled = true
+text = "..."
+icon = ExtResource( 2 )
+align = 0
+icon_align = 2
+expand_icon = true
+script = ExtResource( 9 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="MaximumReached" type="Label" parent="OptionsContainer/BonusList/Ball"]
+visible = false
+margin_left = 10.0
+margin_top = 9.0
+margin_right = 1072.0
+margin_bottom = 158.0
+custom_fonts/font = ExtResource( 18 )
+custom_styles/normal = SubResource( 44 )
+text = "LEVEL BALLS LIMIT REACHED"
+align = 1
+valign = 1
+
+[node name="IntermediateAds" type="Button" parent="OptionsContainer/BonusList"]
+visible = false
+margin_top = 340.0
+margin_right = 1080.0
+margin_bottom = 502.0
+mouse_filter = 1
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
+custom_styles/normal = SubResource( 37 )
+disabled = true
+text = "..."
+align = 0
+expand_icon = true
+script = ExtResource( 9 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="TwoBallsNoAds" type="Button" parent="OptionsContainer/BonusList"]
+visible = false
+margin_top = 506.0
+margin_right = 1080.0
+margin_bottom = 668.0
+mouse_filter = 1
+custom_colors/font_color_disabled = Color( 1, 1, 1, 0.588235 )
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/disabled = SubResource( 49 )
+custom_styles/normal = SubResource( 37 )
+disabled = true
+text = "..."
+align = 0
+expand_icon = true
+script = ExtResource( 9 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="MaximumReachedAds" type="Label" parent="OptionsContainer/BonusList/TwoBallsNoAds"]
+visible = false
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 1072.0
+margin_bottom = 159.0
+custom_fonts/font = ExtResource( 18 )
+custom_styles/normal = SubResource( 44 )
+text = "LEVEL BALLS LIMIT REACHED"
+align = 1
+valign = 1
+
+[node name="AppstoreTimer" type="Timer" parent="OptionsContainer/BonusList"]
+
+[node name="PlayGamesList" type="VBoxContainer" parent="OptionsContainer"]
+visible = false
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -528.0
+margin_bottom = -192.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ShowLeaderboard" type="Button" parent="OptionsContainer/PlayGamesList"]
+margin_right = 1080.0
+margin_bottom = 162.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Leaderboard"
+icon = ExtResource( 15 )
+align = 0
+expand_icon = true
+script = ExtResource( 20 )
+__meta__ = {
+"_editor_description_": ""
+}
+android_icon = ExtResource( 15 )
+
+[node name="ShowAchievements" type="Button" parent="OptionsContainer/PlayGamesList"]
+margin_top = 166.0
+margin_right = 1080.0
+margin_bottom = 328.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = ExtResource( 18 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 37 )
+custom_styles/normal = SubResource( 37 )
+text = "Achievements"
+icon = ExtResource( 16 )
+align = 0
+expand_icon = true
+script = ExtResource( 20 )
+__meta__ = {
+"_editor_description_": ""
+}
+android_icon = ExtResource( 16 )
+
+[node name="LoadingScreen" type="ColorRect" parent="OptionsContainer" instance=ExtResource( 1 )]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -540.0
+margin_top = -1200.0
+margin_right = 540.0
+margin_bottom = 1200.0
+color = Color( 0, 0, 0, 0.941176 )
+script = ExtResource( 19 )
+
+[node name="SelectCountry" type="ColorRect" parent="OptionsContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -8.0
+margin_right = -1.0
+color = Color( 0.0509804, 0.0823529, 0, 0.862745 )
+script = ExtResource( 10 )
+
+[node name="CountryScroller" type="ScrollContainer" parent="OptionsContainer/SelectCountry"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 160.0
+margin_bottom = -197.0
+scroll_horizontal_enabled = false
+scroll_deadzone = 25
+
+[node name="CountryList" type="VBoxContainer" parent="OptionsContainer/SelectCountry/CountryScroller"]
+margin_right = 1079.0
+margin_bottom = 2115.0
+mouse_default_cursor_shape = 8
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OptionsContainer/SelectCountry"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -539.5
+margin_top = -1204.0
+margin_right = 539.5
+margin_bottom = 1204.0
+custom_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="OptionsContainer/SelectCountry/VBoxContainer"]
+margin_top = 957.0
+margin_right = 1079.0
+margin_bottom = 1019.0
+custom_fonts/font = SubResource( 36 )
+text = "Select your team:"
+align = 1
+
+[node name="SelectedCountry" type="Button" parent="OptionsContainer/SelectCountry/VBoxContainer"]
+margin_top = 1029.0
+margin_right = 1079.0
+margin_bottom = 1249.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 36 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "lkkkkk"
+clip_text = true
+align = 2
+script = ExtResource( 8 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="ConfirmButton" type="Button" parent="OptionsContainer/SelectCountry/VBoxContainer"]
+margin_top = 1259.0
+margin_right = 1079.0
+margin_bottom = 1451.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 39 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "CONFIRM"
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="CommercialBreak" type="ColorRect" parent="OptionsContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.745098 )
+script = ExtResource( 7 )
+
+[node name="Timer" type="Timer" parent="OptionsContainer/CommercialBreak"]
+
+[node name="Label" type="Label" parent="OptionsContainer/CommercialBreak"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 27 )
+text = "Commercial
+break"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+__meta__ = {
+"_editor_description_": ""
+}
+
+[connection signal="gui_input" from="OptionsContainer/BackButton" to="OptionsContainer" method="_on_BackButton_gui_input"]
+[connection signal="pressed" from="OptionsContainer/HBoxContainer/PlayGames" to="OptionsContainer" method="_on_PlayGames_pressed"]
+[connection signal="pressed" from="OptionsContainer/HBoxContainer/Bonus" to="OptionsContainer" method="_on_Bonus_pressed"]
+[connection signal="pressed" from="OptionsContainer/HBoxContainer/Options" to="OptionsContainer" method="_on_Options_pressed"]
+[connection signal="pressed" from="OptionsContainer/OptionsList/Levels" to="OptionsContainer" method="_on_Levels_pressed"]
+[connection signal="pressed" from="OptionsContainer/BonusList/WatchRewarded" to="OptionsContainer/BonusList" method="_on_WatchRewarded_pressed"]
+[connection signal="pressed" from="OptionsContainer/BonusList/Ball" to="OptionsContainer/BonusList" method="_on_Ball_pressed"]
+[connection signal="pressed" from="OptionsContainer/BonusList/IntermediateAds" to="OptionsContainer/BonusList" method="_on_IntermediateAds_pressed"]
+[connection signal="pressed" from="OptionsContainer/BonusList/TwoBallsNoAds" to="OptionsContainer/BonusList" method="_on_TwoBallsNoAds_pressed"]
+[connection signal="timeout" from="OptionsContainer/BonusList/AppstoreTimer" to="OptionsContainer/BonusList" method="_on_AppstoreTimer_timeout"]
+[connection signal="pressed" from="OptionsContainer/PlayGamesList/ShowLeaderboard" to="OptionsContainer" method="_on_ShowLeaderboard_pressed"]
+[connection signal="pressed" from="OptionsContainer/PlayGamesList/ShowAchievements" to="OptionsContainer" method="_on_ShowAchievements_pressed"]
+[connection signal="pressed" from="OptionsContainer/SelectCountry/VBoxContainer/SelectedCountry" to="OptionsContainer/SelectCountry" method="_on_SelectedCountry_pressed"]
+[connection signal="pressed" from="OptionsContainer/SelectCountry/VBoxContainer/ConfirmButton" to="OptionsContainer/SelectCountry" method="_on_ConfirmButton_pressed"]
+[connection signal="timeout" from="OptionsContainer/CommercialBreak/Timer" to="OptionsContainer/CommercialBreak" method="_on_Timer_timeout"]

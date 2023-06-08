@@ -1,12 +1,10 @@
 extends VBoxContainer
 
 var payment = null
-var ios_payment = null
 
 const BALL = "ball"
 const INTERMEDIATE_ADS = "intermediate_ads"
 const TWO_BALLS_NO_ADS = "two_balls_and_remove_ads"
-
 
 var SKUS = [
 	BALL,
@@ -14,14 +12,9 @@ var SKUS = [
 	TWO_BALLS_NO_ADS
 ]
 
-var IOS_PRODUCT_IDS = [
-	"com.indest.ball",
-	"intermediate_ads",
-	"two_balls_and_remove_ads"
-]
-
 var max_retries = 5
 var retry = 0
+var consume_retry = 0
 var seconds = [10, 20, 40, 80, 160]
 
 onready var maximum_rew_reached = $WatchRewarded/MaximumRewReached
@@ -31,11 +24,12 @@ onready var maximum_reached = $Ball/MaximumReached
 onready var ball = $Ball
 onready var intermediate_ads = $IntermediateAds
 onready var two_balls_no_ads = $TwoBallsNoAds
-onready var appstore_timer = $AppstoreTimer
+
 
 signal disable_intermediate_ads
 signal add_2_balls_disable_ads
 signal add_ball
+
 
 func _ready():
 	if Engine.has_singleton("GodotGooglePlayBilling"):
@@ -44,8 +38,6 @@ func _ready():
 		payment.connect("connected", self, "_on_connected")
 		# No params.
 		payment.connect("disconnected", self, "_on_disconnected")
-		# No params.
-		payment.connect("billing_resume", self, "_on_billing_resume")
 		# Response ID (int), Debug message (string).
 		payment.connect("connect_error", self, "_on_connect_error")
 		# Purchases (Dictionary[]).
@@ -53,9 +45,9 @@ func _ready():
 		# Response ID (int), Debug message (string).
 		payment.connect("purchase_error", self, "_on_purchase_error")
 		# SKUs (Dictionary[]).
-		payment.connect("product_details_query_completed", self, "_on_product_details_query_completed")
+		payment.connect("sku_details_query_completed", self, "_on_sku_details_query_completed")
 		# Response ID (int), Debug message (string), Queried SKUs (string[]).
-		payment.connect("product_details_query_error", self, "_on_product_details_query_error")
+		payment.connect("sku_details_query_error", self, "_on_sku_details_query_error")
 		# Purchase token (string).
 		payment.connect("purchase_acknowledged", self, "_on_purchase_acknowledged")
 		# Response ID (int), Debug message (string), Purchase token (string).
@@ -72,46 +64,6 @@ func _ready():
 	if GPack.plugin:
 		GPack.plugin.connect(GPack.s_rewarded_ad_loaded, self, "_set_rewarded_ad_button_state")
 		GPack.plugin.connect(GPack.s_rewarded_ad_failed_to_load, self, "_rewarded_failed_to_load")
-	elif MobileAds:
-		MobileAds.connect("rewarded_ad_loaded", self, "_set_rewarded_ad_button_state")
-		MobileAds.connect("rewarded_ad_failed_to_load", self, "_rewarded_failed_to_load")
-		
-	if Engine.has_singleton("InAppStore"):
-		ios_payment = Engine.get_singleton('InAppStore')
-		var result = ios_payment.request_product_info( { "product_ids": IOS_PRODUCT_IDS } )
-		if result == OK:
-			print("Successfully started product info request")
-			ios_payment.set_auto_finish_transaction(true)
-			appstore_timer.start()
-		else:
-			print("failed requesting product info")
-	else:
-		print("no app store plugin")
-
-
-func _on_AppstoreTimer_timeout():
-	check_events()
-	appstore_timer.start()
-
-
-func check_events():
-	while ios_payment.get_pending_event_count() > 0:
-		appstore_timer.stop()
-		var event = ios_payment.pop_pending_event()
-		print(event)
-		if event.result=="ok": # other possible values are "progress", "error", "unhandled"
-			match event.type:
-				'product_info':
-					print(event.titles)
-					print(event.descriptions)
-					print(event.localized_prices)
-					# fields: titles, descriptions, prices, ids, localized_prices, currency_codes, invalid_ids
-				'purchase':
-					pass
-					# fields: product_id, transaction_id, receipt		
-				'restore':
-					pass
-					# fields: product_id, transaction_id, receipt		
 
 
 func _on_connect_error(response_code, debug_message):
@@ -154,8 +106,8 @@ func _set_rewarded_ad_button_state_on_load(max_balls_count: int = -1):
 	elif max_balls_count <= 0:
 		watch_rewarded.disabled = true
 		maximum_rew_reached.visible = true
-	
-		
+
+
 func _set_intermediate_button_state():
 	if not Data.is_intermediate_ads_enabled():
 		intermediate_ads.visible = false
@@ -199,16 +151,19 @@ func _on_connected():
 	payment.querySkuDetails(SKUS, "inapp")
 
 
-func _on_billing_resume():
-	print("PurchaseManager resumed")
+func _notification(what):
+	if what == NOTIFICATION_APP_RESUMED:
+		payment.queryPurchases("inapp")
 
 
 func _on_query_purchases_response(query_result):
+	print("_on_query_purchases_response", query_result)
 	if query_result.status == OK:
 		for purchase in query_result.purchases:
 			# We must acknowledge all purchases.
 			# See https://developer.android.com/google/play/billing/integrate#process for more information
-			_handle_purchase(purchase, true)
+			print("_handle_purchase", purchase)
+			_handle_purchase(purchase)
 	else:
 		print("queryPurchases failed, response code: ",
 				query_result.response_code,
@@ -220,16 +175,17 @@ func _on_query_purchases_response(query_result):
 # "title":"Ball (com.indest.penalty2d (unreviewed))",
 # "type":"inapp"
 
-func _on_product_details_query_completed(sku_details):
+func _on_sku_details_query_completed(sku_details):
+	print("_on_sku_details_query_completed", sku_details)
 	for available_sku in sku_details:
-		var price = available_sku["one_time_purchase_details"]["formatted_price"]
-		if available_sku["id"] == BALL:
+		var price = available_sku["price"]
+		if available_sku["sku"] == BALL:
 			ball.text = available_sku["title"].get_slice("(", 0) + " - " + price
 			ball.disabled = false
-		elif available_sku["id"] == INTERMEDIATE_ADS:
+		elif available_sku["sku"] == INTERMEDIATE_ADS:
 			intermediate_ads.text = available_sku["title"].get_slice("(", 0) + " - " + price
 			intermediate_ads.disabled = false
-		elif available_sku["id"] == TWO_BALLS_NO_ADS:
+		elif available_sku["sku"] == TWO_BALLS_NO_ADS:
 			two_balls_no_ads.text = available_sku["title"].get_slice("(", 0) + " - " + price
 			two_balls_no_ads.disabled = false
 
@@ -253,33 +209,46 @@ func _on_product_details_query_completed(sku_details):
 #"quantity":1,
 #"signature":"REMOVED
 
-func _handle_purchase(purchase, ignore_ball = false):
+func _handle_purchase(purchase):
 	if purchase.purchase_state == 1:
-		_give_content(purchase.products[0])
-		if purchase.products[0] == BALL and not ignore_ball:
+		if !purchase.is_acknowledged:
+			print("Purchase " + str(purchase.sku) + " giving content!")
+			_give_content(purchase.sku, purchase.purchase_token)
+			payment.acknowledgePurchase(purchase.purchase_token)
+			print("Purchase " + str(purchase.sku) + " has not been acknowledged. Acknowledging...")
+			if purchase.sku == BALL:
+				_consume(purchase.purchase_token)
+				print("Purchase " + str(purchase.sku) + " set to consumed.")
+		elif purchase.is_acknowledged and purchase.sku == BALL:
+			print("Purchase " + str(purchase.sku) + "is acknowledged so I give content and consume.")
 			_consume(purchase.purchase_token)
+			_give_content(purchase.sku, purchase.purchase_token)
 		else:
-			if !purchase.is_acknowledged:
-				print("Purchase " + str(purchase.sku) + " has not been acknowledged. Acknowledging...")
-				payment.acknowledgePurchase(purchase.purchase_token)
+			print("Purchase " + str(purchase.sku) + " was acknowledged already. Giving content if needed.")
+			_give_content(purchase.sku, purchase.purchase_token)
 
 
-func _give_content(sku):
+
+func _give_content(sku, token):
 	match sku:
 		BALL:
-			emit_signal("add_ball")
+			if not Data.has_purchase_token(token):
+				Data.add_purchase_token(token)
+				emit_signal("add_ball")
 		INTERMEDIATE_ADS:
-			intermediate_ads.visible = false
-			two_balls_no_ads.visible = false
-			emit_signal("disable_intermediate_ads")
+			if Data.is_intermediate_ads_enabled():
+				intermediate_ads.visible = false
+				two_balls_no_ads.visible = false
+				emit_signal("disable_intermediate_ads")
 		TWO_BALLS_NO_ADS:
-			two_balls_no_ads.visible = false
-			intermediate_ads.visible = false
-			emit_signal("add_2_balls_disable_ads")
+			if not Data.is_two_balls_purchased():
+				two_balls_no_ads.visible = false
+				intermediate_ads.visible = false
+				emit_signal("add_2_balls_disable_ads")
 
 
 func _on_purchases_updated(purchases):
-	print("Purchases updated: %s" % to_json(purchases))
+	print("Purchases updated (on resume and startup): %s" % to_json(purchases))
 	# See _on_connected
 	for purchase in purchases:
 		_handle_purchase(purchase)
@@ -297,16 +266,24 @@ func _on_purchase_error(code, message):
 	print("Purchase error %d: %s" % [code, message])
 	
 
-func _on_purchase_acknowledgement_error(code, message):
-	print("Purchase acknowledgement error %d: %s" % [code, message])
+func _on_purchase_acknowledgement_error(code, message, token):
+	print("Purchase acknowledgement error %d: %s" % [code, message, token])
 	
 	
 func _on_purchase_consumption_error(code, message, purchase_token):
 	print("Purchase consumption error %d: %s, purchase token: %s" % [code, message, purchase_token])
+	if consume_retry < max_retries:
+		yield(get_tree().create_timer(seconds[retry]), "timeout")
+		print("Trying again to consume...")
+		consume_retry += 1
+		_consume(purchase_token)
+	else:
+		print("Consume retries reached maximum.")
+		consume_retry = 0
 
 
-func _on_product_details_query_error(code, message):
-	print("SKU details query error %d: %s" % [code, message])
+func _on_sku_details_query_error(code, message, list):
+	print("SKU details query error %d: %s" % [code, message, list])
 	
 
 func _on_disconnected():

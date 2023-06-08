@@ -21,6 +21,7 @@ func _load_ios_game_data():
 		if not game_data.empty():
 			Data.load_game(game_data)
 
+
 func _ready():
 	_disable_playing()
 	if OS.get_name() == "Android":
@@ -31,11 +32,22 @@ func _ready():
 		_enable_playing()
 	if GPack.plugin:
 		GPack.plugin.connect(GPack.s_reward_earned, self, "_reward_with_ball")
-	if MobileAds:
-		MobileAds.connect("user_earned_rewarded", self, "_reward_with_ball")
 	if OS.get_name() == "OSX":
 		_enable_playing()
 	_print_license()
+
+	
+func show_review():
+	if OS.get_name() == "Android":
+		GPack.plugin.connect(GPack.s_on_start_showing_review, self, "_disable_playing")
+		GPack.plugin.connect(GPack.s_on_ending_review, self, "end_review")
+		GPack.plugin.askForReview()
+
+
+func end_review():
+	loading_screen.visible = false
+	GPack.plugin.disconnect(GPack.s_on_start_showing_review, self, "_disable_playing")
+	GPack.plugin.disconnect(GPack.s_on_ending_review, self, "end_review")
 
 
 func _disable_playing():
@@ -133,7 +145,7 @@ func _show_loading_game_result(game_data: Dictionary, result: bool):
 		Data.load_game(game_data)
 		print("Successfully loaded a game!")
 	else:
-		print("Something went wrong when loading game... :(")
+		print("Something went wrong when loading game... :( or first time")
 	_enable_playing()
 
 
