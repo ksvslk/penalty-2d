@@ -14,6 +14,8 @@ onready var bonus = $CanvasLayer/OptionsContainer/HBoxContainer/Bonus
 onready var commercial_break = $CanvasLayer/OptionsContainer/CommercialBreak
 
 
+# adb logcat -b all -v color | grep -E 'godot|penalty2d' | grep -E '\bD\b'
+
 func _load_ios_game_data():
 	if Engine.has_singleton("ICloud"):
 		var singleton = Engine.get_singleton("ICloud")
