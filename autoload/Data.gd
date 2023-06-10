@@ -7,6 +7,7 @@ const _total_levels_plus_one := 212 # each level has its own section: "1", "2" e
 const _euro_levels := 421 # each level has its own section: "1", "2" etc.
 const _initial_best_score := 0
 var current_level := "-1"
+var game_mode = ""
 
 signal best_score_updated(new_score)
 signal level_info_updated(dict)
@@ -23,12 +24,24 @@ func _ready():
 	if err == ERR_FILE_NOT_FOUND:
 		 # This should be done ONLY ONCE when also cloud has no info!!!
 		_set_initial_launch_settings()
+		_set_initial_euro_settings()
+		_set_various_section()
+		_config.set_value(C.VARIOUS_SECTION, C.GAME_MODE, C.NOT_SET_MODE)
+		_config.save(_path)
 	elif err != 0:
 		printerr("Could not load local data. ", err)
+	
+	initial_game_load()
+
+
+func initial_game_load():
+	if !_config.has_section_key(C.VARIOUS_SECTION, C.CURRENT_LEVEL):
+		return
 	var current = _config.get_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL)
-	load_level(int(current))
-	sync_cloud_with_app()
-	set_initial_euro_settings()
+	if current != "-1":
+		load_level(int(current))
+		sync_cloud_with_app()
+		game_mode = get_game_mode()
 
 
 func sync_cloud_with_app():
@@ -211,6 +224,16 @@ func change_player_team(team: String):
 	emit_signal("team_changed", team)
 
 
+func update_game_mode(mode: String) -> void:
+	_config.set_value(C.VARIOUS_SECTION, C.GAME_MODE, mode)
+	game_mode = mode
+	_config.save(_path)
+
+
+func get_game_mode() -> String:
+	return _config.get_value(C.VARIOUS_SECTION, C.GAME_MODE)
+
+
 func get_max_balls_to_add_count() -> int:
 	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS)
 	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
@@ -219,7 +242,11 @@ func get_max_balls_to_add_count() -> int:
 
 func get_max_level() -> int:
 	var level = -1
-	for level_nr in range(1, _total_levels_plus_one):
+	var level_range = range(1, _total_levels_plus_one)
+	if game_mode == C.EURO_MODE:
+		level_range = range(_total_levels_plus_one, _euro_levels)
+	
+	for level_nr in level_range:
 		var is_unlocked = _config.get_value(str(level_nr), C.UNLOCKED)
 		if is_unlocked:
 			level = level_nr
@@ -244,23 +271,28 @@ func add_eternal_ball(count: int = 1):
 	Data.save_game()
 
 
-func _set_initial_launch_settings():
-	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, "1")
+func _set_various_section():
 	_config.set_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, 0)
-	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, "gb-eng")
 	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, 1)
 	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
 	_config.set_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS, 1)
 	_config.set_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, 0)
-	
+	_config.save(_path)
+
+func set_team_and_current_level(level:String, team:String):
+	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, level)
+	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, team)
+	_config.save(_path)
+
+
+func _set_initial_launch_settings():
 	var file = File.new()
 	file.open("res://assets/level_flag_mapping.json", File.READ)
 	var initial_info = file.get_as_text()
 	var data = JSON.parse(initial_info)
 	if typeof(data.result) != TYPE_DICTIONARY:
 		push_error("Unexpected results.")
-	
-	
+		
 	var difficulty = 1
 	var current_pass_score := 20
 	var pass_score_to_50 = 40
@@ -310,11 +342,10 @@ func _set_initial_launch_settings():
 			_config.set_value(String(i), C.UNLOCKED, 0)
 		_config.set_value(String(i), C.REWARDED_BALLS, 0)
 		difficulty += 0.1
-	_config.save(_path)
 	file.close()
 	
 	
-func set_initial_euro_settings():
+func _set_initial_euro_settings():
 	var file = File.new()
 	file.open("res://assets/level_euro_team_mapping.json", File.READ)
 	var initial_info = file.get_as_text()
@@ -322,14 +353,16 @@ func set_initial_euro_settings():
 	if typeof(data.result) != TYPE_DICTIONARY:
 		push_error("Unexpected results.")
 	
-	
+	var teams = data.result.values()
+	teams.invert()
+
 	var difficulty = 1
 	var current_pass_score := 5
 	var pass_score_to_50 = 15
 	var pass_score_50_to_100 = 30
 	var pass_score_100_to_150 = 45
 	var pass_score_150_and_up = 60
-	var time_limit = 10
+	var time_limit = 30
 	var count = 3
 	var count_temp = 3
 	
@@ -353,27 +386,26 @@ func set_initial_euro_settings():
 			count = count_temp
 
 		if i >= 262 and i < 312:
-			time_limit = 15
+			time_limit = 40
 		elif i >= 312 and i < 362:
-			time_limit = 30
+			time_limit = 50
 		elif i >= 362:
-			time_limit = 45
+			time_limit = 60
 		
-		var json_index = i -_total_levels_plus_one + 1
+		var json_index = i -_total_levels_plus_one
 
-		_config.set_value(String(i), C.FLAG, data.result[str(json_index)]["logo"])
-		_config.set_value(String(i), C.COUNTRY, data.result[str(json_index)]["team"])
+		_config.set_value(String(i), C.FLAG, teams[json_index]["logo"])
+		_config.set_value(String(i), C.COUNTRY, teams[json_index]["team"])
 		_config.set_value(String(i), C.TIME_LIMIT, time_limit)
 		_config.set_value(String(i), C.DIFFICULTY, difficulty)
 		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)
 		_config.set_value(String(i), C.BEST_SCORE, 0)
-		if i == 1:
+		if i == 212:
 			_config.set_value(String(i), C.UNLOCKED, 1)
 		else:
 			_config.set_value(String(i), C.UNLOCKED, 0)
 		_config.set_value(String(i), C.REWARDED_BALLS, 0)
 		difficulty += 0.1
-	_config.save(_path)
 	file.close()
 
 

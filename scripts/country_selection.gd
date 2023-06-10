@@ -10,7 +10,7 @@ func _ready():
 	var levels = Data.get_levels()
 	for i in range(0, levels.keys().size()):
 		var country = levels.keys()[i]
-		var texture = load("res://art/flag/" + country + ".png") as Texture
+		var texture = load(C.get_flag_path() + country + C.get_extension()) as Texture
 		add_icon_item(texture, levels.get(country)[0], i)
 		if country == "br" and current_country == "MISSING":
 			default_option = i

@@ -75,8 +75,12 @@ const INTERMEDIATE_ADS: String = "INTERMEDIATE_ADS"
 const TWO_BALLS_PURCHASED: String = "TWO_BALLS_PURCHASED"
 const TOKENS: String = "TOKENS"
 
+const GAME_MODE: String = "GAME_MODE"
 const EURO_MODE: String = "EURO_MODE"
+const NOT_SET_MODE: String = "NOT_SET_MODE"
 const WORLD_MODE: String = "WORLD_MODE"
+
+
 
 const various_section_dictionary_keys = [
 	TOKENS,
@@ -128,4 +132,15 @@ func get_country() -> String:
 	return "MISSING"
 	
 
+func get_flag_path() -> String:
+	var path = "res://art/flag/"
+	if Data.game_mode == C.EURO_MODE:
+		path = "res://art/team_flag/"
+	return path
+	
 
+func get_extension() -> String:
+	var extension = ".png"
+	if Data.game_mode == C.EURO_MODE:
+		extension = ".jpg"
+	return extension

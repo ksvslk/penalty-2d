@@ -8,12 +8,15 @@ export var time_limit := 40
 
 var swish_scene = load("res://scenes/Swish.tscn")
 var ball_scene = load("res://scenes/Ball.tscn")
+
+
 var ball_dict = {}
 var round_is_active = true
 var new_high_score_announced = false
 var goal_counter := 0
 var swipe_counter := 0
 
+onready var fast_forward_button = $FastForwardButton
 
 onready var continue_button = $Continue
 onready var restart = $Restart
@@ -125,14 +128,14 @@ func _update_level_info(dict: Dictionary):
 	continue_button.visible = false
 	highest.text = str(dict[C.BEST_SCORE])
 	time_limit = dict[C.TIME_LIMIT]
-	goal_keeper.set_flag(load("res://art/flag/" + dict[C.FLAG] + ".png"))
+	goal_keeper.set_flag(load(C.get_flag_path() + dict[C.FLAG] + C.get_extension()))
 	goal_keeper.speed = dict[C.DIFFICULTY]
 	target_score.text = "Target: " + str(dict[C.PASS_SCORE])
 	level_start_countdown()
 	message.fade_out_text(dict[C.COUNTRY])
 	_check_for_country_achievements(dict[C.COUNTRY], dict[C.FLAG])
 	_check_for_time_limit_achievements()
-
+	
 
 func _check_for_country_achievements(country: String, flag: String):
 	if country == "Australia":
@@ -224,6 +227,7 @@ func _play_fanfares_when_level_passed(time_left = 1337) -> void:
 			if time_left <= 1:
 				GPack.unlock_achievement(C.achievement_last_second_pass)
 			message.fade_out_text("Unlocked " + next_country + "!")
+			fast_forward_button.visible = true
 			level_passed.play()
 
 
@@ -281,6 +285,7 @@ func _on_Restart_gui_input(event):
 
 func level_start_countdown():
 	emit_signal("start_level")
+	fast_forward_button.visible = false
 	celebrate.stop()
 	restart.visible = false
 	watch_ad.visible = false
@@ -325,3 +330,10 @@ func _add_tutorial():
 		var tutorial_scene = load("res://scenes/Tut.tscn").instance()
 		tutorial_scene.z_index = 3
 		add_child_below_node($BallPositions, tutorial_scene)
+
+
+func _on_FastForwardButton_pressed():
+	start_timer.stop()
+	time.timer.stop()
+	fast_forward_button.visible = false
+	_on_Time_round_done()

@@ -64,6 +64,8 @@ func _on_SelectedCountry_pressed():
 
 
 func _on_ConfirmButton_pressed():
+	Data.set_team_and_current_level("1", selected_country.flag)
+	Data.initial_game_load()
 	emit_signal("team_selection_done")
 	visible = false
 

@@ -57,7 +57,7 @@ func _disable_playing():
 
 
 func _enable_playing(select_country_flag = false):
-	if (select_country and not select_country.visible) or select_country_flag:
+	if Data.game_mode == C.EURO_MODE or Data.game_mode == C.WORLD_MODE:
 		if loading_screen:
 			loading_screen.visible = false
 		if mediator:
@@ -156,6 +156,8 @@ func _on_SelectCountry_team_selection_done():
 		GPack.load_game()
 	if OS.get_name() == "iOS":
 		_enable_playing(true)
+	else:
+		_enable_playing(true)
 
 
 func _on_AddBall_pressed():
@@ -177,8 +179,11 @@ func _on_FollowTwitter_pressed():
 func _on_Level_commercial_break():
 	commercial_break.visible = true
 
+
 func _on_SelectEuroTeam_euro_team_selection_done():
 	if GPack.plugin:
 		GPack.load_game()
 	if OS.get_name() == "iOS":
+		_enable_playing(true)
+	else:
 		_enable_playing(true)

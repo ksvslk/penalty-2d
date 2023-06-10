@@ -13,9 +13,17 @@ var current_y_velocity = 0.0
 var football_trail = load("res://scenes/FootballTrail.tscn")
 var trail_speed_limit := -5500
 var did_get_over_limit := false
+onready var team_flag_background = $TeamFlagBackground
+onready var flag_background = $FlagBackground
 
 func _ready():
 	use_parent_material = true
+	if Data.game_mode == C.WORLD_MODE:
+		flag_background.visible = true
+		team_flag_background.visible = false
+	elif Data.game_mode == C.EURO_MODE:
+		flag_background.visible = false
+		team_flag_background.visible = true
 
 
 func _input_event(viewport, event, shape_idx):
@@ -89,7 +97,7 @@ func _process(delta):
 
 
 func set_flag(country: String):
-	var flag_texture = load("res://art/flag/" + country + ".png")
+	var flag_texture = load(C.get_flag_path() + country + C.get_extension())
 	$Flag.texture = flag_texture
 	
 	

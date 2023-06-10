@@ -31,7 +31,6 @@ func initialize_club_selection():
 		select_button.texture = texture
 		select_button.country = levels.get(country)[0]
 		select_country_buttons.push_back(select_button)
-	print(select_country_buttons)
 	select_country_buttons.sort_custom(self, "country_name_ascending")
 	
 	for i in range(0, select_country_buttons.size()):
@@ -59,6 +58,8 @@ func _on_SelectedTeam_pressed():
 
 
 func _on_ConfirmButton_pressed():
+	Data.set_team_and_current_level("212", selected_team.flag)
+	Data.initial_game_load()
 	emit_signal("euro_team_selection_done")
 	visible = false
 

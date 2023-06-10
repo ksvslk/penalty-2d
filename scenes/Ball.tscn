@@ -40,18 +40,25 @@ stream = ExtResource( 5 )
 [node name="Timer" type="Timer" parent="."]
 wait_time = 5.0
 
-[node name="ColorRect" type="ColorRect" parent="."]
-margin_left = -18.0
-margin_top = -52.0
-margin_right = 29.0
-margin_bottom = -20.0
-color = Color( 0, 0, 0, 0.0941176 )
+[node name="FlagBackground" type="Polygon2D" parent="."]
+position = Vector2( 11, -27 )
+rotation = 0.201653
+color = Color( 0, 0, 0, 1 )
+polygon = PoolVector2Array( -28, 8, -32, 3, -32, -21, -27, -26, 17, -26, 20, -22, 20, 4, 16, 8 )
+
+[node name="TeamFlagBackground" type="Polygon2D" parent="."]
+visible = false
+position = Vector2( 11, -27 )
+rotation = 0.201653
+color = Color( 0, 0, 0, 1 )
+polygon = PoolVector2Array( -19.3727, 10.0845, -25.6735, 4.22781, -25.2028, -23.4268, -19.1459, -28.7478, 9.48853, -28.4775, 14.6092, -23.4002, 14.1385, 4.25436, 9.2616, 10.3548 )
 
 [node name="Flag" type="TextureRect" parent="."]
-margin_left = -16.0
-margin_top = -50.0
-margin_right = 27.0
-margin_bottom = -22.0
+margin_left = -11.0
+margin_top = -55.0
+margin_right = 32.0
+margin_bottom = -27.0
+rect_rotation = 11.5539
 mouse_filter = 2
 texture = ExtResource( 4 )
 expand = true
