@@ -75,6 +75,8 @@ const INTERMEDIATE_ADS: String = "INTERMEDIATE_ADS"
 const TWO_BALLS_PURCHASED: String = "TWO_BALLS_PURCHASED"
 const TOKENS: String = "TOKENS"
 
+const EURO_MODE: String = "EURO_MODE"
+const WORLD_MODE: String = "WORLD_MODE"
 
 const various_section_dictionary_keys = [
 	TOKENS,

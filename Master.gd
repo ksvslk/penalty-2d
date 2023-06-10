@@ -177,3 +177,8 @@ func _on_FollowTwitter_pressed():
 func _on_Level_commercial_break():
 	commercial_break.visible = true
 
+func _on_SelectEuroTeam_euro_team_selection_done():
+	if GPack.plugin:
+		GPack.load_game()
+	if OS.get_name() == "iOS":
+		_enable_playing(true)

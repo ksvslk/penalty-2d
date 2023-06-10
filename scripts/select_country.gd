@@ -6,16 +6,7 @@ onready var selected_country = $VBoxContainer/SelectedCountry
 onready var v_box_container = $VBoxContainer
 onready var country_scroller = $CountryScroller
 
-
 signal team_selection_done
-
-func _ready():
-	get_tree().paused = true
-	if Data.is_first_time():
-		initialize_select_country()
-		visible = true
-	else:
-		emit_signal("team_selection_done")
 
 
 func initialize_select_country():
@@ -75,3 +66,11 @@ func _on_SelectedCountry_pressed():
 func _on_ConfirmButton_pressed():
 	emit_signal("team_selection_done")
 	visible = false
+
+
+func _on_SelectGameMode_game_mode_selected(mode):
+	if (mode == C.WORLD_MODE):
+		initialize_select_country()
+		visible = true
+	else:
+		visible = false

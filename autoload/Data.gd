@@ -4,6 +4,7 @@ onready var _config := ConfigFile.new()
 
 const _path: String = "user://data.cfg"
 const _total_levels_plus_one := 212 # each level has its own section: "1", "2" etc.
+const _euro_levels := 421 # each level has its own section: "1", "2" etc.
 const _initial_best_score := 0
 var current_level := "-1"
 
@@ -27,6 +28,7 @@ func _ready():
 	var current = _config.get_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL)
 	load_level(int(current))
 	sync_cloud_with_app()
+	set_initial_euro_settings()
 
 
 func sync_cloud_with_app():
@@ -64,6 +66,16 @@ func next_level() -> void:
 func get_levels() -> Dictionary:
 	var info = Dictionary()
 	for i in range(1, _total_levels_plus_one):
+		info[_config.get_value(str(i), C.FLAG)] = [
+			_config.get_value(str(i), C.COUNTRY),
+			_config.get_value(str(i), C.UNLOCKED)
+		]
+	return info
+
+
+func get_euro_levels() -> Dictionary:
+	var info = Dictionary()
+	for i in range(_total_levels_plus_one, _euro_levels):
 		info[_config.get_value(str(i), C.FLAG)] = [
 			_config.get_value(str(i), C.COUNTRY),
 			_config.get_value(str(i), C.UNLOCKED)
@@ -248,6 +260,7 @@ func _set_initial_launch_settings():
 	if typeof(data.result) != TYPE_DICTIONARY:
 		push_error("Unexpected results.")
 	
+	
 	var difficulty = 1
 	var current_pass_score := 20
 	var pass_score_to_50 = 40
@@ -287,6 +300,69 @@ func _set_initial_launch_settings():
 			
 		_config.set_value(String(i), C.FLAG, data.result[str(i)]["flag"])
 		_config.set_value(String(i), C.COUNTRY, data.result[str(i)]["country"])
+		_config.set_value(String(i), C.TIME_LIMIT, time_limit)
+		_config.set_value(String(i), C.DIFFICULTY, difficulty)
+		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)
+		_config.set_value(String(i), C.BEST_SCORE, 0)
+		if i == 1:
+			_config.set_value(String(i), C.UNLOCKED, 1)
+		else:
+			_config.set_value(String(i), C.UNLOCKED, 0)
+		_config.set_value(String(i), C.REWARDED_BALLS, 0)
+		difficulty += 0.1
+	_config.save(_path)
+	file.close()
+	
+	
+func set_initial_euro_settings():
+	var file = File.new()
+	file.open("res://assets/level_euro_team_mapping.json", File.READ)
+	var initial_info = file.get_as_text()
+	var data = JSON.parse(initial_info)
+	if typeof(data.result) != TYPE_DICTIONARY:
+		push_error("Unexpected results.")
+	
+	
+	var difficulty = 1
+	var current_pass_score := 5
+	var pass_score_to_50 = 15
+	var pass_score_50_to_100 = 30
+	var pass_score_100_to_150 = 45
+	var pass_score_150_and_up = 60
+	var time_limit = 10
+	var count = 3
+	var count_temp = 3
+	
+	for i in range(_total_levels_plus_one, _euro_levels):
+		if i == 262:
+			count = 2
+			count_temp = 2
+		elif i == 312:
+			count = 3
+			count_temp = 3
+		elif i == 362:
+			count = 4
+			count_temp = 4
+		elif i == 412:
+			count = 5
+			count_temp = 5 
+			
+		count -= 1
+		if count == 0:
+			current_pass_score += 1
+			count = count_temp
+
+		if i >= 262 and i < 312:
+			time_limit = 15
+		elif i >= 312 and i < 362:
+			time_limit = 30
+		elif i >= 362:
+			time_limit = 45
+		
+		var json_index = i -_total_levels_plus_one + 1
+
+		_config.set_value(String(i), C.FLAG, data.result[str(json_index)]["logo"])
+		_config.set_value(String(i), C.COUNTRY, data.result[str(json_index)]["team"])
 		_config.set_value(String(i), C.TIME_LIMIT, time_limit)
 		_config.set_value(String(i), C.DIFFICULTY, difficulty)
 		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)

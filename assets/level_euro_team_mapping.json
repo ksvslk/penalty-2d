@@ -1,0 +1,838 @@
+{
+    "1": {
+        "team": "City Titans",
+        "logo": "manchester_city"
+    },
+    "2": {
+        "team": "Bavarian Bombers",
+        "logo": "bayern_munich"
+    },
+    "3": {
+        "team": "London Blues",
+        "logo": "chelsea"
+    },
+    "4": {
+        "team": "Merseyside Warriors",
+        "logo": "liverpool"
+    },
+    "5": {
+        "team": "Madrid Royals",
+        "logo": "real_madrid"
+    },
+    "6": {
+        "team": "Parisian Panthers",
+        "logo": "paris_saint_germain"
+    },
+    "7": {
+        "team": "Red Devils FC",
+        "logo": "manchester_united"
+    },
+    "8": {
+        "team": "Juventus Juggernauts",
+        "logo": "juventus"
+    },
+    "9": {
+        "team": "Barcelona Blazers",
+        "logo": "barcelona"
+    },
+    "10": {
+        "team": "Roman Gladiators",
+        "logo": "roma"
+    },
+    "11": {
+        "team": "Inter Milan Mavericks",
+        "logo": "inter_milan"
+    },
+    "12": {
+        "team": "Seville Strikers",
+        "logo": "sevilla"
+    },
+    "13": {
+        "team": "Dutch Dynamo",
+        "logo": "ajax"
+    },
+    "14": {
+        "team": "Dortmund Blitz",
+        "logo": "borussia_dortmund"
+    },
+    "15": {
+        "team": "Madrid Matadors",
+        "logo": "atletico_madrid"
+    },
+    "16": {
+        "team": "Leipzig Lions",
+        "logo": "rb_leipzig"
+    },
+    "17": {
+        "team": "Lisbon Eagles",
+        "logo": "benfica"
+    },
+    "18": {
+        "team": "Villarreal Vipers",
+        "logo": "villarreal"
+    },
+    "19": {
+        "team": "Naples Navigators",
+        "logo": "napoli"
+    },
+    "20": {
+        "team": "Porto Pirates",
+        "logo": "porto"
+    },
+    "21": {
+        "team": "London Spurs",
+        "logo": "tottenham"
+    },
+    "22": {
+        "team": "Frankfurt Falcons",
+        "logo": "eintracht_frankfurt"
+    },
+    "23": {
+        "team": "Arsenal Gunners",
+        "logo": "arsenal"
+    },
+    "24": {
+        "team": "Leverkusen Leopards",
+        "logo": "bayer_leverkusen"
+    },
+    "25": {
+        "team": "Donetsk Dynamo",
+        "logo": "shakhtar_donetsk"
+    },
+    "26": {
+        "team": "Lyon Lions",
+        "logo": "lyon"
+    },
+    "27": {
+        "team": "Salzburg Storm",
+        "logo": "red_bull_salzburg"
+    },
+    "28": {
+        "team": "Bergamo Blazers",
+        "logo": "atalanta"
+    },
+    "29": {
+        "team": "Zagreb Warriors",
+        "logo": "dinamo_zagreb"
+    },
+    "30": {
+        "team": "Brugge Bulldogs",
+        "logo": "club_brugge"
+    },
+    "31": {
+        "team": "Glasgow Rangers",
+        "logo": "rangers"
+    },
+    "32": {
+        "team": "Basel Broncos",
+        "logo": "basel"
+    },
+    "33": {
+        "team": "Lisbon Lions",
+        "logo": "sporting_cp"
+    },
+    "34": {
+        "team": "Prague Pioneers",
+        "logo": "slavia_praha"
+    },
+    "35": {
+        "team": "Rotterdam Falcons",
+        "logo": "feyenoord"
+    },
+    "36": {
+        "team": "East London Hammers",
+        "logo": "west_ham"
+    },
+    "37": {
+        "team": "Milan Magicians",
+        "logo": "ac_milan"
+    },
+    "38": {
+        "team": "Alkmaar Eagles",
+        "logo": "az_alkmaar"
+    },
+    "39": {
+        "team": "Rennes Raptors",
+        "logo": "rennes"
+    },
+    "40": {
+        "team": "Braga Bandits",
+        "logo": "braga"
+    },
+    "41": {
+        "team": "Eindhoven Stars",
+        "logo": "psv"
+    },
+    "42": {
+        "team": "Rome Eagles",
+        "logo": "lazio"
+    },
+    "43": {
+        "team": "Belgrade Knights",
+        "logo": "crvena_zvezda"
+    },
+    "44": {
+        "team": "Copenhagen Warriors",
+        "logo": "fc_copenhagen"
+    },
+    "45": {
+        "team": "Valencia Vipers",
+        "logo": "valencia_cf"
+    },
+    "46": {
+        "team": "Olympiacos Titans",
+        "logo": "olympiacos"
+    },
+    "47": {
+        "team": "Ghent Giants",
+        "logo": "krc_genk"
+    },
+    "48": {
+        "team": "Betis Bullfighters",
+        "logo": "real_betis"
+    },
+    "49": {
+        "team": "Vienna Valkyries",
+        "logo": "lask_linz"
+    },
+    "50": {
+        "team": "Kyiv Dynamo",
+        "logo": "dynamo_kyiv"
+    },
+    "51": {
+        "team": "Young Boys Heroes",
+        "logo": "young_boys"
+    },
+    "52": {
+        "team": "Sociedad Shadows",
+        "logo": "real_sociedad"
+    },
+    "53": {
+        "team": "Marseille Mariners",
+        "logo": "marseille"
+    },
+    "54": {
+        "team": "Galatasaray Guardians",
+        "logo": "galatasaray"
+    },
+    "55": {
+        "team": "Istanbul Falcons",
+        "logo": "basaksehir"
+    },
+    "56": {
+        "team": "Celtic Warriors",
+        "logo": "celtic"
+    },
+    "57": {
+        "team": "Fenerbahçe Phoenix",
+        "logo": "fenerbahce"
+    },
+    "58": {
+        "team": "Lille Lions",
+        "logo": "losc"
+    },
+    "59": {
+        "team": "Monaco Mavericks",
+        "logo": "monaco"
+    },
+    "60": {
+        "team": "Cluj Crusaders",
+        "logo": "cfr_cluj"
+    },
+    "61": {
+        "team": "Budapest Breakers",
+        "logo": "ferencvaros"
+    },
+    "62": {
+        "team": "Midtjylland Marauders",
+        "logo": "midtjylland"
+    },
+    "63": {
+        "team": "Belgrade Bombers",
+        "logo": "partizan"
+    },
+    "64": {
+        "team": "Malmö Mariners",
+        "logo": "malmo"
+    },
+    "65": {
+        "team": "Qarabağ Crusaders",
+        "logo": "qarabag"
+    },
+    "66": {
+        "team": "PAOK Panthers",
+        "logo": "paok"
+    },
+    "67": {
+        "team": "Bratislava Warriors",
+        "logo": "slovan_bratislava"
+    },
+    "68": {
+        "team": "Molde Mariners",
+        "logo": "molde"
+    },
+    "69": {
+        "team": "Tel-Aviv Titans",
+        "logo": "maccabi_tel_aviv"
+    },
+    "70": {
+        "team": "Leicester Foxes",
+        "logo": "leicester_city"
+    },
+    "71": {
+        "team": "Wolfsburg Wolves",
+        "logo": "wolfsburg"
+    },
+    "72": {
+        "team": "Plzeň Pumas",
+        "logo": "plzen"
+    },
+    "73": {
+        "team": "Wolverhampton Wanderers",
+        "logo": "wolves"
+    },
+    "74": {
+        "team": "Burnley Blazers",
+        "logo": "burnley"
+    },
+    "75": {
+        "team": "Ludogorets Lions",
+        "logo": "ludogorets"
+    },
+    "76": {
+        "team": "Mönchengladbach Gladiators",
+        "logo": "borussia_monchengladbach"
+    },
+    "77": {
+        "team": "Florence Falcons",
+        "logo": "fiorentina"
+    },
+    "78": {
+        "team": "Bodø Buccaneers",
+        "logo": "bodo_glimt"
+    },
+    "79": {
+        "team": "Sheriff Strikers",
+        "logo": "sheriff_tiraspol"
+    },
+    "80": {
+        "team": "Union United",
+        "logo": "union_sg"
+    },
+    "81": {
+        "team": "Lech Lions",
+        "logo": "lech_poznan"
+    },
+    "82": {
+        "team": "Hoffenheim Hawks",
+        "logo": "hoffenheim"
+    },
+    "83": {
+        "team": "Granada Guardians",
+        "logo": "granada"
+    },
+    "84": {
+        "team": "Getafe Gladiators",
+        "logo": "getafe"
+    },
+    "85": {
+        "team": "Espanyol Eagles",
+        "logo": "espanyol"
+    },
+    "86": {
+        "team": "Vienna Vikings",
+        "logo": "rapid_vienna"
+    },
+    "87": {
+        "team": "Genk Giants",
+        "logo": "genk"
+    },
+    "88": {
+        "team": "Anderlecht Avengers",
+        "logo": "anderlecht"
+    },
+    "89": {
+        "team": "Nice Knights",
+        "logo": "nice"
+    },
+    "90": {
+        "team": "Berlin Unionists",
+        "logo": "union_berlin"
+    },
+    "91": {
+        "team": "Beer-Sheva Bulldogs",
+        "logo": "hapoel_beer_sheva"
+    },
+    "92": {
+        "team": "Antwerp Aces",
+        "logo": "antwerp"
+    },
+    "93": {
+        "team": "Schalke Spartans",
+        "logo": "schalke"
+    },
+    "94": {
+        "team": "Djurgården Dynamos",
+        "logo": "djurgarden"
+    },
+    "95": {
+        "team": "Sivas Sultans",
+        "logo": "sivasspor"
+    },
+    "96": {
+        "team": "Freiburg Falcons",
+        "logo": "freiburg"
+    },
+    "97": {
+        "team": "Köln Knights",
+        "logo": "fc_koln"
+    },
+    "98": {
+        "team": "Torino Titans",
+        "logo": "torino"
+    },
+    "99": {
+        "team": "Apollon Assassins",
+        "logo": "apollon"
+    },
+    "100": {
+        "team": "Zorya Zealots",
+        "logo": "zorya_luhansk"
+    },
+    "101": {
+        "team": "Liège Lions",
+        "logo": "standard_liege"
+    },
+    "102": {
+        "team": "APOEL Armada",
+        "logo": "apoel"
+    },
+    "103": {
+        "team": "Prague Spartans",
+        "logo": "sparta_praha"
+    },
+    "104": {
+        "team": "Astana Arrows",
+        "logo": "astana"
+    },
+    "105": {
+        "team": "Beşiktaş Buccaneers",
+        "logo": "besiktas"
+    },
+    "106": {
+        "team": "Wolfsberg Warriors",
+        "logo": "wolfsberg"
+    },
+    "107": {
+        "team": "Haifa Hawks",
+        "logo": "maccabi_haifa"
+    },
+    "108": {
+        "team": "Sofia Spartans",
+        "logo": "cska_sofia"
+    },
+    "109": {
+        "team": "Sturm Stormers",
+        "logo": "sturm_graz"
+    },
+    "110": {
+        "team": "Fehérvár Falcons",
+        "logo": "fehervar"
+    },
+    "111": {
+        "team": "Nantes Navigators",
+        "logo": "nantes"
+    },
+    "112": {
+        "team": "Reims Rangers",
+        "logo": "reims"
+    },
+    "113": {
+        "team": "St-Étienne Strikers",
+        "logo": "saint_etienne"
+    },
+    "114": {
+        "team": "Strasbourg Scorpions",
+        "logo": "strasbourg"
+    },
+    "115": {
+        "team": "Bordeaux Bulldogs",
+        "logo": "bordeaux"
+    },
+    "116": {
+        "team": "Jablonec Jaguars",
+        "logo": "jablonec"
+    },
+    "117": {
+        "team": "Twente Titans",
+        "logo": "twente"
+    },
+    "118": {
+        "team": "Vitesse Vikings",
+        "logo": "vitesse"
+    },
+    "119": {
+        "team": "Willem II Wolves",
+        "logo": "willem_ii"
+    },
+    "120": {
+        "team": "Utrecht United",
+        "logo": "utrecht"
+    },
+    "121": {
+        "team": "Trabzonspor Tigers",
+        "logo": "trabzonspor"
+    },
+    "122": {
+        "team": "Rijeka Raptors",
+        "logo": "rijeka"
+    },
+    "123": {
+        "team": "Gil Vicente Gladiators",
+        "logo": "gil_vicente"
+    },
+    "124": {
+        "team": "Vitória Vipers",
+        "logo": "vitoria_guimaraes"
+    },
+    "125": {
+        "team": "Santa Clara Sailors",
+        "logo": "santa_clara"
+    },
+    "126": {
+        "team": "Ferreira Falcons",
+        "logo": "pacos_ferreira"
+    },
+    "127": {
+        "team": "Rio Ave Rovers",
+        "logo": "rio_ave"
+    },
+    "128": {
+        "team": "Žalgiris Zebras",
+        "logo": "zalgiris"
+    },
+    "129": {
+        "team": "Helsinki Hurricanes",
+        "logo": "hjk"
+    },
+    "130": {
+        "team": "Bucharest Blitz",
+        "logo": "fcsb"
+    },
+    "131": {
+        "team": "Legia Lions",
+        "logo": "legia_warsaw"
+    },
+    "132": {
+        "team": "Rosenborg Rangers",
+        "logo": "rosenborg"
+    },
+    "133": {
+        "team": "AEK Athenians",
+        "logo": "aek_athens"
+    },
+    "134": {
+        "team": "Trnava Titans",
+        "logo": "spartak_trnava"
+    },
+    "135": {
+        "team": "Flora Falcons",
+        "logo": "flora_tallinn"
+    },
+    "136": {
+        "team": "Larnaca Lions",
+        "logo": "aek_larnaca"
+    },
+    "137": {
+        "team": "Omonoia Olympians",
+        "logo": "omonoia"
+    },
+    "138": {
+        "team": "Zürich Zealots",
+        "logo": "fc_zurich"
+    },
+    "139": {
+        "team": "Diddeleng Dragons",
+        "logo": "dudelange"
+    },
+    "140": {
+        "team": "Riga Raiders",
+        "logo": "riga"
+    },
+    "141": {
+        "team": "Sūduva Samurai",
+        "logo": "suduva"
+    },
+    "142": {
+        "team": "Maribor Majestics",
+        "logo": "maribor"
+    },
+    "143": {
+        "team": "Brøndby Berserkers",
+        "logo": "brondby"
+    },
+    "144": {
+        "team": "KuPS Knights",
+        "logo": "kups"
+    },
+    "145": {
+        "team": "Shkëndija Shadows",
+        "logo": "shkendija"
+    },
+    "146": {
+        "team": "Shamrock Warriors",
+        "logo": "shamrock_rovers"
+    },
+    "147": {
+        "team": "Split Buccaneers",
+        "logo": "hajduk_split"
+    },
+    "148": {
+        "team": "Craiova Centurions",
+        "logo": "universitatea_craiova"
+    },
+    "149": {
+        "team": "Neftçi Nomads",
+        "logo": "neftchi"
+    },
+    "150": {
+        "team": "Kairat Knights",
+        "logo": "kairat"
+    },
+    "151": {
+        "team": "TNS Titans",
+        "logo": "tns"
+    },
+    "152": {
+        "team": "Ljubljana Lions",
+        "logo": "olimpija_ljubljana"
+    },
+    "153": {
+        "team": "Linfield Legends",
+        "logo": "linfield"
+    },
+    "154": {
+        "team": "Vaduz Valkyries",
+        "logo": "vaduz"
+    },
+    "155": {
+        "team": "Zrinjski Zealots",
+        "logo": "zrinjski"
+    },
+    "156": {
+        "team": "Dunajská Dynamos",
+        "logo": "dunajska_streda"
+    },
+    "157": {
+        "team": "Red Imps Rangers",
+        "logo": "lincoln_red_imps"
+    },
+    "158": {
+        "team": "Dundalk Dragons",
+        "logo": "dundalk"
+    },
+    "159": {
+        "team": "Charleroi Champions",
+        "logo": "charleroi"
+    },
+    "160": {
+        "team": "Dnipro Dynamo",
+        "logo": "dnipro_1"
+    },
+    "161": {
+        "team": "Pyunik Predators",
+        "logo": "pyunik"
+    },
+    "162": {
+        "team": "KÍ Vikings",
+        "logo": "ki"
+    },
+    "163": {
+        "team": "Osijek Outlaws",
+        "logo": "osijek"
+    },
+    "164": {
+        "team": "Alashkert Archers",
+        "logo": "alashkert"
+    },
+    "165": {
+        "team": "Anorthosis Avengers",
+        "logo": "anorthosis"
+    },
+    "166": {
+        "team": "Aberdeen Aces",
+        "logo": "aberdeen"
+    },
+    "167": {
+        "team": "Laç Lions",
+        "logo": "lac"
+    },
+    "168": {
+        "team": "Podgorica Pioneers",
+        "logo": "buducnost_podgorica"
+    },
+    "169": {
+        "team": "Sutjeska Spartans",
+        "logo": "sutjeska"
+    },
+    "170": {
+        "team": "Fola Falcons",
+        "logo": "fola_esch"
+    },
+    "171": {
+        "team": "Tbilisi Titans",
+        "logo": "dinamo_tbilisi"
+    },
+    "172": {
+        "team": "Hearts Heroes",
+        "logo": "hearts"
+    },
+    "173": {
+        "team": "Motherwell Warriors",
+        "logo": "motherwell"
+    },
+    "174": {
+        "team": "St Johnstone Saints",
+        "logo": "st_johnstone"
+    },
+    "175": {
+        "team": "Hibernian Heralds",
+        "logo": "hibernian"
+    },
+    "176": {
+        "team": "Kilmarnock Knights",
+        "logo": "kilmarnock"
+    },
+    "177": {
+        "team": "Shkupi Stormers",
+        "logo": "shkupi"
+    },
+    "178": {
+        "team": "Aris Athenians",
+        "logo": "aris_thessaloniki"
+    },
+    "179": {
+        "team": "Mura Magicians",
+        "logo": "ns_mura"
+    },
+    "180": {
+        "team": "Randers Ravens",
+        "logo": "randers"
+    },
+    "181": {
+        "team": "Sarajevo Shields",
+        "logo": "sarajevo"
+    },
+    "182": {
+        "team": "Vienna Vipers",
+        "logo": "austria_wien"
+    },
+    "183": {
+        "team": "Hartberg Hammers",
+        "logo": "hartberg"
+    },
+    "184": {
+        "team": "Admira Avengers",
+        "logo": "admira"
+    },
+    "185": {
+        "team": "RFS Raptors",
+        "logo": "fc_rfs"
+    },
+    "186": {
+        "team": "AIK Assassins",
+        "logo": "aik"
+    },
+    "187": {
+        "team": "Hibernians Heroes",
+        "logo": "hibernians"
+    },
+    "188": {
+        "team": "Tobol Titans",
+        "logo": "tobol"
+    },
+    "189": {
+        "team": "Petrocub Predators",
+        "logo": "petrocub"
+    },
+    "190": {
+        "team": "B36 Berserkers",
+        "logo": "b36"
+    },
+    "191": {
+        "team": "Drita Defenders",
+        "logo": "drita"
+    },
+    "192": {
+        "team": "Ararat Armada",
+        "logo": "ararat_armenia"
+    },
+    "193": {
+        "team": "Čukarički Centurions",
+        "logo": "cukaricki"
+    },
+    "194": {
+        "team": "Niš Ninjas",
+        "logo": "radnicki_nis"
+    },
+    "195": {
+        "team": "Vojvodina Valkyries",
+        "logo": "vojvodina"
+    },
+    "196": {
+        "team": "Topola Titans",
+        "logo": "backa_topola"
+    },
+    "197": {
+        "team": "Subotica Spartans",
+        "logo": "spartak_subotica"
+    },
+    "198": {
+        "team": "Konya Knights",
+        "logo": "konyaspor"
+    },
+    "199": {
+        "team": "Alanya Aliens",
+        "logo": "alanyaspor"
+    },
+    "200": {
+        "team": "Malatyaspor Marauders",
+        "logo": "yeni_malatyaspor"
+    },
+    "201": {
+        "team": "Akhisar Assassins",
+        "logo": "akhisar"
+    },
+    "202": {
+        "team": "Lugano Lions",
+        "logo": "lugano"
+    },
+    "203": {
+        "team": "Luzern Legends",
+        "logo": "luzern"
+    },
+    "204": {
+        "team": "Servette Sentinels",
+        "logo": "servette"
+    },
+    "205": {
+        "team": "St. Gallen Guardians",
+        "logo": "st_gallen"
+    },
+    "206": {
+        "team": "Thun Thunder",
+        "logo": "thun"
+    },
+    "207": {
+        "team": "Breidablik Blazers",
+        "logo": "breidablik"
+    },
+    "208": {
+        "team": "Gżira Gladiators",
+        "logo": "gzira"
+    },
+    "209": {
+        "team": "Levadia Lions",
+        "logo": "levadia"
+    }
+}

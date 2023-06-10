@@ -1,4 +1,4 @@
-[gd_scene load_steps=79 format=2]
+[gd_scene load_steps=83 format=2]
 
 [ext_resource path="res://sound/tick.wav" type="AudioStream" id=1]
 [ext_resource path="res://art/grass.png" type="Texture" id=2]
@@ -29,6 +29,7 @@
 [ext_resource path="res://scripts/options_container.gd" type="Script" id=27]
 [ext_resource path="res://scripts/level_scroller.gd" type="Script" id=28]
 [ext_resource path="res://art/gear.svg" type="Texture" id=29]
+[ext_resource path="res://select_euro_team.gd" type="Script" id=30]
 [ext_resource path="res://art/bonus.svg" type="Texture" id=31]
 [ext_resource path="res://art/back.svg" type="Texture" id=32]
 [ext_resource path="res://art/games_leaderboards.png" type="Texture" id=33]
@@ -42,6 +43,9 @@
 [ext_resource path="res://scripts/os_game_center_button.gd" type="Script" id=41]
 [ext_resource path="res://art/Twitter social icons - circle - white.png" type="Texture" id=42]
 [ext_resource path="res://scripts/play_games.gd" type="Script" id=43]
+[ext_resource path="res://art/world_cup_trophy.jpg" type="Texture" id=44]
+[ext_resource path="res://art/euro_cup_trophy.jpg" type="Texture" id=45]
+[ext_resource path="res://scripts/select_game_mode.gd" type="Script" id=46]
 
 [sub_resource type="CanvasItemMaterial" id=31]
 blend_mode = 1
@@ -221,6 +225,12 @@ outline_size = 5
 outline_color = Color( 0, 0, 0, 1 )
 font_data = SubResource( 35 )
 
+[sub_resource type="DynamicFont" id=39]
+size = 75
+outline_size = 5
+outline_color = Color( 0, 0, 0, 1 )
+font_data = SubResource( 35 )
+
 [sub_resource type="StyleBoxFlat" id=38]
 content_margin_left = 50.0
 content_margin_right = 50.0
@@ -228,12 +238,6 @@ content_margin_top = 20.0
 content_margin_bottom = 20.0
 bg_color = Color( 0, 0, 0, 0.2 )
 shadow_color = Color( 0, 0, 0, 0.470588 )
-
-[sub_resource type="DynamicFont" id=39]
-size = 75
-outline_size = 5
-outline_color = Color( 0, 0, 0, 1 )
-font_data = SubResource( 35 )
 
 [node name="Master" type="Node"]
 script = ExtResource( 14 )
@@ -1117,6 +1121,68 @@ android_icon = ExtResource( 34 )
 color = Color( 0, 0, 0, 0.941176 )
 script = ExtResource( 39 )
 
+[node name="SelectGameMode" type="ColorRect" parent="CanvasLayer/OptionsContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -8.0
+margin_right = -1.0
+color = Color( 0.0509804, 0.0823529, 0, 0.862745 )
+script = ExtResource( 46 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/OptionsContainer/SelectGameMode"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -539.5
+margin_top = -1204.0
+margin_right = 539.5
+margin_bottom = 1204.0
+custom_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/OptionsContainer/SelectGameMode/VBoxContainer"]
+margin_top = 943.0
+margin_right = 1079.0
+margin_bottom = 1005.0
+custom_fonts/font = SubResource( 36 )
+text = "Select game mode:"
+align = 1
+
+[node name="EuroMode" type="Button" parent="CanvasLayer/OptionsContainer/SelectGameMode/VBoxContainer"]
+margin_top = 1015.0
+margin_right = 1079.0
+margin_bottom = 1235.0
+mouse_filter = 1
+custom_constants/hseparation = 60
+custom_fonts/font = SubResource( 39 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "EASY - Euro Cup"
+icon = ExtResource( 45 )
+align = 0
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="WorldMode" type="Button" parent="CanvasLayer/OptionsContainer/SelectGameMode/VBoxContainer"]
+margin_top = 1245.0
+margin_right = 1079.0
+margin_bottom = 1465.0
+mouse_filter = 1
+custom_constants/hseparation = 60
+custom_fonts/font = SubResource( 39 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "HARD - World Cup"
+icon = ExtResource( 44 )
+align = 0
+__meta__ = {
+"_editor_description_": ""
+}
+
 [node name="SelectCountry" type="ColorRect" parent="CanvasLayer/OptionsContainer"]
 visible = false
 anchor_right = 1.0
@@ -1155,17 +1221,17 @@ custom_constants/separation = 10
 alignment = 1
 
 [node name="Label" type="Label" parent="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer"]
-margin_top = 957.0
+margin_top = 986.0
 margin_right = 1079.0
-margin_bottom = 1019.0
+margin_bottom = 1048.0
 custom_fonts/font = SubResource( 36 )
 text = "Select your team:"
 align = 1
 
 [node name="SelectedCountry" type="Button" parent="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer"]
-margin_top = 1029.0
+margin_top = 1058.0
 margin_right = 1079.0
-margin_bottom = 1249.0
+margin_bottom = 1220.0
 mouse_filter = 1
 custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 36 )
@@ -1181,9 +1247,87 @@ __meta__ = {
 }
 
 [node name="ConfirmButton" type="Button" parent="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer"]
-margin_top = 1259.0
+margin_top = 1230.0
 margin_right = 1079.0
-margin_bottom = 1451.0
+margin_bottom = 1422.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 39 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "CONFIRM"
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="SelectEuroTeam" type="ColorRect" parent="CanvasLayer/OptionsContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -8.0
+margin_right = -1.0
+color = Color( 0.0509804, 0.0823529, 0, 0.862745 )
+script = ExtResource( 30 )
+
+[node name="TeamScroller" type="ScrollContainer" parent="CanvasLayer/OptionsContainer/SelectEuroTeam"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 160.0
+margin_bottom = -197.0
+scroll_horizontal_enabled = false
+scroll_deadzone = 25
+
+[node name="TeamList" type="VBoxContainer" parent="CanvasLayer/OptionsContainer/SelectEuroTeam/TeamScroller"]
+margin_right = 1079.0
+margin_bottom = 2115.0
+mouse_default_cursor_shape = 8
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/OptionsContainer/SelectEuroTeam"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -539.5
+margin_top = -1204.0
+margin_right = 539.5
+margin_bottom = 1204.0
+custom_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/OptionsContainer/SelectEuroTeam/VBoxContainer"]
+margin_top = 986.0
+margin_right = 1079.0
+margin_bottom = 1048.0
+custom_fonts/font = SubResource( 36 )
+text = "Select your team:"
+align = 1
+
+[node name="SelectedTeam" type="Button" parent="CanvasLayer/OptionsContainer/SelectEuroTeam/VBoxContainer"]
+margin_top = 1058.0
+margin_right = 1079.0
+margin_bottom = 1220.0
+mouse_filter = 1
+custom_constants/hseparation = 20
+custom_fonts/font = SubResource( 36 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/normal = SubResource( 37 )
+text = "lkkkkk"
+clip_text = true
+align = 2
+script = ExtResource( 24 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="ConfirmButton" type="Button" parent="CanvasLayer/OptionsContainer/SelectEuroTeam/VBoxContainer"]
+margin_top = 1230.0
+margin_right = 1079.0
+margin_bottom = 1422.0
 mouse_filter = 1
 custom_constants/hseparation = 20
 custom_fonts/font = SubResource( 39 )
@@ -1253,9 +1397,16 @@ stream = ExtResource( 40 )
 [connection signal="timeout" from="CanvasLayer/OptionsContainer/BonusList/AppstoreTimer" to="CanvasLayer/OptionsContainer/BonusList" method="_on_AppstoreTimer_timeout"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/PlayGamesList/ShowLeaderboard" to="CanvasLayer/OptionsContainer" method="_on_ShowLeaderboard_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/PlayGamesList/ShowAchievements" to="CanvasLayer/OptionsContainer" method="_on_ShowAchievements_pressed"]
+[connection signal="game_mode_selected" from="CanvasLayer/OptionsContainer/SelectGameMode" to="CanvasLayer/OptionsContainer/SelectCountry" method="_on_SelectGameMode_game_mode_selected"]
+[connection signal="game_mode_selected" from="CanvasLayer/OptionsContainer/SelectGameMode" to="CanvasLayer/OptionsContainer/SelectEuroTeam" method="_on_SelectGameMode_game_mode_selected"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectGameMode/VBoxContainer/EuroMode" to="CanvasLayer/OptionsContainer/SelectGameMode" method="_on_EuroMode_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectGameMode/VBoxContainer/WorldMode" to="CanvasLayer/OptionsContainer/SelectGameMode" method="_on_WorldMode_pressed"]
 [connection signal="team_selection_done" from="CanvasLayer/OptionsContainer/SelectCountry" to="." method="_on_SelectCountry_team_selection_done"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer/SelectedCountry" to="CanvasLayer/OptionsContainer/SelectCountry" method="_on_SelectedCountry_pressed"]
 [connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectCountry/VBoxContainer/ConfirmButton" to="CanvasLayer/OptionsContainer/SelectCountry" method="_on_ConfirmButton_pressed"]
+[connection signal="euro_team_selection_done" from="CanvasLayer/OptionsContainer/SelectEuroTeam" to="." method="_on_SelectEuroTeam_euro_team_selection_done"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectEuroTeam/VBoxContainer/SelectedTeam" to="CanvasLayer/OptionsContainer/SelectEuroTeam" method="_on_SelectedTeam_pressed"]
+[connection signal="pressed" from="CanvasLayer/OptionsContainer/SelectEuroTeam/VBoxContainer/ConfirmButton" to="CanvasLayer/OptionsContainer/SelectEuroTeam" method="_on_ConfirmButton_pressed"]
 [connection signal="timeout" from="CanvasLayer/OptionsContainer/CommercialBreak/Timer" to="CanvasLayer/OptionsContainer/CommercialBreak" method="_on_Timer_timeout"]
 
 [editable path="Level/GoalKeeper"]
