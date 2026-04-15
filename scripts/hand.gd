@@ -1,4 +1,4 @@
-extends Sprite
+extends Sprite2D
 var start_position: Vector2
 var final_position: Vector2
 

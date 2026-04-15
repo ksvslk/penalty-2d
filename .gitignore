@@ -13,4 +13,7 @@ data_*/
 # Other
 *.apk
 *.idsig
-android/
+android/build/build/
+android/build/assets/
+android/build/libs/
+android/build/.gradle

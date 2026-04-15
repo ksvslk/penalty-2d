@@ -3,8 +3,8 @@ extends MarginContainer
 
 func _ready():
 	### TAKE CARE OF NOTCHES AND SUCH
-	var safe_area  = OS.get_window_safe_area()
-	var window_size = OS.get_real_window_size()
+	var safe_area = DisplayServer.get_display_safe_area()
+	var window_size = DisplayServer.window_get_size()
 	print(safe_area)
 	print(window_size)
 		
@@ -25,7 +25,7 @@ func _ready():
 		right = max(right, abs(safe_area.end.x - window_size.x) * x_factor)
 		
 	# OVERRIDE MARGIN CONTAINER (HOSTS THIS SCRIPT)
-	add_constant_override("margin_top",top)
-	add_constant_override("margin_left",left)
-	add_constant_override("margin_right",right)
-	add_constant_override("margin_bottom",bottom)
+	add_theme_constant_override("margin_top",top)
+	add_theme_constant_override("margin_left",left)
+	add_theme_constant_override("margin_right",right)
+	add_theme_constant_override("margin_bottom",bottom)

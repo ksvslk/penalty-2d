@@ -6,47 +6,7 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "RigidBody2D",
-"class": "Ball",
-"language": "GDScript",
-"path": "res://scripts/ball.gd"
-}, {
-"base": "Button",
-"class": "CountryButton",
-"language": "GDScript",
-"path": "res://scripts/country_button.gd"
-}, {
-"base": "Button",
-"class": "CountrySelectButton",
-"language": "GDScript",
-"path": "res://scripts/country_select_button.gd"
-}, {
-"base": "ColorRect",
-"class": "GoalIndicator",
-"language": "GDScript",
-"path": "res://scripts/goal_indicator.gd"
-}, {
-"base": "Node",
-"class": "Master",
-"language": "GDScript",
-"path": "res://Master.gd"
-}, {
-"base": "Node2D",
-"class": "Mediator",
-"language": "GDScript",
-"path": "res://scripts/level.gd"
-} ]
-_global_script_class_icons={
-"Ball": "",
-"CountryButton": "",
-"CountrySelectButton": "",
-"GoalIndicator": "",
-"Master": "",
-"Mediator": ""
-}
+config_version=5
 
 [admob]
 
@@ -111,33 +71,33 @@ config={
 
 config/name="Penalty 2D"
 run/main_scene="res://Master.tscn"
+config/features=PackedStringArray("4.6")
+boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=false
+boot_splash/stretch_mode=0
 boot_splash/image="res://art/football.svg"
-boot_splash/fullsize=false
-boot_splash/bg_color=Color( 0, 0, 0, 1 )
 config/icon="res://art/icon/main_icon.png"
 
 [autoload]
 
+Network="*res://autoload/Network.gd"
 Data="*res://autoload/Data.gd"
 C="*res://autoload/C.gd"
 GPack="*res://autoload/GPack.gd"
 
 [display]
 
-window/size/width=1080
-window/size/height=2400
+window/size/viewport_width=1080
+window/size/viewport_height=2400
 window/size/always_on_top=true
-window/size/test_width=800
-window/size/test_height=1280
-window/handheld/orientation="portrait"
-window/stretch/mode="2d"
-window/stretch/aspect="keep"
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep_width"
+window/handheld/orientation=1
 
 [gui]
 
-common/drop_mouse_on_gui_input_disabled=true
 theme/custom="res://DefaultTheme.tres"
+common/drop_mouse_on_gui_input_disabled=true
 
 [input_devices]
 
@@ -152,8 +112,7 @@ pointing/emulate_touch_from_mouse=true
 
 [locale]
 
-translation_remaps={
-}
+translation_remaps={}
 
 [physics]
 
@@ -161,9 +120,10 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+textures/vram_compression/import_etc2_astc=true
 quality/driver/driver_name="GLES2"
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
 vram_compression/import_pvrtc=true
-environment/default_clear_color=Color( 0, 0, 0, 1 )
+environment/default_clear_color=Color(0, 0, 0, 1)
 environment/default_environment="res://default_env.tres"

@@ -76,12 +76,7 @@ const TWO_BALLS_PURCHASED: String = "TWO_BALLS_PURCHASED"
 const TOKENS: String = "TOKENS"
 
 const GAME_MODE: String = "GAME_MODE"
-const EURO_MODE: String = "EURO_MODE"
 const NOT_SET_MODE: String = "NOT_SET_MODE"
-const WORLD_MODE: String = "WORLD_MODE"
-
-
-
 const various_section_dictionary_keys = [
 	TOKENS,
 	CURRENT_LEVEL,
@@ -133,14 +128,23 @@ func get_country() -> String:
 	
 
 func get_flag_path() -> String:
-	var path = "res://art/flag/"
-	if Data.game_mode == C.EURO_MODE:
-		path = "res://art/team_flag/"
-	return path
+	return "res://art/flag/"
 	
 
 func get_extension() -> String:
-	var extension = ".png"
-	if Data.game_mode == C.EURO_MODE:
-		extension = ".jpg"
-	return extension
+	return ".png"
+
+func get_top_safe_margin() -> float:
+	if OS.get_name() == "Android" or "iOS" == OS.get_name():
+		var safe_area = DisplayServer.get_display_safe_area()
+		return float(safe_area.position.y)
+	return 0.0
+
+func get_bottom_safe_margin() -> float:
+	if OS.get_name() == "Android" or "iOS" == OS.get_name():
+		var screen_size = DisplayServer.screen_get_size()
+		var safe_area = DisplayServer.get_display_safe_area()
+		var bottom_margin = float(screen_size.y - (safe_area.position.y + safe_area.size.y))
+		if safe_area.position.y > 0:
+			return bottom_margin
+	return 16.0

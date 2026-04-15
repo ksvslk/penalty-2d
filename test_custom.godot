@@ -1,0 +1,131 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[admob]
+
+config={
+"banner": {
+"position": 1,
+"respect_safe_area": true,
+"show_instantly": true,
+"size": "BANNER",
+"unit_ids": {
+"Android": {
+"standard": "ca-app-pub-3940256099942544/6300978111"
+},
+"iOS": {
+"standard": "ca-app-pub-3940256099942544/2934735716"
+}
+}
+},
+"debug": {
+"is_debug_on_release": false,
+"is_real": true,
+"is_test_europe_user_consent": false
+},
+"general": {
+"is_enabled": true,
+"is_for_child_directed_treatment": false,
+"max_ad_content_rating": "PG"
+},
+"interstitial": {
+"unit_ids": {
+"Android": {
+"standard": "ca-app-pub-3940256099942544/1033173712"
+},
+"iOS": {
+"standard": "ca-app-pub-5386053272091445/2605520069"
+}
+}
+},
+"rewarded": {
+"unit_ids": {
+"Android": {
+"standard": "ca-app-pub-3940256099942544/5224354917"
+},
+"iOS": {
+"standard": "ca-app-pub-5386053272091445/6194492858"
+}
+}
+},
+"rewarded_interstitial": {
+"unit_ids": {
+"Android": {
+"standard": "ca-app-pub-3940256099942544/5354046379"
+},
+"iOS": {
+"standard": "ca-app-pub-3940256099942544/6978759866"
+}
+}
+}
+}
+
+[application]
+
+config/name="Penalty 2D"
+run/main_scene="res://Master.tscn"
+config/features=PackedStringArray("4.6")
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/show_image=false
+boot_splash/stretch_mode=0
+boot_splash/image="res://art/football.svg"
+config/icon="res://art/icon/main_icon.png"
+
+[autoload]
+
+Data="*res://autoload/Data.gd"
+C="*res://autoload/C.gd"
+GPack="*res://autoload/GPack.gd"
+Network="*res://autoload/Network.gd"
+
+[display]
+
+window/size/viewport_width=1080
+window/size/viewport_height=2400
+window/size/always_on_top=true
+window/stretch/mode="viewport"
+window/handheld/orientation=1
+window/size/width=1080
+window/size/height=2400
+window/size/test_width=800
+window/size/test_height=1280
+
+[gui]
+
+theme/custom="res://DefaultTheme.tres"
+common/drop_mouse_on_gui_input_disabled=true
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[layer_names]
+
+2d_physics/layer_1="ball"
+2d_physics/layer_2="wall"
+2d_physics/layer_3="goal"
+2d_physics/layer_4="keeper"
+
+[locale]
+
+translation_remaps={}
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+rendering_device/fallback_to_vulkan=false
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/default_clear_color=Color(0, 0, 0, 1)
+environment/default_environment="res://default_env.tres"

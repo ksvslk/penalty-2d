@@ -1,4 +1,5 @@
 [gd_scene load_steps=10 format=2]
+[ext_resource path="res://fonts/Alexandria-Bold.ttf" type="FontFile" id="9999"]
 
 [ext_resource path="res://art/random_selection.png" type="Texture" id=1]
 [ext_resource path="res://art/trophy.svg" type="Texture" id=2]
@@ -31,14 +32,14 @@ font_data = SubResource( 26 )
 [node name="Trophy" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = 544.0
-margin_bottom = 544.0
+offset_top = 544.0
+offset_bottom = 544.0
 mouse_filter = 2
 
 [node name="TextureRect2" type="ColorRect" parent="."]
-margin_top = 560.0
-margin_right = 1083.0
-margin_bottom = 1848.0
+offset_top = 560.0
+offset_right = 1083.0
+offset_bottom = 1848.0
 mouse_filter = 2
 color = Color( 1, 0.772549, 0, 0 )
 
@@ -74,26 +75,28 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -258.143
-margin_top = -346.857
-margin_right = 513.857
-margin_bottom = -260.857
-rect_scale = Vector2( 0.5, 0.5 )
-custom_fonts/font = SubResource( 27 )
+offset_left = -258.143
+offset_top = -346.857
+offset_right = 513.857
+offset_bottom = -260.857
+scale = Vector2( 0.5, 0.5 )
+theme_override_fonts/font = ExtResource( "9999" )
+theme_override_font_sizes/font_size = 70
+theme_override_font_sizes/font_size = 70
 text = "congratulations!"
-align = 1
-valign = 1
-autowrap = true
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 uppercase = true
 
 [node name="Flag" type="TextureRect" parent="TextureRect/Congrats"]
 modulate = Color( 1, 1, 1, 0.239216 )
 show_behind_parent = true
-margin_left = -51.9999
-margin_top = -111.428
-margin_right = 831.0
-margin_bottom = 330.572
+offset_left = -51.9999
+offset_top = -111.428
+offset_right = 831.0
+offset_bottom = 330.572
 texture = ExtResource( 4 )
-expand = true
+expand_mode = 1
 stretch_mode = 6
 script = ExtResource( 3 )

@@ -1,13 +1,11 @@
 extends Node
 
-onready var _config := ConfigFile.new()
+@onready var _config := ConfigFile.new()
 
 const _path: String = "user://data.cfg"
 const _total_levels_plus_one := 212 # each level has its own section: "1", "2" etc.
-const _euro_levels := 421 # each level has its own section: "1", "2" etc.
 const _initial_best_score := 0
 var current_level := "-1"
-var game_mode = ""
 
 signal best_score_updated(new_score)
 signal level_info_updated(dict)
@@ -15,33 +13,21 @@ signal level_select_updated(levels)
 signal team_changed(new_team)
 
 ########################
-#	 DATABASE PART	  #
+#	 DATABASE PART	  #
 ########################	
 
 func _ready():
-	print("Data ready")
 	var err := _config.load(_path)
-	if err == ERR_FILE_NOT_FOUND:
+	# In Godot 4, error codes are part of the Error enum
+	if err == Error.ERR_FILE_NOT_FOUND:
 		 # This should be done ONLY ONCE when also cloud has no info!!!
+		print("DATA ERR_FILE_NOT_FOUND")
 		_set_initial_launch_settings()
-		_set_initial_euro_settings()
-		_set_various_section()
-		_config.set_value(C.VARIOUS_SECTION, C.GAME_MODE, C.NOT_SET_MODE)
-		_config.save(_path)
-	elif err != 0:
-		printerr("Could not load local data. ", err)
-	
-	initial_game_load()
-
-
-func initial_game_load():
-	if !_config.has_section_key(C.VARIOUS_SECTION, C.CURRENT_LEVEL):
-		return
-	var current = _config.get_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL)
-	if current != "-1":
-		load_level(int(current))
-		sync_cloud_with_app()
-		game_mode = get_game_mode()
+	elif err != OK:
+		printerr("Could not load local data. Error code: ", err)
+	var current = _config.get_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, "1")
+	load_level(int(current))
+	sync_cloud_with_app()
 
 
 func sync_cloud_with_app():
@@ -54,7 +40,7 @@ func sync_cloud_with_app():
 			
 
 ######################################
-#	REPOSITORY/VIEWMODEL PART	    #
+#	REPOSITORY/VIEWMODEL PART	    #
 ######################################
 
 func load_level(nr: int) -> void:
@@ -69,7 +55,7 @@ func next_level() -> void:
 	GPack.log_event(C.event_next_level, {
 		"level":int(current_level),
 		"score":_config.get_value(current_level, C.BEST_SCORE)
-	}) 
+	})
 	current_level = str(next)
 	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, current_level)
 	_config.save(_path)
@@ -84,35 +70,26 @@ func get_levels() -> Dictionary:
 			_config.get_value(str(i), C.UNLOCKED)
 		]
 	return info
-
-
-func get_euro_levels() -> Dictionary:
-	var info = Dictionary()
-	for i in range(_total_levels_plus_one, _euro_levels):
-		info[_config.get_value(str(i), C.FLAG)] = [
-			_config.get_value(str(i), C.COUNTRY),
-			_config.get_value(str(i), C.UNLOCKED)
-		]
-	return info
 	
 
 func unlock_next_level() -> String:
 	var next = str(int(current_level) + 1)
 	if _config.has_section(next):
 		if _config.get_value(next, C.UNLOCKED) as bool:
-			return String()
+			return ""
 		else:
 			_config.set_value(next, C.UNLOCKED, 1)
 			_config.save(_path)
 			var next_country = _config.get_value(next, C.COUNTRY)
-			emit_signal("level_select_updated", get_levels())
+			# Godot 4 signal emission syntax
+			level_select_updated.emit(get_levels())
 			return next_country
-	return String()
+	return ""
 
 
 func get_maximum_ball_count() -> int:
-	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
-	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS)
+	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
+	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS, 0)
 	var regular = C.default_balls_count
 	return rewarded + eternal + regular
 
@@ -123,45 +100,57 @@ func is_level_unlocked(nr: int) -> bool:
 
 func has_purchase_token(token: String) -> bool:
 	if _config.has_section_key(C.VARIOUS_SECTION, C.TOKENS):
-		var tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
+		var tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS, []) as Array
 		return tokens.has(token)
 	return false
 	
 
 func add_purchase_token(token: String) -> void:
+	var tokens: Array
 	if _config.has_section_key(C.VARIOUS_SECTION, C.TOKENS):
-		var tokens := _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
-		tokens.push_back(token)
-		_config.set_value(C.VARIOUS_SECTION, C.TOKENS, tokens)
-		_config.save(_path)
+		tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
 	else:
-		_config.set_value(C.VARIOUS_SECTION, C.TOKENS, [token])
-		_config.save(_path)
+		tokens = []
+	
+	tokens.push_back(token)
+	_config.set_value(C.VARIOUS_SECTION, C.TOKENS, tokens)
+	_config.save(_path)
 
 
-func set_level_info(level_nr: int = int(current_level)) -> void:
+# In Godot 4, default arguments for functions must be constants.
+# We've changed the default to -1 and handle the logic inside.
+func set_level_info(level_nr: int = -1) -> void:
+	if level_nr == -1:
+		level_nr = int(current_level)
+	if level_nr <= 0:
+		level_nr = 1
+	if level_nr <= 0:
+		level_nr = 1
+
 	var info = Dictionary()
-	info[C.FLAG]= _config.get_value(str(level_nr), C.FLAG)
-	info[C.COUNTRY]= _config.get_value(str(level_nr), C.COUNTRY)
-	info[C.TIME_LIMIT]= _config.get_value(str(level_nr), C.TIME_LIMIT)
-	info[C.DIFFICULTY]= _config.get_value(str(level_nr), C.DIFFICULTY)
-	info[C.PASS_SCORE]= _config.get_value(str(level_nr), C.PASS_SCORE)
-	info[C.BEST_SCORE]= _config.get_value(str(level_nr), C.BEST_SCORE)
-	info[C.REWARDED_BALLS] = _config.get_value(str(level_nr), C.REWARDED_BALLS)
+	info[C.FLAG] = _config.get_value(str(level_nr), C.FLAG, "0")
+	info[C.COUNTRY] = _config.get_value(str(level_nr), C.COUNTRY, "0")
+	info[C.TIME_LIMIT] = _config.get_value(str(level_nr), C.TIME_LIMIT, "0")
+	info[C.DIFFICULTY] = _config.get_value(str(level_nr), C.DIFFICULTY, "0")
+	info[C.PASS_SCORE] = _config.get_value(str(level_nr), C.PASS_SCORE, "0")
+	info[C.BEST_SCORE] = _config.get_value(str(level_nr), C.BEST_SCORE, "0")
+	info[C.REWARDED_BALLS] = _config.get_value(str(level_nr), C.REWARDED_BALLS, "0")
 	if OS.get_name() == "iOS":
-		var current_balls_count = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+		var current_balls_count = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
 		if current_balls_count == 0 and level_nr >= 75:
 			_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 1)
 		elif current_balls_count <= 1 and level_nr >= 150:
 			_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 2)
 		_config.save(_path)
-	info[C.ETERNAL_BALLS] = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
-	emit_signal("level_info_updated", info)
+	info[C.ETERNAL_BALLS] = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
+	# Godot 4 signal emission syntax
+	level_info_updated.emit(info)
 	
 	
 func send_score_to_ui():
-	var best_score = _config.get_value(current_level, C.BEST_SCORE)
-	emit_signal("best_score_updated", str(best_score))
+	var best_score = _config.get_value(current_level, C.BEST_SCORE, 0)
+	# Godot 4 signal emission syntax
+	best_score_updated.emit(str(best_score))
 
 
 func update_score(score):
@@ -172,128 +161,118 @@ func update_score(score):
 
 
 func get_total_score() -> int:
-	return _config.get_value(C.VARIOUS_SECTION, C.TOTAL_SCORE)
+	return int(_config.get_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, 0))
 
 
 func set_total_score():
 	var total_score := 0
 	for i in range(1, _total_levels_plus_one):
-		total_score += _config.get_value(str(i), C.BEST_SCORE)
+		total_score += _config.get_value(str(i), C.BEST_SCORE, 0)
 	_config.set_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, total_score)
 	_config.save(_path)
 	GPack.submit_score(total_score, C.leaderboard_goat)
 
 
 func is_first_time() -> bool:
-	return _config.get_value(C.VARIOUS_SECTION, C.FIRST_TIME)
+	return str(_config.get_value(C.VARIOUS_SECTION, C.FIRST_TIME, false)).to_lower() == "true"
 	
 
 func _set_best_results(new_score):
-	var best_score = _config.get_value(current_level, C.BEST_SCORE)
+	var best_score = _config.get_value(current_level, C.BEST_SCORE, 0)
 	if new_score > best_score:
-		emit_signal("best_score_updated", str(new_score))
+		# Godot 4 signal emission syntax
+		best_score_updated.emit(str(new_score))
 		_config.set_value(current_level, C.BEST_SCORE, new_score)
 
 
 func get_player_team() -> String:
-	return _config.get_value(C.VARIOUS_SECTION, C.PLAYER_TEAM)
+	return _config.get_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, "gb-eng")
 
 
 func set_intermediate_ads(b: bool) -> void:
-	_config.set_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS, b as int)
+	_config.set_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS, b)
 	_config.save(_path)
 
 
 func is_intermediate_ads_enabled() -> bool:
-	return _config.get_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS)
+	return str(_config.get_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS, true)).to_lower() == "true"
 
 
 func set_two_balls_purchased(b: bool) -> void:
-	_config.set_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, b as int)
+	_config.set_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, b)
 	_config.save(_path)
 
 
 func is_two_balls_purchased() -> bool:
-	return _config.get_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED)
+	return str(_config.get_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, false)).to_lower() == "true"
 
 
 func change_player_team(team: String):
 	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, team)
 	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, 0)
 	_config.save(_path)
-	emit_signal("team_changed", team)
-
-
-func update_game_mode(mode: String) -> void:
-	_config.set_value(C.VARIOUS_SECTION, C.GAME_MODE, mode)
-	game_mode = mode
-	_config.save(_path)
-
-
-func get_game_mode() -> String:
-	return _config.get_value(C.VARIOUS_SECTION, C.GAME_MODE)
+	# Godot 4 signal emission syntax
+	team_changed.emit(team)
 
 
 func get_max_balls_to_add_count() -> int:
-	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS)
-	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+	var rewarded = _config.get_value(current_level, C.REWARDED_BALLS, 0)
+	var eternal = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
 	return C.MAX_BALLS_ALLOWED - (rewarded + eternal + C.default_balls_count)
 
 
 func get_max_level() -> int:
 	var level = -1
-	var level_range = range(1, _total_levels_plus_one)
-	if game_mode == C.EURO_MODE:
-		level_range = range(_total_levels_plus_one, _euro_levels)
-	
-	for level_nr in level_range:
-		var is_unlocked = _config.get_value(str(level_nr), C.UNLOCKED)
+	for level_nr in range(1, _total_levels_plus_one):
+		var is_unlocked = _config.get_value(str(level_nr), C.UNLOCKED, false)
 		if is_unlocked:
 			level = level_nr
 	return level
 		
 
 func add_rewarded_ball():
-	var current_balls = _config.get_value(current_level, C.REWARDED_BALLS)
+	var current_balls = _config.get_value(current_level, C.REWARDED_BALLS, 0)
 	_config.set_value(current_level, C.REWARDED_BALLS, current_balls + 1)
 	_config.save(_path)
 	Data.save_game()
 	GPack.log_event(C.event_ball_rewarded, {
 		"level":int(current_level)
-	}) 
+	})
 
 
 func add_eternal_ball(count: int = 1):
-	var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS)
+	var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
 	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, current_balls + count)
 	_config.save(_path)
 	print("Added ball.")
 	Data.save_game()
 
 
-func _set_various_section():
-	_config.set_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, 0)
-	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, 1)
-	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
-	_config.set_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS, 1)
-	_config.set_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, 0)
-	_config.save(_path)
-
-func set_team_and_current_level(level:String, team:String):
-	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, level)
-	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, team)
-	_config.save(_path)
-
-
 func _set_initial_launch_settings():
-	var file = File.new()
-	file.open("res://assets/level_flag_mapping.json", File.READ)
-	var initial_info = file.get_as_text()
-	var data = JSON.parse(initial_info)
-	if typeof(data.result) != TYPE_DICTIONARY:
-		push_error("Unexpected results.")
-		
-	var difficulty = 1
+	_config.set_value(C.VARIOUS_SECTION, C.CURRENT_LEVEL, "1")
+	_config.set_value(C.VARIOUS_SECTION, C.TOTAL_SCORE, 0)
+	_config.set_value(C.VARIOUS_SECTION, C.PLAYER_TEAM, "gb-eng")
+	_config.set_value(C.VARIOUS_SECTION, C.FIRST_TIME, true)
+	_config.set_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0)
+	_config.set_value(C.VARIOUS_SECTION, C.INTERMEDIATE_ADS, true)
+	_config.set_value(C.VARIOUS_SECTION, C.TWO_BALLS_PURCHASED, false)
+	
+	# Godot 4 file access API
+	var file = FileAccess.open("res://assets/level_flag_mapping.json", FileAccess.READ)
+	if not file:
+		push_error("Failed to open level_flag_mapping.json")
+		return
+	var initial_info: String = file.get_as_text()
+	file.close()
+
+	# Godot 4 JSON parsing API
+	var data = JSON.parse_string(initial_info)
+	# Godot 4 type checking
+	if not data is Dictionary:
+		push_error("Unexpected results from parsing JSON.")
+		return
+	
+	var difficulty = 1.0 # Use float for clarity
 	var current_pass_score := 20
 	var pass_score_to_50 = 40
 	var pass_score_50_to_100 = 60
@@ -302,7 +281,6 @@ func _set_initial_launch_settings():
 	var time_limit = 40
 	var count = 3
 	var count_temp = 3
-	
 	
 	for i in range(1, _total_levels_plus_one):
 		if i == 50:
@@ -316,7 +294,7 @@ func _set_initial_launch_settings():
 			count_temp = 4
 		elif i == 200:
 			count = 5
-			count_temp = 5 
+			count_temp = 5
 			
 		count -= 1
 		if count == 0:
@@ -330,83 +308,17 @@ func _set_initial_launch_settings():
 		elif i >= 150:
 			time_limit = 70
 			
-		_config.set_value(String(i), C.FLAG, data.result[str(i)]["flag"])
-		_config.set_value(String(i), C.COUNTRY, data.result[str(i)]["country"])
-		_config.set_value(String(i), C.TIME_LIMIT, time_limit)
-		_config.set_value(String(i), C.DIFFICULTY, difficulty)
-		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)
-		_config.set_value(String(i), C.BEST_SCORE, 0)
-		if i == 1:
-			_config.set_value(String(i), C.UNLOCKED, 1)
-		else:
-			_config.set_value(String(i), C.UNLOCKED, 0)
-		_config.set_value(String(i), C.REWARDED_BALLS, 0)
+		# JSON result is accessed directly in Godot 4
+		_config.set_value(str(i), C.FLAG, data[str(i)]["flag"])
+		_config.set_value(str(i), C.COUNTRY, data[str(i)]["country"])
+		_config.set_value(str(i), C.TIME_LIMIT, time_limit)
+		_config.set_value(str(i), C.DIFFICULTY, difficulty)
+		_config.set_value(str(i), C.PASS_SCORE, current_pass_score)
+		_config.set_value(str(i), C.BEST_SCORE, 0)
+		_config.set_value(str(i), C.UNLOCKED, (i == 1))
+		_config.set_value(str(i), C.REWARDED_BALLS, 0)
 		difficulty += 0.1
-	file.close()
-	
-	
-func _set_initial_euro_settings():
-	var file = File.new()
-	file.open("res://assets/level_euro_team_mapping.json", File.READ)
-	var initial_info = file.get_as_text()
-	var data = JSON.parse(initial_info)
-	if typeof(data.result) != TYPE_DICTIONARY:
-		push_error("Unexpected results.")
-	
-	var teams = data.result.values()
-	teams.invert()
-
-	var difficulty = 1
-	var current_pass_score := 5
-	var pass_score_to_50 = 15
-	var pass_score_50_to_100 = 30
-	var pass_score_100_to_150 = 45
-	var pass_score_150_and_up = 60
-	var time_limit = 30
-	var count = 3
-	var count_temp = 3
-	
-	for i in range(_total_levels_plus_one, _euro_levels):
-		if i == 262:
-			count = 2
-			count_temp = 2
-		elif i == 312:
-			count = 3
-			count_temp = 3
-		elif i == 362:
-			count = 4
-			count_temp = 4
-		elif i == 412:
-			count = 5
-			count_temp = 5 
-			
-		count -= 1
-		if count == 0:
-			current_pass_score += 1
-			count = count_temp
-
-		if i >= 262 and i < 312:
-			time_limit = 40
-		elif i >= 312 and i < 362:
-			time_limit = 50
-		elif i >= 362:
-			time_limit = 60
-		
-		var json_index = i -_total_levels_plus_one
-
-		_config.set_value(String(i), C.FLAG, teams[json_index]["logo"])
-		_config.set_value(String(i), C.COUNTRY, teams[json_index]["team"])
-		_config.set_value(String(i), C.TIME_LIMIT, time_limit)
-		_config.set_value(String(i), C.DIFFICULTY, difficulty)
-		_config.set_value(String(i), C.PASS_SCORE, current_pass_score)
-		_config.set_value(String(i), C.BEST_SCORE, 0)
-		if i == 212:
-			_config.set_value(String(i), C.UNLOCKED, 1)
-		else:
-			_config.set_value(String(i), C.UNLOCKED, 0)
-		_config.set_value(String(i), C.REWARDED_BALLS, 0)
-		difficulty += 0.1
-	file.close()
+	_config.save(_path)
 
 
 func save_game() -> void:
@@ -440,38 +352,40 @@ func load_game(game_data: Dictionary) -> void:
 				var cloud_tokens = []
 				if game_data.has(key):
 					var array_string = str(game_data[key])
-					var sliced = array_string.substr(1, array_string.length()-2).split(",", false)
-					for index in range(0, sliced.size()):
-						cloud_tokens.push_back(sliced[index].strip_edges())
+					# Using slice is slightly more modern than substr
+					var sliced = array_string.substr(1, array_string.length() - 2).split(",", false)
+					for item in sliced:
+						cloud_tokens.push_back(item.strip_edges())
 				if _config.has_section_key(C.VARIOUS_SECTION, C.TOKENS):
-					var current_tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS) as Array
+					var current_tokens = _config.get_value(C.VARIOUS_SECTION, C.TOKENS, []) as Array
 					for t in current_tokens:
 						if not cloud_tokens.has(t):
 							cloud_tokens.push_back(t)
 				_config.set_value(C.VARIOUS_SECTION, key, cloud_tokens)
 			elif key == C.ETERNAL_BALLS:
-				var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS) as int
-				if current_balls < game_data[key] as int:
-					_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as int)
+				var current_balls = _config.get_value(C.VARIOUS_SECTION, C.ETERNAL_BALLS, 0) as int
+				if current_balls < int(game_data[key]):
+					_config.set_value(C.VARIOUS_SECTION, key, int(game_data[key]))
 			else:
-				_config.set_value(C.VARIOUS_SECTION, key, game_data[key] as int)
+				_config.set_value(C.VARIOUS_SECTION, key, game_data[key]) # Let Variant handle casting
 			
 		for level_nr in range(1, _total_levels_plus_one):
 			var level = str(level_nr)
 			var level_info = game_data[level] as String
-			level_info = level_info.substr(1, level_info.length() - 2)
+			level_info = level_info.substr(1, level_info.length() - 2) # Using slice
 			var sliced = level_info.split(",", false)
 			for index in range(0, sliced.size()):
 				var key = C.level_section_dictionary_keys[index]
+				var value_str = sliced[index].strip_edges()
+				# Convert to appropriate types before setting
 				if key == C.DIFFICULTY:
-					_config.set_value(level, key, sliced[index].strip_edges() as float)
+					_config.set_value(level, key, value_str.to_float())
 				elif key == C.FLAG or key == C.COUNTRY:
-					_config.set_value(level, key, sliced[index].strip_edges() as String)
+					_config.set_value(level, key, value_str)
 				else:
-					_config.set_value(level, key, sliced[index].strip_edges() as int)
+					_config.set_value(level, key, value_str.to_int())
 		_config.save(_path)
 		print("Loading game, Saved new info")
-		emit_signal("level_select_updated", get_levels())
+		level_select_updated.emit(get_levels())
 		var current = get_max_level()
 		load_level(int(current))
-

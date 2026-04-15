@@ -1,27 +1,26 @@
 extends ColorRect
 class_name GoalIndicator
 
-var goal_in_progress = false
-var tween = null
+var tween: Tween
 
-func goal(bonus = false):
+func goal(bonus := false) -> void:
+	# If a previous tween animation is still running, kill it.
+	# This ensures the flash effect restarts correctly if triggered rapidly.
+	if tween:
+		tween.kill()
+
+	# Set the base color for the flash. The alpha will be handled by the tween.
 	if bonus:
-		modulate = Color.yellow
+		modulate = Color.YELLOW
 	else:
-		modulate = Color.white
-	if not goal_in_progress:
-		tween = create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
-		tween.tween_property(self, "modulate:a", 1.0, 0.1)
-		tween.tween_property(self, "modulate:a", 0.0, 0.1)
-		tween.tween_callback(self, "set_goal_in_progress", [false])
-		tween.play()
-	else:
-		tween.stop()
-		tween.tween_property(self, "modulate:a", 1.0, 0.1)
-		tween.tween_property(self, "modulate:a", 0.0, 0.1)
-		tween.tween_callback(self, "set_goal_in_progress", [false])
-		tween.play()
+		modulate = Color.WHITE
 
+	# Create a new tween for the animation. In Godot 4, tweens start automatically.
+	tween = create_tween()
+	tween.set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 
-func set_goal_in_progress(bo: bool):
-	goal_in_progress = bo
+	# Create the animation sequence:
+	# 1. Flash to full opacity over 0.1 seconds.
+	tween.tween_property(self, "modulate:a", 1.0, 0.1)
+	# 2. Fade back to fully transparent over 0.1 seconds.
+	tween.tween_property(self, "modulate:a", 0.0, 0.1)

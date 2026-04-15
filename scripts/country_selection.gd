@@ -1,5 +1,5 @@
 extends OptionButton
-onready var popup = get_popup()
+@onready var popup = get_popup()
 var was_just_dragging = false
 
 
@@ -10,7 +10,7 @@ func _ready():
 	var levels = Data.get_levels()
 	for i in range(0, levels.keys().size()):
 		var country = levels.keys()[i]
-		var texture = load(C.get_flag_path() + country + C.get_extension()) as Texture
+		var texture = load("res://art/flag/" + country + ".png") as Texture
 		add_icon_item(texture, levels.get(country)[0], i)
 		if country == "br" and current_country == "MISSING":
 			default_option = i
@@ -25,10 +25,10 @@ func _ready():
 	Data.change_player_team(levels.keys()[default_option])
 	popup.hide_on_item_selection = false
 	popup.hide_on_checkable_item_selection = false
-	popup.connect("gui_input", self, "_on_popup_gui_input")
+	popup.connect("gui_input", Callable(self, "_on_popup_gui_input"))
 	if default_option != -1:
 		select(default_option)
-	items.sort()
+	#items.sort()
 
 
 func _on_popup_gui_input(event):

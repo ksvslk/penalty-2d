@@ -1,4 +1,5 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
+[ext_resource path="res://fonts/Alexandria-Bold.ttf" type="FontFile" id="9999"]
 
 [ext_resource path="res://art/flag/np.png" type="Texture" id=1]
 [ext_resource path="res://scripts/country_select_button.gd" type="Script" id=2]
@@ -17,30 +18,26 @@ content_margin_left = 50.0
 content_margin_right = 50.0
 content_margin_top = 20.0
 content_margin_bottom = 20.0
-bg_color = Color( 0, 0, 0, 0.392157 )
-border_color = Color( 0.8, 0.8, 0.8, 0.545098 )
-shadow_color = Color( 0, 0, 0, 0.470588 )
-
-[sub_resource type="StyleBoxFlat" id=38]
-content_margin_left = 50.0
-content_margin_right = 50.0
-content_margin_top = 20.0
-content_margin_bottom = 20.0
-bg_color = Color( 0, 0, 0, 0.580392 )
-shadow_color = Color( 0, 0, 0, 0.470588 )
+bg_color = Color( 0, 0, 0, 1 )
+border_color = Color( 0, 0, 0, 1 )
+shadow_color = Color( 0, 0, 0, 1 )
 
 [node name="CountrySelectButton" type="Button"]
-margin_right = 1080.0
-margin_bottom = 264.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 1081.0
+offset_bottom = 265.0
 mouse_filter = 1
-custom_constants/hseparation = 20
-custom_fonts/font = SubResource( 36 )
-custom_styles/hover = SubResource( 37 )
-custom_styles/pressed = SubResource( 38 )
-custom_styles/normal = SubResource( 37 )
+theme_override_constants/h_separation = 20
+theme_override_fonts/font = ExtResource( "9999" )
+theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 50
+theme_override_styles/hover = SubResource( 37 )
+theme_override_styles/pressed = SubResource( 37 )
+theme_override_styles/normal = SubResource( 37 )
 text = "lkkkkk"
 icon = ExtResource( 1 )
-align = 2
+alignment = 2
 script = ExtResource( 2 )
 __meta__ = {
 "_editor_description_": ""

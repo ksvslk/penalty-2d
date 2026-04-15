@@ -1,9 +1,9 @@
 extends Node2D
 class_name Mediator
 
-export var ball_count := 15
-export var bonus_balls := 0
-export var time_limit := 40
+@export var ball_count := 15
+@export var bonus_balls := 0
+@export var time_limit := 40
 
 
 var swish_scene = load("res://scenes/Swish.tscn")
@@ -16,28 +16,28 @@ var new_high_score_announced = false
 var goal_counter := 0
 var swipe_counter := 0
 
-onready var fast_forward_button = $FastForwardButton
+@onready var fast_forward_button = $FastForwardButton
 
-onready var continue_button = $Continue
-onready var restart = $Restart
-onready var goal_indicator = $GoalIndicator
-onready var goal_sound = $GoalSound
-onready var bonus_goal_sound = $BonusGoalSound
-onready var whistle_sound = $WhistleSound
-onready var target_score = $TargetScore
-onready var level_passed = $LevelPassed
-onready var start_timer = $StartTimer
-onready var start_countdown = $StartCountdown
-onready var tick_sound = $TickSound
-onready var celebrate = $Celebrate
+@onready var continue_button = $Continue
+@onready var restart = $Restart
+@onready var goal_indicator = $GoalIndicator
+@onready var goal_sound = $GoalSound
+@onready var bonus_goal_sound = $BonusGoalSound
+@onready var whistle_sound = $WhistleSound
+@onready var target_score = $TargetScore
+@onready var level_passed_sound = $LevelPassed
+@onready var start_timer = $StartTimer
+@onready var start_countdown = $StartCountdown
+@onready var tick_sound = $TickSound
+@onready var celebrate = $Celebrate
 
 
-onready var time = $Display/Time
-onready var score = $Display/Score
-onready var highest = $Display/Highest
+@onready var time = $Display/Time
+@onready var score = $Display/Score
+@onready var highest = $Display/Highest
 var balls = []
-onready var goal_keeper = $GoalKeeper
-onready var watch_ad = $WatchAd
+@onready var goal_keeper = $GoalKeeper
+@onready var watch_ad = $WatchAd
 
 const SHOW_REVIEW_LEVEL = 7
 const LAST_LEVEL = 211
@@ -50,7 +50,7 @@ var ad_shown_counter := 0
 
 var countdown = 3
 
-onready var message = $Message
+@onready var message = $Message
 var holding_ball := false
 signal level_passed
 signal start_level
@@ -71,8 +71,8 @@ func start_game():
 	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased() and int(Data.current_level) >= SHOW_ADS_LEVEL_AND_UP:
 		GPack.load_interstitial_ad()
 	round_is_active = false
-	Data.connect("best_score_updated", highest, "set_text")
-	Data.connect("level_info_updated", self, "_update_level_info")
+	Data.best_score_updated.connect(highest.set_text)
+	Data.level_info_updated.connect(self._update_level_info)
 	Data.set_level_info()
 
 
@@ -95,11 +95,11 @@ func _add_all_balls():
 
 
 func add_ball(eternal_ball = false, adding_all_balls = false, pos = $BallPositions.get_children()[0]):
-	var ball = ball_scene.instance() as Ball
+	var ball = ball_scene.instantiate() as Ball
 	ball.mediator = self
 	ball.scale = ball.scale / 2
 	ball.set_flag(Data.get_player_team())
-	ball.global_position = pos.position
+	ball.global_position = pos.global_position
 	if eternal_ball:
 		ball.activate_bonus_patch()
 		if not adding_all_balls:
@@ -119,21 +119,21 @@ func remove_ball():
 func _update_level_info(dict: Dictionary):
 	if get_node_or_null("Trophy"):
 		remove_child(get_node_or_null("Trophy"))
-	ball_count = min(C.default_balls_count + dict[C.REWARDED_BALLS] + dict[C.ETERNAL_BALLS], 10)
-	bonus_balls = dict[C.ETERNAL_BALLS] + dict[C.REWARDED_BALLS]
+	ball_count = min(C.default_balls_count + int(dict.get(C.REWARDED_BALLS, 0)) + int(dict.get(C.ETERNAL_BALLS, 0)), 10)
+	bonus_balls = int(dict.get(C.ETERNAL_BALLS, 0)) + int(dict.get(C.REWARDED_BALLS, 0))
 	_add_all_balls()
 	round_is_active = false
 	time.timer.stop()
 	restart.visible = false
 	continue_button.visible = false
-	highest.text = str(dict[C.BEST_SCORE])
-	time_limit = dict[C.TIME_LIMIT]
-	goal_keeper.set_flag(load(C.get_flag_path() + dict[C.FLAG] + C.get_extension()))
+	highest.text = str(int(dict.get(C.BEST_SCORE, 0)))
+	time_limit = int(dict.get(C.TIME_LIMIT, 0))
+	goal_keeper.set_flag(load(C.get_flag_path() + str(dict[C.FLAG]).replace("\"", "") + C.get_extension()))
 	goal_keeper.speed = dict[C.DIFFICULTY]
-	target_score.text = "Target: " + str(dict[C.PASS_SCORE])
+	target_score.text = "Target: " + str(int(dict.get(C.PASS_SCORE, 0)))
 	level_start_countdown()
 	message.fade_out_text(dict[C.COUNTRY])
-	_check_for_country_achievements(dict[C.COUNTRY], dict[C.FLAG])
+	_check_for_country_achievements(str(dict[C.COUNTRY]).replace("\"", ""), str(dict[C.FLAG]).replace("\"", ""))
 	_check_for_time_limit_achievements()
 	
 
@@ -157,14 +157,14 @@ func _check_for_time_limit_achievements():
 func add_swish(name: String, points: Array):
 	if ball_dict.has(name):
 		ball_dict[name].add_point(points[1])
-		ball_dict[name].update()
+		ball_dict[name].queue_redraw()
 	else:
-		var swish = swish_scene.instance() as Line2D
-		swish.set_as_toplevel(true)
+		var swish = swish_scene.instantiate() as Line2D
+		swish.top_level = true
 		for p in points:
 			swish.add_point(p)
 		add_child(swish)
-		swish.update()
+		swish.queue_redraw()
 		ball_dict[name] = swish
 
 
@@ -174,7 +174,7 @@ func remove_swish(name: String):
 		ball_dict.erase(name)
 		var tween := create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 		tween.tween_property(line, "modulate:a", 0.0, 2.0)
-		tween.tween_callback(line, "queue_free")
+		tween.tween_callback(line.queue_free)
 		tween.play()
 
 
@@ -182,7 +182,7 @@ func vibrate(duration: int = 50):
 	Input.vibrate_handheld(duration)
 
 
-func _on_Goal_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
+func _on_Goal_body_shape_entered(_body_rid, body, _body_shape_index, _local_shape_index):
 	if round_is_active:
 		goal_counter += 1
 		var time_left = time.start_time
@@ -221,20 +221,20 @@ func _check_first_second_goal_achievement():
 
 func _play_fanfares_when_level_passed(time_left = 1337) -> void:
 	if int(score.text) >= int(target_score.text):
-		target_score.modulate = Color.greenyellow
+		target_score.modulate = Color.GREEN_YELLOW
 		var next_country = Data.unlock_next_level()
 		if not next_country.empty():
 			if time_left <= 1:
 				GPack.unlock_achievement(C.achievement_last_second_pass)
 			message.fade_out_text("Unlocked " + next_country + "!")
 			fast_forward_button.visible = true
-			level_passed.play()
+			level_passed_sound.play()
 
 
 func _check_high_score() -> void:
 	if int(score.text) > int(highest.text) and int(highest.text) != 0 and not new_high_score_announced:
 		new_high_score_announced = true
-		level_passed.play()
+		level_passed_sound.play()
 		message.fade_out_text("New high score!")
 			
 
@@ -273,8 +273,8 @@ func _check_all_goals_achievement():
 
 func _check_champion_achievement():
 	if int(Data.current_level) == LAST_LEVEL:
-		var trophy = load("res://scenes/Trophy.tscn").instance()
-		add_child_below_node($TargetScore, trophy)
+		var trophy = load("res://scenes/Trophy.tscn").instantiate()
+		$TargetScore.add_sibling(trophy)
 		GPack.unlock_achievement(C.achievement_world_champion)
 
 
@@ -308,7 +308,7 @@ func round_start_actions():
 	time.original_start_time = time_limit
 	time.start_time = time_limit
 	score.text = str(0)
-	target_score.modulate = Color.yellow
+	target_score.modulate = Color.YELLOW
 	time.restart_timer_for_next_round()
 
 
@@ -327,9 +327,9 @@ func _on_StartTimer_timeout():
 func _add_tutorial():
 	if int(Data.current_level) == 1:
 		get_tree().paused = true
-		var tutorial_scene = load("res://scenes/Tut.tscn").instance()
+		var tutorial_scene = load("res://scenes/Tut.tscn").instantiate()
 		tutorial_scene.z_index = 3
-		add_child_below_node($BallPositions, tutorial_scene)
+		$BallPositions.add_sibling(tutorial_scene)
 
 
 func _on_FastForwardButton_pressed():

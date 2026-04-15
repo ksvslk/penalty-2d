@@ -7,10 +7,10 @@ var gc = null
 func _ready():
 	if Engine.has_singleton("GPack"):
 		plugin = Engine.get_singleton("GPack")
+		print("WE HAVE THE SINGLETON GPACK!!!!", plugin)
 	elif Engine.has_singleton("GameCenter"):
 		gc = Engine.get_singleton("GameCenter")
 		gc.authenticate()
-	print("GPack ready")
 
 
 # ios game center
