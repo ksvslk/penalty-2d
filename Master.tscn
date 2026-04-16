@@ -335,6 +335,16 @@ position = Vector2( 840, 256 )
 position = Vector2( 200, 240 )
 
 [node name="Level" type="Node2D" parent="."]
+[node name="PhysicsWorldFloor" type="ColorRect" parent="Level"]
+z_index = -1
+
+offset_left = -2000.0
+offset_top = 2207.0
+offset_right = 3000.0
+offset_bottom = 3500.0
+color = Color(0, 0, 0, 1)
+
+
 pause_mode = 1
 script = ExtResource( 3 )
 __meta__ = {
@@ -776,12 +786,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 
-[node name="MonolithicGapFiller" type="ColorRect" parent="CanvasLayer/OptionsContainer"]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -210.0
-offset_bottom = 0.0
 color = Color(0, 0, 0, 1)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/OptionsContainer"]
