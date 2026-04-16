@@ -15,9 +15,7 @@ var trail_speed_limit := -5500
 var did_get_over_limit := false
 
 func _ready():
-	# The 'use_parent_material' property was removed in Godot 4.
-	# Material inheritance is now the default behavior, so this line is no longer needed.
-	pass
+	$Flag.rotation_degrees = 11.5539
 
 
 func _input_event(_viewport, event, _shape_idx):

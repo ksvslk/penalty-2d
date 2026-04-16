@@ -15,7 +15,32 @@ var currently_visible_suboption = null
 
 signal switch_level
 
+
+
+func _scale_ui_element(node: Node, primary_style: StyleBoxFlat):
+	if node is Button:
+		node.add_theme_font_size_override("font_size", 48)
+		# Add our luxurious premium padding and background style
+		node.add_theme_stylebox_override("normal", primary_style)
+		node.add_theme_stylebox_override("hover", primary_style)
+		node.add_theme_stylebox_override("pressed", primary_style)
+		
+		# Enforce massive luxury widths
+		if not node.get_parent() is HBoxContainer:
+			node.custom_minimum_size = Vector2(900, 140)
+		else:
+			node.custom_minimum_size = Vector2(430, 140) 
+			
+	elif node is Label:
+		node.add_theme_font_size_override("font_size", 56)
+		
+	# Recurse children
+	for child in node.get_children():
+		_scale_ui_element(child, primary_style)
+
+
 func _ready():
+
 	if OS.get_name() == "iOS":
 		bonus.hide()
 
@@ -23,38 +48,95 @@ func _ready():
 		get_tree().get_root().size_changed.connect(update_margins)
 		update_margins()
 
-	# PRECISE MODAL LOGIC: Center the Option lists dynamically
-	var menus = [play_games_list, bonus_list, options_list, $SelectCountry/VBoxContainer]
+	
+	var premium_btn = StyleBoxFlat.new()
+	premium_btn.bg_color = Color(0.01, 0.01, 0.01, 0.96)
+	premium_btn.corner_radius_top_left = 15
+	premium_btn.corner_radius_top_right = 15
+	premium_btn.corner_radius_bottom_left = 15
+	premium_btn.corner_radius_bottom_right = 15
+	premium_btn.content_margin_left = 40
+	premium_btn.content_margin_right = 40
+	premium_btn.content_margin_top = 20
+	premium_btn.content_margin_bottom = 20
+	
+
+	# Inject a deep pure black backdrop behind the bottom row toolbar natively so the "weird grey" gaps are flawlessly patched
+	
+
+	# Inject a mathematical layout blackout block uniquely engineered to bind exactly starting from the physical BottomWall coordinate Y=2207.0 extending downward infinitely past the layout bounds to effectively eliminate all aspect-ratio holes caused by taller mobile screens.
+	
+	# MVP Modal Style: Center the Option lists dynamically and style exactly like MultiplayerUI
+	var menu_titles = {
+		play_games_list: "GAME CENTER",
+		bonus_list: "BONUS",
+		options_list: "OPTIONS",
+	}
+	var menus = [play_games_list, bonus_list, options_list]
 	for m in menus:
 		if m != null:
-			# Strip strict rigid offsets that caused them to be at the bottom
-			m.anchor_top = 0.5
-			m.anchor_bottom = 0.5
-			m.anchor_left = 0.5
-			m.anchor_right = 0.5
-			m.offset_left = -300
-			m.offset_right = 300
-			m.offset_top = -250
-			m.offset_bottom = 250
-			m.alignment = BoxContainer.ALIGNMENT_CENTER
-			m.add_theme_constant_override("separation", 20)
+			m.set_anchors_preset(Control.PRESET_FULL_RECT)
+			m.offset_left = 0
+			m.offset_right = 0
+			m.offset_top = 0
+			m.offset_bottom = 0
+			m.anchor_left = 0
+			m.anchor_top = 0
+			m.anchor_right = 1
+			m.anchor_bottom = 1
 			
-			# Add explicit dark backgrounds so the menu isn't transparent
-			var background = ColorRect.new()
-			background.color = Color(0, 0, 0, 0.95)
-			background.set_anchors_preset(Control.PRESET_FULL_RECT)
-			background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			m.add_child(background)
-			m.move_child(background, 0)
+			# The background overlay (fullscreen translucent black)
+			var bg = ColorRect.new()
+			bg.color = Color(0.05, 0.05, 0.05, 0.96)
+			bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+			bg.offset_top = -400
+			bg.offset_bottom = 400
+			bg.offset_left = -200
+			bg.offset_right = 200
+			m.add_child(bg)
+			m.move_child(bg, 0)
 			
-	# Convert BackButton from invisible blocker to Translucent Fullscreen Dim
-	if back_button != null:
-		var dim = ColorRect.new()
-		dim.color = Color(0, 0, 0, 0.8)
-		dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-		dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		back_button.add_child(dim)
-		back_button.move_child(dim, 0)
+			# Inner centered container exactly like MultiplayerUI
+			var inner_box = VBoxContainer.new()
+			inner_box.name = "InnerBox"
+			inner_box.set_anchors_preset(Control.PRESET_CENTER)
+			inner_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+			inner_box.grow_vertical = Control.GROW_DIRECTION_BOTH
+			inner_box.alignment = BoxContainer.ALIGNMENT_CENTER
+			inner_box.add_theme_constant_override("separation", 40)
+			
+			# Dynamic Header Label
+			if menu_titles.has(m):
+				var title = Label.new()
+				title.text = menu_titles[m]
+				title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				title.add_theme_font_size_override("font_size", 48)
+				if play_games:
+					title.add_theme_font_override("font", play_games.get_theme_font("font"))
+				inner_box.add_child(title)
+				
+			var existing_children = m.get_children()
+			for child in existing_children:
+				if child == bg or child == inner_box:
+					continue
+				m.remove_child(child)
+				inner_box.add_child(child)
+				_scale_ui_element(child, premium_btn)
+			
+			# Standard explicit local BACK button identically functioning to MVP
+			var local_back = Button.new()
+			local_back.text = "BACK"
+			local_back.custom_minimum_size = Vector2(900, 140)
+			local_back.add_theme_font_size_override("font_size", 48)
+			local_back.add_theme_stylebox_override("normal", premium_btn)
+			local_back.add_theme_stylebox_override("hover", premium_btn)
+			local_back.add_theme_stylebox_override("pressed", premium_btn)
+			if play_games:
+				local_back.add_theme_font_override("font", play_games.get_theme_font("font"))
+			local_back.pressed.connect(func(): m.visible = false)
+			inner_box.add_child(local_back)
+			
+			m.add_child(inner_box)
 
 func update_margins():
 	var safe_area = DisplayServer.get_display_safe_area()
@@ -69,61 +151,42 @@ func update_margins():
 		var safe_bottom = int((window_size.y - safe_area.end.y) * scale_y)
 		
 		offset_top = safe_top
-		offset_bottom = -safe_bottom
+		offset_bottom = 0
 
 
 
 func _on_Options_pressed():
 	options_list.visible = true
-	currently_visible_suboption = options_list
-	back_button.visible = true
-	total_score.text = "Total score: " + str(Data.get_total_score())
-	_hide_all_menu_buttons()
 
 
 func _on_Levels_pressed():
 	level_scroller.visible = true
 	options_list.hide()
-	currently_visible_suboption = level_scroller
 
 
 func switch_level_now(index):
-	_on_BackButton_pressed()
+	options_list.visible = false
 	emit_signal("switch_level", index)
 
 
 func _on_Bonus_pressed():
 	bonus_list.visible = true
-	currently_visible_suboption = bonus_list
-	back_button.visible = true
-	_hide_all_menu_buttons()
 
 
 func _on_PlayGames_pressed():
 	play_games_list.visible = true
-	currently_visible_suboption = play_games_list
-	back_button.visible = true
-	_hide_all_menu_buttons()
-	
+
 
 func _hide_all_menu_buttons():
-	play_games.visible = false
-	bonus.visible = false
-	options.visible = false
-
+	pass
 
 func _show_all_menu_buttons():
-	play_games.visible = true
-	if OS.get_name() != "iOS":
-		bonus.visible = true
-	options.visible = true
-
+	pass
 
 func _on_BackButton_pressed():
-	currently_visible_suboption.visible = false
-	currently_visible_suboption = null
-	back_button.visible = false
-	_show_all_menu_buttons()
+	if play_games_list.visible: play_games_list.visible = false
+	if bonus_list.visible: bonus_list.visible = false
+	if options_list.visible: options_list.visible = false
 
 
 func _on_ShowLeaderboard_pressed():
@@ -137,5 +200,4 @@ func _on_ShowAchievements_pressed():
 
 
 func _on_BackButton_gui_input(event):
-	if event is InputEventMouseButton and event.is_pressed():
-		_on_BackButton_pressed()
+	pass

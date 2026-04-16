@@ -13,7 +13,7 @@ func _ready():
 	anchors_preset = Control.PRESET_FULL_RECT
 	
 	var bg = ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.9)
+	bg.color = Color(0.05, 0.05, 0.05, 0.96)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 	
@@ -22,7 +22,7 @@ func _ready():
 	main_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	main_container.grow_vertical = Control.GROW_DIRECTION_BOTH
 	main_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	main_container.add_theme_constant_override("separation", 20)
+	main_container.add_theme_constant_override("separation", 40)
 	add_child(main_container)
 	
 	var title = Label.new()
@@ -34,6 +34,7 @@ func _ready():
 	status_label = Label.new()
 	status_label.text = "Select Mode"
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	status_label.add_theme_font_size_override("font_size", 32)
 	main_container.add_child(status_label)
 	
 	host_btn = _create_button("CREATE GAME")
@@ -46,11 +47,13 @@ func _ready():
 	
 	code_input = LineEdit.new()
 	code_input.placeholder_text = "ENTER CODE"
-	code_input.custom_minimum_size = Vector2(200, 60)
+	code_input.custom_minimum_size = Vector2(320, 140)
+	code_input.add_theme_font_size_override("font_size", 32)
 	code_input.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	join_container.add_child(code_input)
 	
 	join_btn = _create_button("JOIN")
+	join_btn.custom_minimum_size = Vector2(550, 140)
 	join_btn.pressed.connect(_on_join_pressed)
 	join_container.add_child(join_btn)
 	
@@ -74,8 +77,24 @@ func _ready():
 func _create_button(text: String) -> Button:
 	var btn = Button.new()
 	btn.text = text
-	btn.custom_minimum_size = Vector2(300, 80)
-	btn.add_theme_font_size_override("font_size", 32)
+	btn.custom_minimum_size = Vector2(900, 140)
+	btn.add_theme_font_size_override("font_size", 48)
+	
+	var premium_btn = StyleBoxFlat.new()
+	premium_btn.bg_color = Color(0.01, 0.01, 0.01, 0.96)
+	premium_btn.corner_radius_top_left = 15
+	premium_btn.corner_radius_top_right = 15
+	premium_btn.corner_radius_bottom_left = 15
+	premium_btn.corner_radius_bottom_right = 15
+	premium_btn.content_margin_left = 40
+	premium_btn.content_margin_right = 40
+	premium_btn.content_margin_top = 20
+	premium_btn.content_margin_bottom = 20
+	
+	btn.add_theme_stylebox_override("normal", premium_btn)
+	btn.add_theme_stylebox_override("hover", premium_btn)
+	btn.add_theme_stylebox_override("pressed", premium_btn)
+	
 	return btn
 
 func _on_host_pressed():

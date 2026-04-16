@@ -6,8 +6,8 @@ var scrolling := false
 @onready var watch_ad = $Level/WatchAd
 @onready var select_country = $CanvasLayer/OptionsContainer/SelectCountry
 @onready var loading_screen = $CanvasLayer/OptionsContainer/LoadingScreen
-@onready var add_ball = $CanvasLayer/OptionsContainer/OptionsList/BallManagement/AddBall
-@onready var remove_ball = $CanvasLayer/OptionsContainer/OptionsList/BallManagement/RemoveBall
+@onready var add_ball = $CanvasLayer/OptionsContainer/OptionsList/InnerBox/BallManagement/AddBall
+@onready var remove_ball = $CanvasLayer/OptionsContainer/OptionsList/InnerBox/BallManagement/RemoveBall
 @onready var click_sound = $ClickSound
 @onready var play_games = $CanvasLayer/OptionsContainer/HBoxContainer/PlayGames
 @onready var bonus = $CanvasLayer/OptionsContainer/HBoxContainer/Bonus
@@ -60,6 +60,16 @@ func _setup_multiplayer_ui():
 	btn.mouse_filter = Control.MOUSE_FILTER_PASS
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.size_flags_stretch_ratio = 0.5
+	
+	# Match the PlayGames button theme styles
+	var play_games = $CanvasLayer/OptionsContainer/HBoxContainer/PlayGames
+	if play_games:
+		btn.add_theme_font_override("font", play_games.get_theme_font("font"))
+		btn.add_theme_font_size_override("font_size", play_games.get_theme_font_size("font_size"))
+		btn.add_theme_stylebox_override("normal", play_games.get_theme_stylebox("normal"))
+		btn.add_theme_stylebox_override("hover", play_games.get_theme_stylebox("hover"))
+		btn.add_theme_stylebox_override("pressed", play_games.get_theme_stylebox("pressed"))
+	
 	btn.pressed.connect(func(): mp_ui.visible = true)
 	
 	# Add to container

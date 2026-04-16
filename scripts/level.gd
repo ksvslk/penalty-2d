@@ -223,7 +223,7 @@ func _play_fanfares_when_level_passed(time_left = 1337) -> void:
 	if int(score.text) >= int(target_score.text):
 		target_score.modulate = Color.GREEN_YELLOW
 		var next_country = Data.unlock_next_level()
-		if not next_country.empty():
+		if not next_country.is_empty():
 			if time_left <= 1:
 				GPack.unlock_achievement(C.achievement_last_second_pass)
 			message.fade_out_text("Unlocked " + next_country + "!")
