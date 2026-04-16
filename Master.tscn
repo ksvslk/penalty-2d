@@ -377,7 +377,6 @@ polygon = PoolVector2Array( -500, 2307, 2000, 2307, 2000, 5000, -500, 5000 )
 
 
 [node name="PhysicsWorldBackgroundBlock" type="ColorRect" parent="Level"]
-z_index = -1
 offset_left = -2000.0
 offset_top = 2207.0
 offset_right = 3000.0
