@@ -149,10 +149,9 @@ func _ready():
 		back_btn.name = "DynamicLevelBackButton"
 		_scale_ui_element(back_btn, premium_btn)
 		
-		# Position explicitly at the bottom accurately correctly mathematically symmetrically smartly intuitively logically flawlessly dynamically
 		back_btn.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-		var btn_w = premium_btn.x
-		var btn_h = premium_btn.y
+		var btn_w = 900
+		var btn_h = 140
 		back_btn.offset_bottom = -60
 		back_btn.offset_left = -int(btn_w / 2.0)
 		back_btn.offset_right = int(btn_w / 2.0)
