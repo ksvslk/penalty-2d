@@ -310,6 +310,29 @@ func round_start_actions():
 	score.text = str(0)
 	target_score.modulate = Color.YELLOW
 	time.restart_timer_for_next_round()
+	
+	if Network.connected_peer_id != 0:
+		_setup_pvp_round()
+
+func _setup_pvp_round():
+	if Network.my_role_this_round == Network.PlayerRole.STRIKER:
+		for b in balls:
+			b.set_multiplayer_authority(multiplayer.get_unique_id())
+		goal_keeper.set_multiplayer_authority(Network.connected_peer_id)
+		message.fade_out_text("YOU ARE STRIKER!")
+	elif Network.my_role_this_round == Network.PlayerRole.GOALKEEPER:
+		for b in balls:
+			b.set_multiplayer_authority(Network.connected_peer_id)
+		goal_keeper.set_multiplayer_authority(multiplayer.get_unique_id())
+		message.fade_out_text("YOU ARE GOALKEEPER!")
+		
+	# Update UI header for PvP
+	if highest.get_parent().has_node("HighestLabel"):
+		highest.get_parent().get_node("HighestLabel").text = "OPPONENT:"
+	if score.get_parent().has_node("ScoreLabel"):
+		score.get_parent().get_node("ScoreLabel").text = "YOU:"
+	highest.text = "0"
+	target_score.text = "PvP Match"
 
 
 func _on_StartTimer_timeout():

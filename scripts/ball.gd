@@ -19,11 +19,17 @@ func _ready():
 
 
 func _input_event(_viewport, event, _shape_idx):
+	# PVP: Only Striker can touch balls!
+	if Network.connected_peer_id != 0 and not is_multiplayer_authority(): return
+	
 	if event is InputEventScreenTouch and get_global_mouse_position().y > 1200 and mediator.round_is_active and not mediator.holding_ball: # check if left click is pressed on the body
 		mediator.holding_ball = true
 		held = event.pressed
 		timer.start()
 		did_get_over_limit = false
+		
+		# Turn ball slightly glowing to indicate aim
+		modulate = Color(2.0, 1.2, 1.2)
 
 
 func activate_bonus_patch():
@@ -39,8 +45,12 @@ func _add_trail() -> void:
 
 
 func _input(event): # check if left click is released even outside of the body
+	if Network.connected_peer_id != 0 and not is_multiplayer_authority(): return
+	
 	if event is InputEventScreenTouch and not event.pressed:
 		if held:
+			# Restore normal color
+			modulate = Color(1.0, 1.0, 1.0)
 			if current_y_velocity < trail_speed_limit:
 				super_shot.play()
 				did_get_over_limit = true
@@ -63,23 +73,63 @@ func unlock_ball_related_achievements():
 
 
 func _integrate_forces(state: PhysicsDirectBodyState2D):
+	if not is_multiplayer_authority() and Network.connected_peer_id != 0:
+		# PVP: Goalie is watching the Striker remotely drag the ball
+		if remote_is_held:
+			var old_vel = state.linear_velocity
+			state.transform.origin = state.transform.origin.lerp(remote_pos, 0.5)
+			state.linear_velocity = Vector2.ZERO # Stop rigid physics while dragged remotely
+		elif remote_burst_velocity != Vector2.ZERO:
+			# ONE SHOT BURST RECEIVED!
+			state.linear_velocity = remote_burst_velocity
+			remote_burst_velocity = Vector2.ZERO
+		return
+
 	if held:
 		var linear_vel = get_global_mouse_position() - global_position
 		if get_global_mouse_position().y < 1200:
 			linear_vel /= 3
 			kick_sound.play()
 			held = false
+			modulate = Color(1.0, 1.0, 1.0)
 			mediator.holding_ball = false
+			# BURST FIRE! Send trajectory to Goalie!
+			if Network.connected_peer_id != 0:
+				rpc("launch_ball_remote", linear_vel * mouse_drag_scale)
+		
 		state.linear_velocity = linear_vel
 		state.linear_velocity *= mouse_drag_scale
+		
+		# Send drag interpolation to Goalie
+		if Network.connected_peer_id != 0:
+			rpc("update_ball_drag", global_position)
+			
 	current_y_velocity = state.linear_velocity.y
 
 
 
 
 
+var remote_pos = Vector2()
+var remote_is_held = false
+var remote_burst_velocity = Vector2()
+
+@rpc("unreliable", "call_remote", "any_peer")
+func update_ball_drag(pos: Vector2):
+	remote_pos = pos
+	remote_is_held = true
+
+@rpc("reliable", "call_remote", "any_peer")
+func launch_ball_remote(vel: Vector2):
+	remote_is_held = false
+	remote_burst_velocity = vel
+
 func _process(_delta):
+	# "Anticipation Glow Trajectory" when held
 	if held:
+		var dist = global_position.distance_to(get_global_mouse_position())
+		if dist > 50:
+			modulate = Color(2.0, 1.0 + (dist / 1000.0), 1.0) # Pulses brighter as dragged further
 		mediator.add_swish(name, [global_position, get_global_mouse_position()])
 
 
@@ -111,8 +161,8 @@ func _enter_tree():
 	set_multiplayer_authority(1) # Default to server, will be updated by spawner
 
 func _physics_process(_delta):
-	# only process physics if we are the authority
-	if is_multiplayer_authority():
+	# only process physics trail if moving fast
+	if is_multiplayer_authority() or Network.connected_peer_id == 0:
 		if current_y_velocity < trail_speed_limit and did_get_over_limit:
 			_add_trail()
 		if global_position.y <= 111:

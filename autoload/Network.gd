@@ -19,6 +19,11 @@ var is_host = false
 var multiplier_peer: WebRTCMultiplayerPeer
 var connected_peer_id = 0
 
+# PvP Authority States
+enum PlayerRole { NONE, STRIKER, GOALKEEPER }
+var my_role_this_round: PlayerRole = PlayerRole.NONE
+var opponent_role_this_round: PlayerRole = PlayerRole.NONE
+
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS # Keep running even if game is paused
 
@@ -124,17 +129,9 @@ func _create_offer():
 func _receive_offer(sdp: String, type: String):
 	var peer = multiplier_peer.get_peer(1)["connection"]
 	peer.set_remote_description(type, sdp)
-	# Only Client creates answer
-	# Removed explicit create_answer here, checking Godot docs flow
-	# Godot WebRTC flow: set_remote -> create_answer
-	# But checking Godot 4 WebRTCMultiplayerPeer behavior: 
-	# Usually we just modify the connection directly.
-	# Correct flow for standard WebRTC:
-	# Client receives Offer -> Set Remote -> Create Answer -> Set Local -> Send Answer
-	# However, WebRTCMultiplayerPeer usually handles the underlying connection. 
-	# Let's interact with WebRTCPeerConnection directly as shown.
-	# Wait, `get_peer` returns a Dictionary with "connection" key which is the WebRTCPeerConnection.
-	pass # Logic continues in Session Description Created
+	# In WebRTC, after receiving an offer and setting the remote description,
+	# the client MUST create an answer to send back to the Host.
+	peer.create_answer()
 
 func _receive_answer(sdp: String, type: String):
 	var peer = multiplier_peer.get_peer(2)["connection"]
@@ -164,6 +161,15 @@ func _on_ice_candidate_created(mid: String, index: int, sdp: String):
 func _on_network_peer_connected(id):
 	print("Network Peer Connected: ", id)
 	connected_peer_id = id
+	
+	# Round 1 Authorities (Host is Striker, Client is Goalkeeper)
+	if is_host:
+		my_role_this_round = PlayerRole.STRIKER
+		opponent_role_this_round = PlayerRole.GOALKEEPER
+	else:
+		my_role_this_round = PlayerRole.GOALKEEPER
+		opponent_role_this_round = PlayerRole.STRIKER
+		
 	emit_signal("game_started")
 
 func _on_network_peer_disconnected(id):

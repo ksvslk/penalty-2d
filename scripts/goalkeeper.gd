@@ -29,31 +29,63 @@ func _physics_process(delta: float) -> void:
 			protecting_goal_in_progress = true
 			_add_swish(global_position)
 			
-	if not protecting_goal_in_progress:
-		if is_multiplayer_controlled:
-			# Manual Control Logic
-			var target = get_global_mouse_position().x
-			# If we are the network puppet, we move to the received position
-			if not is_multiplayer_authority():
-				target = remote_target_x
-			
-			# Clamp movement
-			target = clamp(target, 0, 1080)
-			position.x = lerp(position.x, target, delta * 10)
-		elif counter < move_to_center_time_limit:
-			counter += delta * speed
-		elif counter >= move_to_center_time_limit:
-			var return_vec = Vector2(home_position.x - global_position.x, 0)
-			move_and_collide(return_vec * delta * speed)
-	elif protecting_goal_in_progress:
-		counter = 0
+	if is_multiplayer_controlled:
+		protecting_goal_in_progress = false # Override AI completely
+		if is_multiplayer_authority():
+			# Remote Touch Dragging: Goalie can drag anywhere on screen (x-axis)
+			# Only sync if touching the screen
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.get_connected_joypads().size() > 0:
+				var target = get_global_mouse_position().x
+				target = clamp(target, 80, 1000)
+				position.x = lerp(position.x, target, delta * 20)
+				rpc("update_remote_position", position.x)
+		else:
+			# We are the Striker, viewing the remotely manipulated Goalie
+			position.x = lerp(position.x, remote_target_x, delta * 15)
+	else:
+		if not protecting_goal_in_progress:
+			if counter < move_to_center_time_limit:
+				counter += delta * speed
+			elif counter >= move_to_center_time_limit:
+				var return_vec = Vector2(home_position.x - global_position.x, 0)
+				move_and_collide(return_vec * delta * speed)
+		elif protecting_goal_in_progress:
+			counter = 0
 
 var is_multiplayer_controlled = false
 var remote_target_x = 540.0
 
-@rpc("unreliable")
+var shield_area: Area2D
+var shield_shape: CollisionPolygon2D
+
+func _ready():
+	if Network.connected_peer_id != 0:
+		is_multiplayer_controlled = true
+		
+	# Dynamically attach Authoritative Shield Area for Network Hits
+	shield_area = Area2D.new()
+	shield_area.collision_mask = 3 # Listen to Ball Layer
+	shield_shape = CollisionPolygon2D.new()
+	shield_area.add_child(shield_shape)
+	add_child(shield_area)
+	shield_area.body_entered.connect(_on_shield_body_entered)
+
+func _on_shield_body_entered(body: Node2D):
+	if body is Ball and is_multiplayer_authority() and is_multiplayer_controlled:
+		rpc("goal_saved", body.name)
+
+@rpc("unreliable", "call_remote", "any_peer")
 func update_remote_position(x: float):
 	remote_target_x = x
+
+@rpc("reliable", "call_remote", "any_peer")
+func goal_saved(ball_name: String):
+	# Triggered remotely if the Goalie blocked our ball
+	var ball = get_parent().get_node("BallsContainer").get_node_or_null(ball_name)
+	if ball and ball is Ball and ball.is_multiplayer_authority():
+		# The authoritative ball bounces backward, denying the goal
+		ball.linear_velocity = Vector2(ball.linear_velocity.x, 3000)
+		ball.kick_sound.play()
 
 
 func _add_swish(pos: Vector2) -> void:
@@ -87,3 +119,4 @@ func set_flag(texture: Texture2D) -> void:
 		Vector2(width/2, height/2),
 		Vector2(-width/2, height/2),
 	])
+	shield_shape.polygon = collision_polygon.polygon
