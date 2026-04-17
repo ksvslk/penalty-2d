@@ -31,6 +31,12 @@ func _ready() -> void:
 		
 		index += 1
 	
+	# Add bottom spacer so last items are not occluded by the back button
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 300)
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	levels_list.add_child(spacer)
+	
 	# Connect to the Data singleton to update the level list when it changes
 	Data.level_select_updated.connect(_update_level_select)
 

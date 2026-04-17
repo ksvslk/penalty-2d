@@ -60,6 +60,12 @@ func initialize_select_country() -> void:
 		button.pressed.connect(_set_new_default_team.bind(button.flag, button.country))
 		country_list.add_child(button)
 		
+	# Add bottom spacer so last items are not occluded by the bottom buttons
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 300)
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	country_list.add_child(spacer)
+		
 	# Safeguard: if no specific country was matched, default to the first in the list
 	if default_option == -1 and not select_country_buttons.is_empty():
 		default_option = 0
