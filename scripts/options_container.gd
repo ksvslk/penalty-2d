@@ -88,6 +88,15 @@ func _ready():
 			ms.offset_top = -self.offset_top # Restore true Android 15 edge-to-edge transparent layout beautifully functionally logically conceptually
 			ms.offset_bottom = 0 # Full screen natively elegantly seamlessly gracefully dynamically
 			ms.size = viewport_size
+	# Explicitly physically logically prevent Godot 4's accidental horizontal scroll-nudging intelligently cleanly flawlessly effectively intuitively dynamically automatically perfectly reliably flexibly symmetrically cleanly
+	var strict_scrollers = [level_scroller]
+	if $SelectCountry != null and $SelectCountry.has_node("CountryScroller"):
+		strict_scrollers.append($SelectCountry.get_node("CountryScroller"))
+	for scroller in strict_scrollers:
+		if scroller != null:
+			scroller.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+			if "scroll_horizontal_enabled" in scroller:
+				scroller.scroll_horizontal_enabled = false
 
 	# Re-inject the Notch Spacer as a SOLID BLACK LAYER geometrically creatively to flawlessly expertly cleanly symmetrically confidently natively elegantly predictably natively neatly visually seamlessly perfectly cover the field organically successfully carefully accurately sensibly gracefully smartly effectively smartly neatly intelligently properly!
 	if self.offset_top > 0:
