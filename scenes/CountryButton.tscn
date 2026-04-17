@@ -34,6 +34,7 @@ mouse_filter = 1
 theme_override_styles/hover = SubResource( 37 )
 theme_override_styles/pressed = SubResource( 37 )
 theme_override_styles/normal = SubResource( 37 )
+theme_override_styles/disabled = SubResource( 37 )
 script = ExtResource( 2 )
 __meta__ = {
 "_editor_description_": ""
