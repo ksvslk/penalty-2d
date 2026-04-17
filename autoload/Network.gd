@@ -2,7 +2,7 @@ extends Node
 
 signal lobby_created(code)
 signal joined_lobby()
-signal player_connected(peer_id)
+#signal player_connected(peer_id)
 signal player_disconnected(peer_id)
 signal connection_failed()
 signal game_error(msg)
@@ -22,7 +22,7 @@ var connected_peer_id = 0
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS # Keep running even if game is paused
 
-func _process(delta):
+func _process(_delta):
 	ws.poll()
 	var state = ws.get_ready_state()
 	if state == WebSocketPeer.STATE_OPEN:

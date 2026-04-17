@@ -62,7 +62,7 @@ func _setup_multiplayer_ui():
 	btn.size_flags_stretch_ratio = 0.5
 	
 	# Match the PlayGames button theme styles
-	var play_games = $CanvasLayer/OptionsContainer/HBoxContainer/PlayGames
+	play_games = $CanvasLayer/OptionsContainer/HBoxContainer/PlayGames
 	if play_games:
 		btn.add_theme_font_override("font", play_games.get_theme_font("font"))
 		btn.add_theme_font_size_override("font_size", play_games.get_theme_font_size("font_size"))

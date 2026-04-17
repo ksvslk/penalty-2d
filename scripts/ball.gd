@@ -78,7 +78,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 
 
 
-func _process(delta):
+func _process(_delta):
 	if held:
 		mediator.add_swish(name, [global_position, get_global_mouse_position()])
 
@@ -96,7 +96,7 @@ func is_in_bounds(pos: Vector2 = global_position) -> bool:
 	var c_plus_x = pos.x + c.radius
 	var c_minus_x = pos.x - c.radius
 	var c_plus_y = pos.y + c.radius
-	var c_minus_y = pos.y - c.radius
+	var _c_minus_y = pos.y - c.radius
 	if c_plus_x > viewport_x or c_minus_x < 0 or c_plus_y > viewport_y or c_plus_y < 0:
 		return false
 	return true
@@ -110,7 +110,7 @@ func _enter_tree():
 	# But we can try to set it up via script if the node exists, or just rely on the Spawner.
 	set_multiplayer_authority(1) # Default to server, will be updated by spawner
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	# only process physics if we are the authority
 	if is_multiplayer_authority():
 		if current_y_velocity < trail_speed_limit and did_get_over_limit:

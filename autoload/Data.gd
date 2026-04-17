@@ -35,7 +35,7 @@ func sync_cloud_with_app():
 		set_intermediate_ads(false)
 		if Engine.has_singleton("ICloud"):
 			var cloud = Engine.get_singleton("ICloud")
-			var synced = cloud.synchronize_key_values()
+			var _synced = cloud.synchronize_key_values()
 			set_intermediate_ads(false)
 			
 
@@ -274,10 +274,10 @@ func _set_initial_launch_settings():
 	
 	var difficulty = 1.0 # Use float for clarity
 	var current_pass_score := 20
-	var pass_score_to_50 = 40
-	var pass_score_50_to_100 = 60
-	var pass_score_100_to_150 = 65
-	var pass_score_150_and_up = 70
+	var _pass_score_to_50 = 40
+	var _pass_score_50_to_100 = 60
+	var _pass_score_100_to_150 = 65
+	var _pass_score_150_and_up = 70
 	var time_limit = 40
 	var count = 3
 	var count_temp = 3

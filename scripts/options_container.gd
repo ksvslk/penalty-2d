@@ -292,7 +292,7 @@ func update_margins():
 		
 		# Translate physical device pixels to virtual godot sizing
 		var safe_top = int(safe_area.position.y * scale_y)
-		var safe_bottom = int((window_size.y - safe_area.end.y) * scale_y)
+		var _safe_bottom = int((window_size.y - safe_area.end.y) * scale_y)
 		
 		offset_top = safe_top
 		offset_bottom = 0
@@ -344,5 +344,5 @@ func _on_ShowAchievements_pressed():
 	_on_BackButton_pressed()
 
 
-func _on_BackButton_gui_input(event):
+func _on_BackButton_gui_input(_event):
 	pass

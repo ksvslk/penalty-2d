@@ -221,7 +221,7 @@ func save_game(data: Dictionary, progress: int) -> void:
 	elif Engine.has_singleton("ICloud"):
 		data["progress"] = progress
 		var cloud = Engine.get_singleton("ICloud")
-		var result = cloud.set_key_values(data)
+		var _result = cloud.set_key_values(data)
 
 
 func load_game() -> void:

@@ -154,10 +154,10 @@ func _check_for_time_limit_achievements():
 			GPack.unlock_achievement(C.achievement_70_second_rounds)
 
 
-func add_swish(name: String, points: Array):
-	if ball_dict.has(name):
-		ball_dict[name].add_point(points[1])
-		ball_dict[name].queue_redraw()
+func add_swish(swish_name: String, points: Array):
+	if ball_dict.has(swish_name):
+		ball_dict[swish_name].add_point(points[1])
+		ball_dict[swish_name].queue_redraw()
 	else:
 		var swish = swish_scene.instantiate() as Line2D
 		swish.top_level = true
@@ -165,13 +165,13 @@ func add_swish(name: String, points: Array):
 			swish.add_point(p)
 		add_child(swish)
 		swish.queue_redraw()
-		ball_dict[name] = swish
+		ball_dict[swish_name] = swish
 
 
-func remove_swish(name: String):
-	if ball_dict.has(name):
-		var line = ball_dict[name] as Line2D
-		ball_dict.erase(name)
+func remove_swish(swish_name: String):
+	if ball_dict.has(swish_name):
+		var line = ball_dict[swish_name] as Line2D
+		ball_dict.erase(swish_name)
 		var tween := create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 		tween.tween_property(line, "modulate:a", 0.0, 2.0)
 		tween.tween_callback(line.queue_free)
