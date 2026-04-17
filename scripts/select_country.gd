@@ -61,7 +61,8 @@ func initialize_select_country() -> void:
 		country_list.add_child(button)
 		
 	# Add bottom spacer so last items are not occluded by the bottom buttons
-	var spacer = Control.new()
+	var spacer = ColorRect.new()
+	spacer.color = Color(0, 0, 0, 0.7)
 	spacer.custom_minimum_size = Vector2(0, 300)
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	country_list.add_child(spacer)
