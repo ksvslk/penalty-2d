@@ -151,10 +151,12 @@ func _ready():
 		
 		# Position explicitly at the bottom accurately correctly mathematically symmetrically smartly intuitively logically flawlessly dynamically
 		back_btn.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-		back_btn.offset_bottom = -int(60 * scale_y)
-		back_btn.offset_left = -int((premium_btn.x * scale_x) / 2.0)
-		back_btn.offset_right = int((premium_btn.x * scale_x) / 2.0)
-		back_btn.offset_top = back_btn.offset_bottom - int(premium_btn.y * scale_y)
+		var btn_w = premium_btn.x
+		var btn_h = premium_btn.y
+		back_btn.offset_bottom = -60
+		back_btn.offset_left = -int(btn_w / 2.0)
+		back_btn.offset_right = int(btn_w / 2.0)
+		back_btn.offset_top = back_btn.offset_bottom - int(btn_h)
 		
 		level_scroller.get_parent().add_child(back_btn)
 		back_btn.pressed.connect(func(): level_scroller.visible = false)
