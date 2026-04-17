@@ -310,8 +310,6 @@ func _on_Levels_pressed():
 
 func switch_level_now(index):
 	options_list.visible = false
-	level_scroller.visible = false
-	visible = false
 	emit_signal("switch_level", index)
 
 
