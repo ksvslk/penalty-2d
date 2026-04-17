@@ -195,7 +195,14 @@ func _ready():
 		back_btn_sc.offset_top = back_btn_sc.offset_bottom - int(cbtn_h)
 		
 		$SelectCountry.add_child(back_btn_sc)
-		back_btn_sc.pressed.connect(func(): $SelectCountry.visible = false)
+		back_btn_sc.pressed.connect(func():
+			if $SelectCountry.has_node("CountryScroller") and $SelectCountry.get_node("CountryScroller").visible:
+				$SelectCountry.get_node("CountryScroller").visible = false
+				if $SelectCountry.has_node("VBoxContainer"):
+					$SelectCountry.get_node("VBoxContainer").visible = true
+			else:
+				$SelectCountry.visible = false
+		)
 
 	for m in menus:
 		if m != null:
