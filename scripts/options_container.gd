@@ -196,13 +196,6 @@ func _ready():
 		
 		$SelectCountry.add_child(back_btn_sc)
 		back_btn_sc.pressed.connect(func(): $SelectCountry.visible = false)
-		# Hide HBoxContainer properly natively confidently gracefully neatly manually flexibly
-		var main_menu_bar_c = $HBoxContainer
-		if main_menu_bar_c != null:
-			var sc_visibility = func(): main_menu_bar_c.visible = not $SelectCountry.visible
-			if not $SelectCountry.visibility_changed.is_connected(sc_visibility):
-				$SelectCountry.visibility_changed.connect(sc_visibility)
-			main_menu_bar_c.visible = not $SelectCountry.visible
 
 	for m in menus:
 		if m != null:
