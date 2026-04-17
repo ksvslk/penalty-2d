@@ -108,7 +108,7 @@ func vibrate(duration: int = 10):
 			"Android":
 				Input.vibrate_handheld(duration)
 			"iOS":
-				Input.vibrate_handheld(duration / 2)
+				Input.vibrate_handheld(int(duration / 2.0))
 
 
 func get_language() -> String:
