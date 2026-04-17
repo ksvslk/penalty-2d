@@ -64,7 +64,12 @@ func _ready():
 
 	back_btn = _create_button("BACK")
 	back_btn.pressed.connect(_on_back_pressed)
-	main_container.add_child(back_btn)
+	back_btn.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	back_btn.offset_left = -450
+	back_btn.offset_right = 450
+	back_btn.offset_bottom = -150
+	back_btn.offset_top = -290
+	add_child(back_btn)
 	
 	# Connect Network Signals
 	if has_node("/root/Network"):

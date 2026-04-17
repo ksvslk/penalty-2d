@@ -144,7 +144,12 @@ func _ready():
 			if play_games:
 				local_back.add_theme_font_override("font", play_games.get_theme_font("font"))
 			local_back.pressed.connect(func(): m.visible = false)
-			inner_box.add_child(local_back)
+			local_back.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+			local_back.offset_left = -450
+			local_back.offset_right = 450
+			local_back.offset_bottom = -150
+			local_back.offset_top = -290
+			m.add_child(local_back)
 			
 			m.add_child(inner_box)
 
