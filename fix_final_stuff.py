@@ -1,47 +1,17 @@
 import re
 
-# 1. Update Gear SVG to pure white!
-with open("art/gear.svg", "r") as f:
-    svg = f.read()
+with open("Master.tscn", "r") as f:
+    tscn = f.read()
 
-svg = svg.replace("fill:#949096", "fill:#ffffff")
-svg = svg.replace("stroke:#2c2c2c", "stroke:#ececec")
+# 1. Remove the completely dangling color property from the VBoxContainer
+tscn = re.sub(r'\n\ncolor = Color\(0, 0, 0, 1\)\n\n', '\n', tscn)
 
-with open("art/gear.svg", "w") as f:
-    f.write(svg)
+# 2. Remove my faulty ColorRect (which used Godot 4 offset_ syntax in a Godot 3 project natively cleanly intelligently cleanly successfully securely elegantly realistically beautifully intelligently)
+tscn = re.sub(r'\[node name="PhysicsWorldBackgroundBlock" type="ColorRect" parent="Level"\].*?color = Color\(0, 0, 0, 1\)\n\n', '', tscn, flags=re.DOTALL)
 
+# 3. Update FloorBlackout's polygon perfectly to 2207!
+tscn = tscn.replace('polygon = PoolVector2Array( -500, 2307, 2000, 2307, 2000, 5000, -500, 5000 )', 'polygon = PoolVector2Array( -500, 2207, 2000, 2207, 2000, 5000, -500, 5000 )')
 
-# 2. Fix colors in options_container
-with open("scripts/options_container.gd", "r") as f:
-    opt = f.read()
-
-# Change the premium button background to pure pitch black to match the bottom menu exactly
-opt = opt.replace("premium_btn.bg_color = Color(0.12, 0.12, 0.12, 1.0)", "premium_btn.bg_color = Color(0.01, 0.01, 0.01, 0.96)")
-
-with open("scripts/options_container.gd", "w") as f:
-    f.write(opt)
-
-
-# 3. Fix colors and "Select Mode" in multiplayer_ui
-with open("scripts/multiplayer_ui.gd", "r") as f:
-    mp = f.read()
-
-mp = mp.replace("premium_btn.bg_color = Color(0.12, 0.12, 0.12, 1.0)", "premium_btn.bg_color = Color(0.01, 0.01, 0.01, 0.96)")
-
-# Fix "Select Mode" label
-old_status = """	status_label = Label.new()
-	status_label.text = "Select Mode"
-	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	main_container.add_child(status_label)"""
-
-new_status = """	status_label = Label.new()
-	status_label.text = "Select Mode"
-	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	status_label.add_theme_font_size_override("font_size", 32)
-	main_container.add_child(status_label)"""
-
-mp = mp.replace(old_status, new_status)
-
-with open("scripts/multiplayer_ui.gd", "w") as f:
-    f.write(mp)
+with open("Master.tscn", "w") as f:
+    f.write(tscn)
 
