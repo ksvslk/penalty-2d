@@ -87,7 +87,7 @@ func _ready():
 			ms.offset_right = 0
 			ms.offset_top = -self.offset_top # Restore true Android 15 edge-to-edge transparent layout beautifully functionally logically conceptually
 			ms.offset_bottom = 0 # Full screen natively elegantly seamlessly gracefully dynamically
-			ms.size = viewport_size
+			#ms.size = viewport_size
 	# Explicitly physically logically prevent Godot 4's accidental horizontal scroll-nudging intelligently cleanly flawlessly effectively intuitively dynamically automatically perfectly reliably flexibly symmetrically cleanly
 	var strict_scrollers = [level_scroller]
 	if $SelectCountry != null and $SelectCountry.has_node("CountryScroller"):

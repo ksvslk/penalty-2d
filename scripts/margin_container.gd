@@ -16,8 +16,8 @@ func _ready():
 		
 	# CALQULATE EXTRA PADDING REQUIRED TO SKIP NOTCH
 	if window_size.x >= safe_area.size.x and window_size.y >= safe_area.size.y:
-		var x_factor = safe_area.size.x / window_size.x
-		var y_factor = safe_area.size.y / window_size.y
+		var x_factor = float(safe_area.size.x) / float(window_size.x)
+		var y_factor = float(safe_area.size.y) / float(window_size.y)
 
 		top = max(top, safe_area.position.y * y_factor)
 		left = max(left, safe_area.position.x * x_factor)
