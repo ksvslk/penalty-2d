@@ -86,7 +86,10 @@ func _ready():
 			ms.offset_left = 0
 			ms.offset_right = 0
 			ms.offset_top = -self.offset_top # Extend fully dynamically cleanly functionally seamlessly into Android 15/iOS status bar natively creatively efficiently manually brilliantly properly mathematically smoothly
-			ms.offset_bottom = 0
+			if ms == level_scroller:
+				ms.offset_bottom = -200 # Prevent overlapping the bottom HBoxContainer intuitively smoothly
+			else:
+				ms.offset_bottom = 0
 			ms.size = viewport_size 
 
 	# Inject mathematical dummy spacers to perfectly accurately smartly efficiently elegantly visually explicitly smoothly pad the safe_top notch gracefully naturally reliably securely comfortably precisely intelligently effortlessly
@@ -104,14 +107,17 @@ func _ready():
 			tlist.add_child(spacer)
 			tlist.move_child(spacer, 0)
 	
-	var overlay_bg = ColorRect.new()
-	overlay_bg.color = Color(0.05, 0.08, 0, 0.86)
-	# Discard anchors completely to mathematically lock the absolute visual span natively seamlessly 
-	overlay_bg.position = Vector2(-800, -800)
-	overlay_bg.size = viewport_size + Vector2(1600, 1600)
-	$SelectCountry.add_child(overlay_bg)
-	$SelectCountry.move_child(overlay_bg, 0)
-	$SelectCountry.color.a = 0
+	var target_overlays = [$SelectCountry, level_scroller]
+	for target_ms in target_overlays:
+		if target_ms != null:
+			var bg = ColorRect.new()
+			bg.color = Color(0.05, 0.08, 0, 0.86)
+			bg.position = Vector2(-800, -800)
+			bg.size = viewport_size + Vector2(1600, 1600)
+			target_ms.add_child(bg)
+			target_ms.move_child(bg, 0)
+			if "color" in target_ms:
+				target_ms.color.a = 0
 
 	var select_country_vbox = $SelectCountry/VBoxContainer
 	if select_country_vbox != null:

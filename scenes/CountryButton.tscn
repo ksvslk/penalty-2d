@@ -25,7 +25,6 @@ font_data = SubResource( 25 )
 
 [node name="CountryButton" type="Button"]
 self_modulate = Color( 0, 0, 0, 1 )
-material = ExtResource( 3 )
 offset_left = -1.0
 offset_right = 999.0
 offset_bottom = 240.0
@@ -60,7 +59,7 @@ autowrap_mode = 2
 uppercase = true
 
 [node name="TextureButton" type="TextureRect" parent="."]
-use_parent_material = true
+material = ExtResource( 3 )
 offset_left = 782.0
 offset_top = 42.0
 offset_right = 984.0

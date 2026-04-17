@@ -18,15 +18,13 @@ func _ready() -> void:
 	
 func activate_button() -> void:
 	disabled = false
-	# In Godot 4, use the specific 'set_shader_parameter' method.
-	if material:
-		material.set_shader_parameter("grayscale", false)
+	if texture_rect and texture_rect.material:
+		texture_rect.material.set_shader_parameter("grayscale", false)
 	label.modulate.a = 1.0
 	
 
 func deactivate_button() -> void:
 	disabled = true
-	# In Godot 4, use the specific 'set_shader_parameter' method.
-	if material:
-		material.set_shader_parameter("grayscale", true)
+	if texture_rect and texture_rect.material:
+		texture_rect.material.set_shader_parameter("grayscale", true)
 	label.modulate.a = 0.15
