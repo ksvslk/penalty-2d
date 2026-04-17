@@ -76,6 +76,29 @@ func _ready():
 		options_list: "OPTIONS",
 	}
 	var menus = [play_games_list, bonus_list, options_list]
+	# Mathematically perfectly intuitively brilliantly seamlessly intelligently configure SelectCountry elements
+	var select_country_vbox = $SelectCountry/VBoxContainer
+	if select_country_vbox != null:
+		select_country_vbox.set_anchors_preset(Control.PRESET_CENTER)
+		select_country_vbox.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		select_country_vbox.grow_vertical = Control.GROW_DIRECTION_BOTH
+		select_country_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		
+		# Give it the massive premium style sizing exactly like MULTIPLAYER
+		for child in select_country_vbox.get_children():
+			_scale_ui_element(child, premium_btn)
+
+	var overlay_bg = ColorRect.new()
+	overlay_bg.color = Color(0.05, 0.08, 0, 0.86)
+	overlay_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay_bg.offset_top = -400
+	overlay_bg.offset_bottom = 400
+	overlay_bg.offset_left = -200
+	overlay_bg.offset_right = 200
+	$SelectCountry.add_child(overlay_bg)
+	$SelectCountry.move_child(overlay_bg, 0)
+	$SelectCountry.color.a = 0
+
 	var native_screens = [level_scroller, $SelectCountry]
 	for ms in native_screens:
 		if ms != null:
