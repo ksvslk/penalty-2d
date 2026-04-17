@@ -24,6 +24,8 @@ func _scale_ui_element(node: Node, primary_style: StyleBoxFlat):
 		node.add_theme_stylebox_override("normal", primary_style)
 		node.add_theme_stylebox_override("hover", primary_style)
 		node.add_theme_stylebox_override("pressed", primary_style)
+		node.add_theme_constant_override("h_separation", 40)
+		node.add_theme_constant_override("icon_max_width", 65)
 		
 		# Enforce massive luxury widths
 		if not node.get_parent() is HBoxContainer:
