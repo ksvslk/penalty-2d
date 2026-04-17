@@ -203,6 +203,14 @@ func _ready():
 			else:
 				$SelectCountry.visible = false
 		)
+		
+		# Only show Back button during the actual scroller phase cleanly smartly seamlessly perfectly naturally explicitly logically intelligently rationally seamlessly visually
+		if $SelectCountry.has_node("CountryScroller"):
+			var c_scroller = $SelectCountry.get_node("CountryScroller")
+			var update_back_btn = func():
+				back_btn_sc.visible = c_scroller.visible
+			c_scroller.visibility_changed.connect(update_back_btn)
+			update_back_btn.call()
 
 	for m in menus:
 		if m != null:
