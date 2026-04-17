@@ -8,13 +8,12 @@ var is_activated = false
 func _ready():
 	update_info()
 	if not is_activated:
-		# Pass disabled status beautifully magically safely smoothly mathematically systematically cleanly naturally
-		$HBoxContainer/TextureButton.material.set_shader_parameter("is_disabled", true)
+		$TextureButton.material.set_shader_parameter("is_disabled", true)
 		
 func activate_button():
 	is_activated = true
-	$HBoxContainer/TextureButton.material.set_shader_parameter("is_disabled", false)
+	$TextureButton.material.set_shader_parameter("is_disabled", false)
 	
 func update_info():
-	$HBoxContainer/TextureButton.texture = texture
-	$HBoxContainer/Label.text = country
+	$TextureButton.texture = texture
+	$Label.text = country

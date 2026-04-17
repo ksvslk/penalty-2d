@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://c2s2gj8gq3u1b"]
+[gd_scene load_steps=5 format=3 uid="uid://c2t3gj8hq4v2c"]
 
 [ext_resource type="Script" path="res://scripts/country_button.gd" id="2_script"]
 [ext_resource type="Material" path="res://shader/Grayscale.tres" id="3_material"]
@@ -22,29 +22,36 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_0y68e")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_0y68e")
 script = ExtResource("2_script")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 20
-alignment = 2
-
-[node name="TextureButton" type="TextureRect" parent="HBoxContainer"]
+[node name="TextureButton" type="TextureRect" parent="."]
 material = ExtResource("3_material")
-custom_minimum_size = Vector2(202, 163)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 50.0
+offset_top = -81.5
+offset_right = 252.0
+offset_bottom = 81.5
+grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="HBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 1
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -780.0
+offset_top = -65.0
+offset_right = -50.0
+offset_bottom = 65.0
+grow_horizontal = 0
+grow_vertical = 2
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 50
 text = "1. Andorra"
+horizontal_alignment = 2
 vertical_alignment = 1
