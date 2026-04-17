@@ -82,10 +82,95 @@ func _setup_multiplayer_ui():
 		var net = get_node_or_null("/root/Network")
 		net.game_started.connect(_on_multiplayer_game_started)
 
+var mp_rounds_played = 0
+var host_match_wins = 0
+var client_match_wins = 0
+
 func _on_multiplayer_game_started():
 	if loading_screen: loading_screen.visible = false
 	$CanvasLayer/OptionsContainer.visible = false
-	mediator.start_multiplayer_match()
+	
+	mp_rounds_played = 0
+	host_match_wins = 0
+	client_match_wins = 0
+	
+	# Silence original arena securely exactly once
+	var original_level = get_node_or_null("Level")
+	if original_level:
+		original_level.name = "SinglePlayerLevel"
+		original_level.hide()
+		original_level.set_process(false)
+		original_level.set_physics_process(false)
+		original_level.process_mode = Node.PROCESS_MODE_DISABLED
+		if original_level.has_method("_remove_all_balls"):
+			original_level._remove_all_balls()
+		original_level.name = "OriginalLevel_Disabled"
+		
+	start_multiplayer_round()
+
+func start_multiplayer_round():
+	mp_rounds_played += 1
+	var original_level = get_node("OriginalLevel_Disabled")
+	
+	# Scour and destroy native leftover round arena smoothly
+	var old_mp = get_node_or_null("Level")
+	if old_mp:
+		old_mp.name = "Level_Deleted" # Instantly sever name collision!
+		old_mp.queue_free()
+		
+	# Determine rotating Network Parity (Host is Striker on Round 1 and Round 3)
+	if Network.is_host:
+		Network.my_role_this_round = Network.PlayerRole.STRIKER if (mp_rounds_played % 2 != 0) else Network.PlayerRole.GOALKEEPER
+	else:
+		Network.my_role_this_round = Network.PlayerRole.GOALKEEPER if (mp_rounds_played % 2 != 0) else Network.PlayerRole.STRIKER
+	
+	# Clone node tree cleanly and accurately
+	var mp_level = original_level.duplicate()
+	mp_level.name = "Level" # Retain core name so NodePaths internally succeed exactly between peers
+	mp_level.show()
+	mp_level.modulate = Color.WHITE
+	mp_level.process_mode = Node.PROCESS_MODE_INHERIT
+	mp_level.set_process(true)
+	mp_level.set_physics_process(true)
+	mp_level.set_script(load("res://scripts/mp_manager.gd"))
+	
+	# Pre-emptively swap child scripts BEFORE add_child so Godot triggers _ready natively!
+	var goalie = mp_level.get_node("GoalKeeper")
+	goalie.set_script(load("res://scripts/mp_goalkeeper.gd"))
+	goalie.init_multiplayer()
+	
+	# Assign explicit Network Node Authorities (Otherwise Host exclusively controls local inputs for both sides!)
+	var striker_id = 1
+	var goalkeeper_id = multiplayer.get_unique_id() if not Network.is_host else Network.connected_peer_id
+	goalie.set_multiplayer_authority(goalkeeper_id)
+	
+	# Do NOT swap ball scripts here. mp_manager's add_ball overrides handle it seamlessly!
+	# Pre-existing balls will be natively deleted by the map loader.
+	
+	add_child(mp_level)
+	
+	mp_level.start_multiplayer_match()
+		
+@rpc("any_peer", "call_remote", "reliable")
+func trigger_next_round(round_winner_id: int):
+	# Calculate match series wins securely
+	if round_winner_id == 1:
+		host_match_wins += 1
+	elif round_winner_id != 0:
+		client_match_wins += 1
+		
+	if host_match_wins >= 2 or client_match_wins >= 2:
+		# Series Decided!
+		var _mp_level = get_node_or_null("Level")
+		if _mp_level and _mp_level.has_node("Message"):
+			var win_text = "HOST WINS MATCH!" if host_match_wins >= 2 else "CLIENT WINS MATCH!"
+			if (Network.is_host and host_match_wins >= 2) or (not Network.is_host and client_match_wins >= 2):
+				win_text = "YOU WIN THE MATCH!"
+			else:
+				win_text = "YOU LOST THE MATCH!"
+			_mp_level.get_node("Message").fade_out_text(win_text)
+	else:
+		start_multiplayer_round()
 
 
 	

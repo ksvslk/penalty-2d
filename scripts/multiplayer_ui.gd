@@ -149,7 +149,15 @@ func _on_game_started():
 
 func _on_back_pressed():
 	visible = false
-	# Disconnect?
+	var m = get_node_or_null("/root/Master")
+	if m:
+		var opts = m.get_node_or_null("CanvasLayer/OptionsContainer")
+		if opts:
+			opts.show()
+			
+	# Natively disconnect gracefully to clear sockets
+	if Network.multiplayer.has_multiplayer_peer():
+		Network.multiplayer.multiplayer_peer.close()
 
 func _on_copy_pressed():
 	DisplayServer.clipboard_set(code_input.text)

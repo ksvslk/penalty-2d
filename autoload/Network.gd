@@ -11,7 +11,7 @@ signal game_started() # When the handshake is complete and we are ready
 # Signaling Server Configuration
 # Use "ws://localhost:8080" for local testing
 # Use your public IP or hosted URL for real device testing
-var SIGNALING_URL = "ws://10.42.0.226:8080"
+var SIGNALING_URL = "ws://127.0.0.1:8080"
 
 var ws: WebSocketPeer = WebSocketPeer.new()
 var code = ""
@@ -26,6 +26,13 @@ var opponent_role_this_round: PlayerRole = PlayerRole.NONE
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS # Keep running even if game is paused
+	
+	# Mobile devices MUST use the Mac's external Wi-Fi IP to bridge the gap
+	if OS.get_name() in ["Android", "iOS"]:
+		SIGNALING_URL = "ws://192.168.0.104:8080"
+		print("Mobile detected. Using Wi-Fi URL: ", SIGNALING_URL)
+	else:
+		print("Desktop detected. Using LocalHost URL: ", SIGNALING_URL)
 
 func _process(_delta):
 	ws.poll()
@@ -129,9 +136,8 @@ func _create_offer():
 func _receive_offer(sdp: String, type: String):
 	var peer = multiplier_peer.get_peer(1)["connection"]
 	peer.set_remote_description(type, sdp)
-	# In WebRTC, after receiving an offer and setting the remote description,
-	# the client MUST create an answer to send back to the Host.
-	peer.create_answer()
+	# In Godot 4, setting a remote description of type "offer" automatically creates the answer
+	# and emits the session_description_created signal! Do not call create_answer().
 
 func _receive_answer(sdp: String, type: String):
 	var peer = multiplier_peer.get_peer(2)["connection"]
