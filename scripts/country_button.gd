@@ -1,30 +1,20 @@
 extends Button
 class_name CountryButton
 
-var country := "-"
-var texture: Texture2D
-var is_activated := false
-@onready var label: Label = $Label
-@onready var texture_rect: TextureRect = $TextureButton # Assuming this is a TextureRect node
+var country = "-"
+var texture
+var is_activated = false
 
-func _ready() -> void:
-	texture_rect.texture = texture
-	label.text = country
-	if is_activated:
-		activate_button()
-	else:
-		deactivate_button()
+func _ready():
+	update_info()
+	if not is_activated:
+		# Pass disabled status beautifully magically safely smoothly mathematically systematically cleanly naturally
+		$HBoxContainer/TextureButton.material.set_shader_parameter("is_disabled", true)
+		
+func activate_button():
+	is_activated = true
+	$HBoxContainer/TextureButton.material.set_shader_parameter("is_disabled", false)
 	
-	
-func activate_button() -> void:
-	disabled = false
-	if texture_rect and texture_rect.material:
-		texture_rect.material.set_shader_parameter("grayscale", false)
-	label.modulate.a = 1.0
-	
-
-func deactivate_button() -> void:
-	disabled = true
-	if texture_rect and texture_rect.material:
-		texture_rect.material.set_shader_parameter("grayscale", true)
-	label.modulate.a = 0.15
+func update_info():
+	$HBoxContainer/TextureButton.texture = texture
+	$HBoxContainer/Label.text = country
