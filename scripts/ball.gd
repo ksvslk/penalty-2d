@@ -73,6 +73,7 @@ func unlock_ball_related_achievements():
 
 
 func _integrate_forces(state: PhysicsDirectBodyState2D):
+	if multiplayer.multiplayer_peer == null: return
 	if not is_multiplayer_authority() and Network.connected_peer_id != 0:
 		# PVP: Goalie is watching the Striker remotely drag the ball
 		if remote_is_held:
@@ -161,6 +162,7 @@ func _enter_tree():
 	set_multiplayer_authority(1) # Default to server, will be updated by spawner
 
 func _physics_process(_delta):
+	if multiplayer.multiplayer_peer == null: return
 	# only process physics trail if moving fast
 	if is_multiplayer_authority() or Network.connected_peer_id == 0:
 		if current_y_velocity < trail_speed_limit and did_get_over_limit:

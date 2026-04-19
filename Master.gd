@@ -124,9 +124,20 @@ func start_multiplayer_round():
 	else:
 		Network.my_role_this_round = Network.PlayerRole.GOALKEEPER if (mp_rounds_played % 2 != 0) else Network.PlayerRole.STRIKER
 	
+	# Clean up leftover physics junk securely from disconnected prior single-player states exactly
+	var _bc = original_level.get_node_or_null("BallsContainer")
+	if _bc:
+		for child in _bc.get_children():
+			_bc.remove_child(child)
+			child.queue_free()
+	
 	# Clone node tree cleanly and accurately
 	var mp_level = original_level.duplicate()
 	mp_level.name = "Level" # Retain core name so NodePaths internally succeed exactly between peers
+	
+	var bg = mp_level.get_node_or_null("Background")
+	if bg: bg.texture = load("res://art/grass_euro.png")
+	
 	mp_level.show()
 	mp_level.modulate = Color.WHITE
 	mp_level.process_mode = Node.PROCESS_MODE_INHERIT
@@ -159,16 +170,22 @@ func trigger_next_round(round_winner_id: int):
 	elif round_winner_id != 0:
 		client_match_wins += 1
 		
-	if host_match_wins >= 2 or client_match_wins >= 2:
+	if host_match_wins >= 5 or client_match_wins >= 5:
 		# Series Decided!
 		var _mp_level = get_node_or_null("Level")
 		if _mp_level and _mp_level.has_node("Message"):
-			var win_text = "HOST WINS MATCH!" if host_match_wins >= 2 else "CLIENT WINS MATCH!"
-			if (Network.is_host and host_match_wins >= 2) or (not Network.is_host and client_match_wins >= 2):
-				win_text = "YOU WIN THE MATCH!"
+			var win_text = "HOST WINS MATCH!" if host_match_wins >= 5 else "CLIENT WINS MATCH!"
+			if (Network.is_host and host_match_wins >= 5) or (not Network.is_host and client_match_wins >= 5):
+				win_text = "VICTORY! YOU ARE THE VETERAN STRIKER!"
 			else:
-				win_text = "YOU LOST THE MATCH!"
+				win_text = "SERIES LOST! BETTER LUCK NEXT MATCH..."
+				
+			# Aggressively halt any further round processing
+			var mp_ui = _mp_level.get_node_or_null("MultiplayerEnvironment")
+			if mp_ui: mp_ui.process_mode = Node.PROCESS_MODE_DISABLED
+			
 			_mp_level.get_node("Message").fade_out_text(win_text)
+			print("MATCH CONCLUDED! ", win_text)
 	else:
 		start_multiplayer_round()
 

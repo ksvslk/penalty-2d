@@ -11,6 +11,7 @@ var move_to_center_time_limit := 12
 @onready var collision_polygon: CollisionPolygon2D = $CollisionPolygon2D
 
 func _physics_process(delta: float) -> void:
+	if multiplayer.multiplayer_peer == null: return
 	protecting_goal_in_progress = false
 	for b in balls:
 		if not is_instance_valid(b): continue # Safety check in case a ball is freed

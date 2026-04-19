@@ -1,4 +1,5 @@
 extends TextureRect
 
 func _ready():
-	texture = load("res://art/grass.png")
+	if not texture or texture.resource_path == "":
+		texture = load("res://art/grass.png")
