@@ -16,9 +16,44 @@ signal game_error(msg)
 signal game_started() # When the handshake is complete and we are ready
 
 # Signaling Server Configuration
-# Use "ws://localhost:8080" for local testing
-# Use your public IP or hosted URL for real device testing
-var SIGNALING_URL = "wss://wei-vinous-avery.ngrok-free.dev"
+# local development URL:
+const LOCAL_SIGNALING_URL = "ws://localhost:8080"
+# Replace with your actual GCP Cloud Run URL (e.g. wss://app-name-xxxxxx.a.run.app) after deployment:
+const PRODUCTION_SIGNALING_URL = "wss://penalty2d-signaling-730456293701.us-central1.run.app"
+
+var SIGNALING_URL = PRODUCTION_SIGNALING_URL
+
+# WebRTC ICE Servers Configuration (STUN and TURN)
+const DEFAULT_ICE_SERVERS = [
+	{
+		"urls": [
+			"stun:stun.l.google.com:19302",
+			"stun:stun1.l.google.com:19302"
+		]
+	}
+]
+var ice_servers = DEFAULT_ICE_SERVERS
+
+# Lobby Settings (configured by Host)
+var match_total_rounds := 3
+var round_time_limit := 60
+var round_ball_count := 5
+
+# Local Player Identity
+var player_name := ""
+
+func _reset_network_state():
+	code = ""
+	is_host = false
+	connected_peer_id = 0
+	multiplier_peer = null
+	multiplayer.multiplayer_peer = null
+	active_connections.clear()
+	ice_servers = DEFAULT_ICE_SERVERS
+	match_total_rounds = 3
+	round_time_limit = 60
+	round_ball_count = 5
+	print("Network state reset successfully.")
 
 var ws: WebSocketPeer = WebSocketPeer.new()
 var code = ""
@@ -37,14 +72,17 @@ var opponent_role_this_round: PlayerRole = PlayerRole.NONE
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS # Keep running even if game is paused
 	
-	# Mobile devices MUST use the Mac's external Wi-Fi IP to bridge the gap
-	if OS.get_name() in ["Android", "iOS"]:
-		# Wait, if the user explicitly defined their own ngrok tunnel already, DO NOT overwrite it locally!
-		if not "ngrok" in SIGNALING_URL and not "wss://" in SIGNALING_URL:
-			SIGNALING_URL = "ws://192.168.0.103:8080"
-		print("Mobile detected. Using Wi-Fi URL: ", SIGNALING_URL)
-	else:
-		print("Desktop detected. Using LocalHost URL: ", SIGNALING_URL)
+	# Initialize default nickname
+	player_name = "Player_" + str(randi_range(100, 999))
+	
+	# Force production signaling server for all builds (including debug exports)
+	SIGNALING_URL = PRODUCTION_SIGNALING_URL
+	
+	# Optional: If you want to use a local server when testing in the Godot Editor, un-comment below:
+	# if OS.has_feature("editor"):
+	# 	SIGNALING_URL = LOCAL_SIGNALING_URL
+		
+	print("Multiplayer signaling URL: ", SIGNALING_URL)
 
 func _process(_delta):
 	ws.poll()
@@ -59,7 +97,11 @@ func _process(_delta):
 		while ws.get_available_packet_count():
 			_handle_signaling_data(ws.get_packet().get_string_from_utf8())
 	elif state == WebSocketPeer.STATE_CLOSED:
-		pass # Disconnected from signaling
+		# If we were active in a lobby or queue, handle the disconnect gracefully
+		if code != "" or multiplier_peer != null:
+			print("Signaling connection closed unexpectedly.")
+			_reset_network_state()
+			emit_signal("game_error", "Connection to signaling server lost.")
 
 func connect_to_signaling_server():
 	if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
@@ -88,21 +130,14 @@ func cancel_matchmaking():
 		_buffer_or_send({"type": "leave_lobby"})
 	else:
 		_buffer_or_send({"type": "leave_queue"})
-	code = ""
-	is_host = false
-	connected_peer_id = 0
-	multiplier_peer = null
-	multiplayer.multiplayer_peer = null
+	_reset_network_state()
 
 func accept_match():
 	_buffer_or_send({"type": "accept_match"})
 
 func decline_match():
 	_buffer_or_send({"type": "decline_match"})
-	code = ""
-	is_host = false
-	multiplier_peer = null
-	multiplayer.multiplayer_peer = null
+	_reset_network_state()
 
 func _buffer_or_send(data: Dictionary):
 	if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
@@ -132,15 +167,16 @@ func _handle_signaling_data(json_str: String):
 			emit_signal("match_found", data.get("role", "client"))
 			
 		"match_cancelled":
-			code = ""
-			multiplier_peer = null
-			multiplayer.multiplayer_peer = null
-			active_connections.clear()
+			_reset_network_state()
 			emit_signal("match_cancelled")
 			
 		"peer_connected":
 			if data.has("role"):
 				is_host = (data["role"] == "host")
+				
+			if data.has("ice_servers") and data["ice_servers"] != null:
+				ice_servers = data["ice_servers"]
+				print("Received ephemeral ICE servers from signaling.")
 				
 			if is_host and multiplier_peer == null:
 				_initialize_multiplayer_peer()
@@ -164,9 +200,7 @@ func _handle_signaling_data(json_str: String):
 			
 		"peer_disconnected":
 			emit_signal("player_disconnected", 0)
-			multiplier_peer = null
-			multiplayer.multiplayer_peer = null
-			active_connections.clear()
+			_reset_network_state()
 			
 		"error":
 			emit_signal("game_error", data.get("message"))
@@ -185,9 +219,7 @@ func _initialize_multiplayer_peer():
 	# Create the WebRTC Peer Connection
 	var peer = WebRTCPeerConnection.new()
 	peer.initialize({
-		"iceServers": [
-			{ "urls": ["stun:stun.l.google.com:19302"] } # Google's public STUN server
-		]
+		"iceServers": ice_servers
 	})
 	
 	# Add this peer to the mesh

@@ -683,34 +683,34 @@ vertical_alignment = 1
 script = ExtResource( 9991 )
 
 [node name="Position2D" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 110, 2071 )
+position = Vector2( 110, 2157 )
 
 [node name="Position2D2" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 328, 2071 )
+position = Vector2( 328, 2157 )
 
 [node name="Position2D3" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 544, 2071 )
+position = Vector2( 544, 2157 )
 
 [node name="Position2D4" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 760, 2071 )
+position = Vector2( 760, 2157 )
 
 [node name="Position2D5" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 969, 2071 )
+position = Vector2( 969, 2157 )
 
 [node name="Position2D6" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 979, 1834 )
+position = Vector2( 979, 1920 )
 
 [node name="Position2D7" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 770, 1834 )
+position = Vector2( 770, 1920 )
 
 [node name="SpecialPosition" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 554, 1834 )
+position = Vector2( 554, 1920 )
 
 [node name="Position2D9" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 338, 1834 )
+position = Vector2( 338, 1920 )
 
 [node name="Position2D10" type="Position2D" parent="Level/BallPositions"]
-position = Vector2( 120, 1834 )
+position = Vector2( 120, 1920 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 2

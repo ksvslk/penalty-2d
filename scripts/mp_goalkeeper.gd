@@ -19,8 +19,8 @@ func _ready():
 	shield_area.body_entered.connect(_on_shield_body_entered)
 	shield_shape.polygon = PackedVector2Array([
 		Vector2(-50, -50), Vector2(50, -50),
-		Vector2(50, 50), Vector2(-50, 50)
-	]) # Approximation for the flag texture
+		Vector2(50, 150), Vector2(-50, 150)
+	]) # Approximation for the flag texture, extended downwards to prevent tunneling
 
 @rpc("unreliable", "call_remote", "any_peer")
 func mp_update_position(x: float):
@@ -37,6 +37,24 @@ func _on_shield_body_entered(body: Node2D):
 	if multiplayer.multiplayer_peer == null: return
 	if "Ball" in body.name and is_multiplayer_authority():
 		rpc("goal_saved", body.name)
+		
+		if Network.my_role_this_round == Network.PlayerRole.GOALKEEPER:
+			var is_fast = false
+			if body and body.get("current_y_velocity") != null:
+				var trail_limit = body.get("trail_speed_limit") if body.get("trail_speed_limit") != null else -5500
+				is_fast = (body.current_y_velocity < trail_limit)
+				
+			if is_fast:
+				_play_voice_over("res://sound/voice_good_save.wav")
+
+func _play_voice_over(file_path: String):
+	var stream = load(file_path)
+	if stream:
+		var player = AudioStreamPlayer.new()
+		player.stream = stream
+		add_child(player)
+		player.play()
+		player.finished.connect(player.queue_free)
 
 func _physics_process(delta: float) -> void:
 	if multiplayer.multiplayer_peer == null: return
@@ -61,3 +79,15 @@ func _physics_process(delta: float) -> void:
 	# Draw aesthetic ghost trailing if moving sufficiently fast
 	if abs(position.x - old_x) > 5.0 and has_method("_add_swish"):
 		_add_swish(global_position)
+
+func set_flag(texture: Texture2D) -> void:
+	super.set_flag(texture)
+	# Expand the goalkeeper's shield area downwards by 100 pixels to prevent fast balls tunneling through
+	var poly = shield_shape.polygon
+	var new_poly = PackedVector2Array()
+	for vertex in poly:
+		if vertex.y > 0:
+			new_poly.append(Vector2(vertex.x, vertex.y + 100.0))
+		else:
+			new_poly.append(vertex)
+	shield_shape.polygon = new_poly

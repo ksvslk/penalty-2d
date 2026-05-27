@@ -55,7 +55,12 @@ var holding_ball := false
 signal level_passed
 signal start_level
 signal commercial_break
-
+func _ready():
+	if OS.get_name() != "macOS":
+		await get_tree().process_frame
+		var viewport_height = get_viewport_rect().size.y
+		var shift = viewport_height - 2400 - C.get_bottom_safe_margin()
+		$FloorBlackout.position.y = shift
 
 func _try_to_show_ad():
 	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased():
@@ -71,8 +76,10 @@ func start_game():
 	if Data.is_intermediate_ads_enabled() and not Data.is_two_balls_purchased() and int(Data.current_level) >= SHOW_ADS_LEVEL_AND_UP:
 		GPack.load_interstitial_ad()
 	round_is_active = false
-	Data.best_score_updated.connect(highest.set_text)
-	Data.level_info_updated.connect(self._update_level_info)
+	if not Data.best_score_updated.is_connected(highest.set_text):
+		Data.best_score_updated.connect(highest.set_text)
+	if not Data.level_info_updated.is_connected(self._update_level_info):
+		Data.level_info_updated.connect(self._update_level_info)
 	Data.set_level_info()
 
 

@@ -45,6 +45,32 @@ func _ready() -> void:
 		_enable_playing()
 	_print_license()
 	_setup_multiplayer_ui()
+	
+	# Deeplink Initialization
+	var deeplink = Deeplink.new()
+	deeplink.name = "DeeplinkNode"
+	add_child(deeplink)
+	if not deeplink.deeplink_received.is_connected(_on_deeplink_received):
+		deeplink.deeplink_received.connect(_on_deeplink_received)
+	deeplink.initialize()
+
+func _on_deeplink_received(url_data: Dictionary) -> void:
+	print("DEEPLINK RECEIVED: ", url_data)
+	var path = url_data.get("path", "")
+	var queries = url_data.get("queries", {})
+	
+	if "lobby" in path:
+		# Hide main menu, show Multiplayer UI
+		if has_node("CanvasLayer/OptionsContainer"):
+			$CanvasLayer/OptionsContainer.visible = false
+		if has_node("CanvasLayer/MultiplayerUI"):
+			var mp_ui = $CanvasLayer/MultiplayerUI
+			mp_ui.visible = true
+			
+			# If the link is like https://indest.ee/penalty-2d/lobby?code=ABCD
+			if queries.has("code"):
+				mp_ui.code_input.text = queries["code"]
+				mp_ui._on_join_pressed() # Auto-join!
 
 func _setup_multiplayer_ui():
 	# Create UI
@@ -61,14 +87,32 @@ func _setup_multiplayer_ui():
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.size_flags_stretch_ratio = 0.5
 	
-	# Match the PlayGames button theme styles
+	# Use StyleBoxEmpty to remove all outer borders and styling edges
+	var empty_style = StyleBoxEmpty.new()
+	btn.add_theme_stylebox_override("normal", empty_style)
+	btn.add_theme_stylebox_override("hover", empty_style)
+	btn.add_theme_stylebox_override("pressed", empty_style)
+	btn.add_theme_stylebox_override("focus", empty_style)
+	
+	# Override text colors (Vibrant gold/orange text)
+	btn.add_theme_color_override("font_color", Color(0.9, 0.65, 0.0, 1.0))
+	btn.add_theme_color_override("font_hover_color", Color(1.0, 0.8, 0.2, 1.0))
+	btn.add_theme_color_override("font_pressed_color", Color(0.7, 0.45, 0.0, 1.0))
+	
+	# Add clean text drop shadow
+	btn.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.85))
+	btn.add_theme_constant_override("shadow_offset_x", 4)
+	btn.add_theme_constant_override("shadow_offset_y", 4)
+	btn.add_theme_constant_override("shadow_outline_size", 6)
+	
+	# Match the PlayGames button theme styles but make it stand out
 	play_games = $CanvasLayer/OptionsContainer/HBoxContainer/PlayGames
 	if play_games:
 		btn.add_theme_font_override("font", play_games.get_theme_font("font"))
-		btn.add_theme_font_size_override("font_size", play_games.get_theme_font_size("font_size"))
-		btn.add_theme_stylebox_override("normal", play_games.get_theme_stylebox("normal"))
-		btn.add_theme_stylebox_override("hover", play_games.get_theme_stylebox("hover"))
-		btn.add_theme_stylebox_override("pressed", play_games.get_theme_stylebox("pressed"))
+		var base_size = play_games.get_theme_font_size("font_size")
+		btn.add_theme_font_size_override("font_size", base_size + 8) # Increase font size by 8
+	else:
+		btn.add_theme_font_size_override("font_size", 40)
 	
 	btn.pressed.connect(func(): mp_ui.visible = true)
 	
@@ -82,19 +126,27 @@ func _setup_multiplayer_ui():
 		var net = get_node_or_null("/root/Network")
 		net.game_started.connect(_on_multiplayer_game_started)
 
-var mp_rounds_played = 0
-var host_match_wins = 0
-var client_match_wins = 0
+var current_round_index := 1
+var current_turn_in_round := 1
+
+var host_round_wins := 0
+var client_round_wins := 0
+
+var host_round_goals := 0
+var client_round_goals := 0
 
 func _on_multiplayer_game_started():
 	if loading_screen: loading_screen.visible = false
 	$CanvasLayer/OptionsContainer.visible = false
 	
-	mp_rounds_played = 0
-	host_match_wins = 0
-	client_match_wins = 0
+	current_round_index = 1
+	current_turn_in_round = 1
+	host_round_wins = 0
+	client_round_wins = 0
+	host_round_goals = 0
+	client_round_goals = 0
 	
-	# Silence original arena securely exactly once
+	# Silence original arena securely exactly once on both Host and Client
 	var original_level = get_node_or_null("Level")
 	if original_level:
 		original_level.name = "SinglePlayerLevel"
@@ -105,11 +157,12 @@ func _on_multiplayer_game_started():
 		if original_level.has_method("_remove_all_balls"):
 			original_level._remove_all_balls()
 		original_level.name = "OriginalLevel_Disabled"
-		
-	start_multiplayer_round()
+	
+	if Network.is_host:
+		rpc_sync_settings.rpc(Network.match_total_rounds, Network.round_time_limit, Network.round_ball_count)
+		start_multiplayer_round()
 
 func start_multiplayer_round():
-	mp_rounds_played += 1
 	var original_level = get_node("OriginalLevel_Disabled")
 	
 	# Scour and destroy native leftover round arena smoothly
@@ -118,11 +171,19 @@ func start_multiplayer_round():
 		old_mp.name = "Level_Deleted" # Instantly sever name collision!
 		old_mp.queue_free()
 		
-	# Determine rotating Network Parity (Host is Striker on Round 1 and Round 3)
-	if Network.is_host:
-		Network.my_role_this_round = Network.PlayerRole.STRIKER if (mp_rounds_played % 2 != 0) else Network.PlayerRole.GOALKEEPER
+	# Determine rotating Network Parity (Round 1 Turn 1: Host is Striker, Turn 2: Client is Striker)
+	# Turn 1: Host is STRIKER, Client is GOALKEEPER
+	# Turn 2: Host is GOALKEEPER, Client is STRIKER
+	if current_turn_in_round == 1:
+		if Network.is_host:
+			Network.my_role_this_round = Network.PlayerRole.STRIKER
+		else:
+			Network.my_role_this_round = Network.PlayerRole.GOALKEEPER
 	else:
-		Network.my_role_this_round = Network.PlayerRole.GOALKEEPER if (mp_rounds_played % 2 != 0) else Network.PlayerRole.STRIKER
+		if Network.is_host:
+			Network.my_role_this_round = Network.PlayerRole.GOALKEEPER
+		else:
+			Network.my_role_this_round = Network.PlayerRole.STRIKER
 	
 	# Clean up leftover physics junk securely from disconnected prior single-player states exactly
 	var _bc = original_level.get_node_or_null("BallsContainer")
@@ -150,44 +211,147 @@ func start_multiplayer_round():
 	goalie.set_script(load("res://scripts/mp_goalkeeper.gd"))
 	goalie.init_multiplayer()
 	
-	# Assign explicit Network Node Authorities (Otherwise Host exclusively controls local inputs for both sides!)
-	var striker_id = 1
-	var goalkeeper_id = multiplayer.get_unique_id() if not Network.is_host else Network.connected_peer_id
-	goalie.set_multiplayer_authority(goalkeeper_id)
-	
 	# Do NOT swap ball scripts here. mp_manager's add_ball overrides handle it seamlessly!
 	# Pre-existing balls will be natively deleted by the map loader.
 	
 	add_child(mp_level)
 	
-	mp_level.start_multiplayer_match()
-		
-@rpc("any_peer", "call_remote", "reliable")
-func trigger_next_round(round_winner_id: int):
-	# Calculate match series wins securely
-	if round_winner_id == 1:
-		host_match_wins += 1
-	elif round_winner_id != 0:
-		client_match_wins += 1
-		
-	if host_match_wins >= 5 or client_match_wins >= 5:
-		# Series Decided!
-		var _mp_level = get_node_or_null("Level")
-		if _mp_level and _mp_level.has_node("Message"):
-			var win_text = "HOST WINS MATCH!" if host_match_wins >= 5 else "CLIENT WINS MATCH!"
-			if (Network.is_host and host_match_wins >= 5) or (not Network.is_host and client_match_wins >= 5):
-				win_text = "VICTORY! YOU ARE THE VETERAN STRIKER!"
-			else:
-				win_text = "SERIES LOST! BETTER LUCK NEXT MATCH..."
-				
-			# Aggressively halt any further round processing
-			var mp_ui = _mp_level.get_node_or_null("MultiplayerEnvironment")
-			if mp_ui: mp_ui.process_mode = Node.PROCESS_MODE_DISABLED
-			
-			_mp_level.get_node("Message").fade_out_text(win_text)
-			print("MATCH CONCLUDED! ", win_text)
+	# Assign explicit Network Node Authorities after node enters tree
+	var goalkeeper_id = 0
+	if current_turn_in_round == 1:
+		goalkeeper_id = Network.connected_peer_id if Network.is_host else multiplayer.get_unique_id()
 	else:
+		goalkeeper_id = multiplayer.get_unique_id() if Network.is_host else Network.connected_peer_id
+		
+	goalie.set_multiplayer_authority(goalkeeper_id)
+	
+	mp_level.start_multiplayer_match()
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_sync_settings(total_rounds: int, time_limit: int, ball_count: int):
+	Network.match_total_rounds = total_rounds
+	Network.round_time_limit = time_limit
+	Network.round_ball_count = ball_count
+	print("Synced settings: total_rounds=", total_rounds, ", time_limit=", time_limit, ", ball_count=", ball_count)
+	
+	if not Network.is_host:
 		start_multiplayer_round()
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_end_turn_and_swap(h_goals: int, c_goals: int):
+	local_end_turn_and_swap(h_goals, c_goals)
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_end_round(winner_id: int, h_wins: int, c_wins: int):
+	local_end_round(winner_id, h_wins, c_wins)
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_end_match(winner_id: int, h_wins: int, c_wins: int):
+	local_end_match(winner_id, h_wins, c_wins)
+
+func host_transition_to_turn_2(h_goals: int, c_goals: int):
+	if not Network.is_host: return
+	host_round_goals = h_goals
+	rpc_end_turn_and_swap.rpc(h_goals, c_goals)
+	local_end_turn_and_swap(h_goals, c_goals)
+
+func local_end_turn_and_swap(h_goals: int, c_goals: int):
+	host_round_goals = h_goals
+	client_round_goals = c_goals
+	
+	var mp_level = get_node_or_null("Level")
+	if mp_level:
+		mp_level.round_is_active = false
+		if mp_level.has_node("Message"):
+			mp_level.get_node("Message").fade_out_text("TURN 1 FINISHED!\nROLES SWAPPING...")
+			
+	get_tree().create_timer(3.0).timeout.connect(func():
+		current_turn_in_round = 2
+		start_multiplayer_round()
+	)
+
+func host_transition_to_next_round(h_goals: int, c_goals: int):
+	if not Network.is_host: return
+	client_round_goals = c_goals
+	
+	var winner_id = 0
+	if host_round_goals > client_round_goals:
+		host_round_wins += 1
+		winner_id = 1
+	elif client_round_goals > host_round_goals:
+		client_round_wins += 1
+		winner_id = Network.connected_peer_id
+	else:
+		winner_id = 0 # Draw
+		
+	if current_round_index >= Network.match_total_rounds:
+		var match_winner_id = 0
+		if host_round_wins > client_round_wins:
+			match_winner_id = 1
+		elif client_round_wins > host_round_wins:
+			match_winner_id = Network.connected_peer_id
+		else:
+			match_winner_id = 0 # Draw
+			
+		rpc_end_match.rpc(match_winner_id, host_round_wins, client_round_wins)
+		local_end_match(match_winner_id, host_round_wins, client_round_wins)
+	else:
+		rpc_end_round.rpc(winner_id, host_round_wins, client_round_wins)
+		local_end_round(winner_id, host_round_wins, client_round_wins)
+
+func local_end_round(winner_id: int, h_wins: int, c_wins: int):
+	host_round_wins = h_wins
+	client_round_wins = c_wins
+	
+	var mp_level = get_node_or_null("Level")
+	if mp_level:
+		mp_level.round_is_active = false
+		
+		var winner_text = ""
+		if winner_id == multiplayer.get_unique_id():
+			winner_text = "YOU WIN THE ROUND!"
+		elif winner_id == 0:
+			winner_text = "ROUND DRAWN!"
+		else:
+			winner_text = "OPPONENT WINS ROUND!"
+			
+		if mp_level.has_node("Message"):
+			mp_level.get_node("Message").fade_out_text(winner_text)
+			
+	get_tree().create_timer(3.0).timeout.connect(func():
+		current_round_index += 1
+		current_turn_in_round = 1
+		start_multiplayer_round()
+	)
+
+func local_end_match(winner_id: int, h_wins: int, c_wins: int):
+	host_round_wins = h_wins
+	client_round_wins = c_wins
+	
+	var mp_level = get_node_or_null("Level")
+	if mp_level:
+		mp_level.round_is_active = false
+		
+		var win_text = ""
+		if winner_id == multiplayer.get_unique_id():
+			win_text = "VICTORY!\nYOU ARE THE VETERAN STRIKER!"
+			if mp_level.get("celebrate") != null:
+				mp_level.celebrate.play()
+			mp_level.emit_signal("level_passed")
+		elif winner_id == 0:
+			win_text = "MATCH DRAWN!\nWELL PLAYED!"
+		else:
+			win_text = "SERIES LOST!\nBETTER LUCK NEXT MATCH..."
+			
+		if mp_level.has_node("Message"):
+			mp_level.get_node("Message").fade_out_text(win_text)
+			
+	get_tree().create_timer(5.0).timeout.connect(func():
+		if Network.multiplayer.has_multiplayer_peer():
+			Network.multiplayer.multiplayer_peer.close()
+		Network.cancel_matchmaking()
+		get_tree().call_deferred("reload_current_scene")
+	)
 
 
 	

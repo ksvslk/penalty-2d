@@ -2,6 +2,7 @@ extends "res://scripts/ball.gd"
 
 var target_pos = Vector2()
 var target_rot = 0.0
+var was_shot := false
 
 @rpc("unreliable", "call_remote", "any_peer")
 func sync_ball_transform(pos: Vector2, rot: float, sleep: bool):
@@ -9,6 +10,10 @@ func sync_ball_transform(pos: Vector2, rot: float, sleep: bool):
 	target_rot = rot
 	if not sleep:
 		sleeping = false # Preemptively wake up!
+	else:
+		sleeping = true
+		global_position = pos
+		rotation = rot
 
 @rpc("reliable", "call_remote", "any_peer")
 func sync_held_state(h: bool):
@@ -35,6 +40,12 @@ func init_multiplayer():
 	kick_sound = get_node("KickSound")
 	timer = get_node("Timer")
 	super_shot = get_node("SuperShot")
+	
+	# Pre-initialize target_pos to avoid initial 0,0 mismatch before first RPC sync
+	target_pos = global_position
+	
+	# Enable continuous collision detection to prevent fast tunneling shots
+	continuous_cd = RigidBody2D.CCD_MODE_CAST_RAY
 
 func _input_event(_viewport, event, _shape_idx):
 	if not is_multiplayer_authority(): return
@@ -44,7 +55,10 @@ func _input_event(_viewport, event, _shape_idx):
 
 func _input(event):
 	if not is_multiplayer_authority(): return
+	var was_held = held
 	super(event)
+	if was_held and not held:
+		was_shot = true
 
 var _last_did_get_over_limit = false
 
@@ -73,6 +87,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 			held = false
 			mediator.holding_ball = false
 			rpc("sync_held_state", false)
+			was_shot = true
 		
 		state.linear_velocity = linear_vel
 		state.linear_velocity *= mouse_drag_scale
@@ -85,6 +100,7 @@ var sleep_sent = false
 func _physics_process(_delta):
 	if multiplayer.multiplayer_peer == null: return
 	if is_multiplayer_authority():
+		freeze = false
 		# Host broadcasts its absolute truth dynamically! Throttle sleep packets to prevent ENet queue DOS flooding.
 		if sleeping:
 			if not sleep_sent:
@@ -94,6 +110,7 @@ func _physics_process(_delta):
 			sleep_sent = false
 			rpc("sync_ball_transform", global_position, rotation, false)
 	else:
+		freeze = true
 		# Client perfectly mimics host visually without fighting local engine physics!
 		if target_pos != Vector2():
 			var old_pos = global_position

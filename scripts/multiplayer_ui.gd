@@ -15,6 +15,9 @@ var accept_btn: Button
 var decline_btn: Button
 var confirmation_container: HBoxContainer
 
+var nickname_input: LineEdit
+var host_settings_container: VBoxContainer
+
 func _ready():
 	# Setup UI
 	anchors_preset = Control.PRESET_FULL_RECT
@@ -37,6 +40,17 @@ func _ready():
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 48)
 	main_container.add_child(title)
+	
+	nickname_input = LineEdit.new()
+	nickname_input.placeholder_text = "ENTER NICKNAME"
+	nickname_input.text = Network.player_name
+	nickname_input.custom_minimum_size = Vector2(900, 140)
+	nickname_input.add_theme_font_size_override("font_size", 36)
+	nickname_input.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nickname_input.focus_entered.connect(_on_osk_focus_entered)
+	nickname_input.focus_exited.connect(_on_osk_focus_exited)
+	nickname_input.text_changed.connect(_on_nickname_changed)
+	main_container.add_child(nickname_input)
 	
 	status_label = Label.new()
 	status_label.text = "Select Mode"
@@ -142,6 +156,193 @@ func _ready():
 	decline_btn.pressed.connect(_on_decline_pressed)
 	confirmation_container.add_child(decline_btn)
 
+	host_settings_container = VBoxContainer.new()
+	host_settings_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	host_settings_container.add_theme_constant_override("separation", 20)
+	host_settings_container.visible = true
+	main_container.add_child(host_settings_container)
+	
+	var settings_title = Label.new()
+	settings_title.text = "HOST MATCH SETTINGS"
+	settings_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	settings_title.add_theme_font_size_override("font_size", 32)
+	settings_title.modulate = Color(0.8, 0.8, 0.8, 1.0)
+	host_settings_container.add_child(settings_title)
+	
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = Color(0.1, 0.1, 0.1, 0.9)
+	style_normal.corner_radius_top_left = 10
+	style_normal.corner_radius_top_right = 10
+	style_normal.corner_radius_bottom_left = 10
+	style_normal.corner_radius_bottom_right = 10
+	
+	var style_pressed = StyleBoxFlat.new()
+	style_pressed.bg_color = Color(0.1, 0.4, 0.1, 0.9)
+	style_pressed.border_width_left = 2
+	style_pressed.border_width_right = 2
+	style_pressed.border_width_top = 2
+	style_pressed.border_width_bottom = 2
+	style_pressed.border_color = Color(0.8, 0.6, 0.2, 1.0)
+	style_pressed.corner_radius_top_left = 10
+	style_pressed.corner_radius_top_right = 10
+	style_pressed.corner_radius_bottom_left = 10
+	style_pressed.corner_radius_bottom_right = 10
+	
+	var apply_settings_style = func(btn: Button):
+		btn.add_theme_stylebox_override("normal", style_normal)
+		btn.add_theme_stylebox_override("hover", style_normal)
+		btn.add_theme_stylebox_override("pressed", style_pressed)
+		btn.add_theme_stylebox_override("hover_pressed", style_pressed)
+	
+	# Match Rounds selector
+	var wins_hbox = HBoxContainer.new()
+	wins_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	wins_hbox.add_theme_constant_override("separation", 20)
+	host_settings_container.add_child(wins_hbox)
+	
+	var wins_label = Label.new()
+	wins_label.text = "Match Rounds: "
+	wins_label.add_theme_font_size_override("font_size", 28)
+	wins_hbox.add_child(wins_label)
+	
+	var wins_btn_3 = Button.new()
+	wins_btn_3.text = "3 Rounds"
+	wins_btn_3.toggle_mode = true
+	wins_btn_3.button_pressed = true
+	wins_btn_3.custom_minimum_size = Vector2(200, 80)
+	wins_btn_3.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(wins_btn_3)
+	wins_hbox.add_child(wins_btn_3)
+	
+	var wins_btn_5 = Button.new()
+	wins_btn_5.text = "5 Rounds"
+	wins_btn_5.toggle_mode = true
+	wins_btn_5.custom_minimum_size = Vector2(200, 80)
+	wins_btn_5.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(wins_btn_5)
+	wins_hbox.add_child(wins_btn_5)
+	
+	# Seconds per round selector
+	var time_hbox = HBoxContainer.new()
+	time_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	time_hbox.add_theme_constant_override("separation", 20)
+	host_settings_container.add_child(time_hbox)
+	
+	var time_label = Label.new()
+	time_label.text = "Round Time: "
+	time_label.add_theme_font_size_override("font_size", 28)
+	time_hbox.add_child(time_label)
+	
+	var time_btn_45 = Button.new()
+	time_btn_45.text = "45s"
+	time_btn_45.toggle_mode = true
+	time_btn_45.custom_minimum_size = Vector2(150, 80)
+	time_btn_45.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(time_btn_45)
+	time_hbox.add_child(time_btn_45)
+	
+	var time_btn_60 = Button.new()
+	time_btn_60.text = "60s"
+	time_btn_60.toggle_mode = true
+	time_btn_60.button_pressed = true
+	time_btn_60.custom_minimum_size = Vector2(150, 80)
+	time_btn_60.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(time_btn_60)
+	time_hbox.add_child(time_btn_60)
+	
+	var time_btn_90 = Button.new()
+	time_btn_90.text = "90s"
+	time_btn_90.toggle_mode = true
+	time_btn_90.custom_minimum_size = Vector2(150, 80)
+	time_btn_90.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(time_btn_90)
+	time_hbox.add_child(time_btn_90)
+	
+	# Balls count selector
+	var balls_hbox = HBoxContainer.new()
+	balls_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	balls_hbox.add_theme_constant_override("separation", 20)
+	host_settings_container.add_child(balls_hbox)
+	
+	var balls_label = Label.new()
+	balls_label.text = "Balls Count: "
+	balls_label.add_theme_font_size_override("font_size", 28)
+	balls_hbox.add_child(balls_label)
+	
+	var balls_btn_3 = Button.new()
+	balls_btn_3.text = "3"
+	balls_btn_3.toggle_mode = true
+	balls_btn_3.custom_minimum_size = Vector2(150, 80)
+	balls_btn_3.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(balls_btn_3)
+	balls_hbox.add_child(balls_btn_3)
+	
+	var balls_btn_5 = Button.new()
+	balls_btn_5.text = "5"
+	balls_btn_5.toggle_mode = true
+	balls_btn_5.button_pressed = true
+	balls_btn_5.custom_minimum_size = Vector2(150, 80)
+	balls_btn_5.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(balls_btn_5)
+	balls_hbox.add_child(balls_btn_5)
+	
+	var balls_btn_7 = Button.new()
+	balls_btn_7.text = "7"
+	balls_btn_7.toggle_mode = true
+	balls_btn_7.custom_minimum_size = Vector2(150, 80)
+	balls_btn_7.add_theme_font_size_override("font_size", 24)
+	apply_settings_style.call(balls_btn_7)
+	balls_hbox.add_child(balls_btn_7)
+	
+	wins_btn_3.pressed.connect(func():
+		wins_btn_3.button_pressed = true
+		wins_btn_5.button_pressed = false
+		Network.match_total_rounds = 3
+	)
+	wins_btn_5.pressed.connect(func():
+		wins_btn_3.button_pressed = false
+		wins_btn_5.button_pressed = true
+		Network.match_total_rounds = 5
+	)
+	
+	time_btn_45.pressed.connect(func():
+		time_btn_45.button_pressed = true
+		time_btn_60.button_pressed = false
+		time_btn_90.button_pressed = false
+		Network.round_time_limit = 45
+	)
+	time_btn_60.pressed.connect(func():
+		time_btn_45.button_pressed = false
+		time_btn_60.button_pressed = true
+		time_btn_90.button_pressed = false
+		Network.round_time_limit = 60
+	)
+	time_btn_90.pressed.connect(func():
+		time_btn_45.button_pressed = false
+		time_btn_60.button_pressed = false
+		time_btn_90.button_pressed = true
+		Network.round_time_limit = 90
+	)
+	
+	balls_btn_3.pressed.connect(func():
+		balls_btn_3.button_pressed = true
+		balls_btn_5.button_pressed = false
+		balls_btn_7.button_pressed = false
+		Network.round_ball_count = 3
+	)
+	balls_btn_5.pressed.connect(func():
+		balls_btn_3.button_pressed = false
+		balls_btn_5.button_pressed = true
+		balls_btn_7.button_pressed = false
+		Network.round_ball_count = 5
+	)
+	balls_btn_7.pressed.connect(func():
+		balls_btn_3.button_pressed = false
+		balls_btn_5.button_pressed = false
+		balls_btn_7.button_pressed = true
+		Network.round_ball_count = 7
+	)
+	
 	back_btn = _create_button("BACK")
 	back_btn.pressed.connect(_on_back_pressed)
 	back_btn.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
@@ -208,10 +409,21 @@ func _on_quick_match_pressed():
 	quick_match_btn.visible = false
 	code_input.visible = false
 	cancel_btn.visible = true
+	nickname_input.visible = false
+	host_settings_container.visible = false
 
 func _on_host_pressed():
 	status_label.text = "Connecting to signaling..."
 	Network.connect_to_signaling_server()
+	
+	host_btn.visible = false
+	join_btn.visible = false
+	quick_match_btn.visible = false
+	code_input.visible = false
+	cancel_btn.visible = true
+	nickname_input.visible = false
+	host_settings_container.visible = false
+	
 	await get_tree().create_timer(0.5).timeout
 	Network.create_game()
 
@@ -222,14 +434,17 @@ func _on_join_pressed():
 		
 	status_label.text = "Connecting..."
 	Network.connect_to_signaling_server()
-	await get_tree().create_timer(0.5).timeout
-	Network.join_game(code_input.text.strip_edges().to_upper())
 	
 	host_btn.visible = false
 	join_btn.visible = false
 	quick_match_btn.visible = false
 	code_input.visible = false
 	cancel_btn.visible = true
+	nickname_input.visible = false
+	host_settings_container.visible = false
+	
+	await get_tree().create_timer(0.5).timeout
+	Network.join_game(code_input.text.strip_edges().to_upper())
 
 func _on_cancel_pressed():
 	Network.cancel_matchmaking()
@@ -251,11 +466,14 @@ func _reset_to_start():
 	join_btn.visible = true
 	quick_match_btn.visible = true
 	code_input.visible = true
+	code_input.editable = true
 	copy_btn.visible = false
 	cancel_btn.visible = false
 	confirmation_container.visible = false
 	accept_btn.disabled = false
 	decline_btn.disabled = false
+	nickname_input.visible = true
+	host_settings_container.visible = true
 
 func _on_queue_joined():
 	status_label.text = "SEARCHING FOR PLAYERS..."
@@ -269,12 +487,16 @@ func _on_lobby_created(code):
 	quick_match_btn.visible = false
 	copy_btn.visible = true
 	cancel_btn.visible = true
+	nickname_input.visible = false
+	host_settings_container.visible = true
 
 func _on_match_found(role):
 	status_label.text = "MATCH FOUND!\nYOU WILL BE " + role.to_upper() + "\nACCEPT?"
 	copy_btn.visible = false
 	cancel_btn.visible = false
 	confirmation_container.visible = true
+	nickname_input.visible = false
+	host_settings_container.visible = false
 	
 func _on_match_cancelled():
 	status_label.text = "Match Cancelled."
@@ -285,21 +507,17 @@ func _on_joined_lobby():
 	status_label.text = "MATCH ACCEPTED! Connecting WebRTC..."
 	confirmation_container.visible = false
 	cancel_btn.visible = false
+	nickname_input.visible = false
+	host_settings_container.visible = false
 
 func _on_game_error(msg):
+	_reset_to_start()
 	status_label.text = "Error: " + str(msg)
-	host_btn.visible = true
-	join_btn.visible = true
-	quick_match_btn.visible = true
-	code_input.visible = true
-	copy_btn.visible = false
 
 func _on_game_started():
 	status_label.text = "STARTING GAME!"
 	await get_tree().create_timer(1.0).timeout
 	visible = false
-	# Get Level and start multiplayer
-	# This should be handled by a signal in Master.gd or Level.gd
 
 func _on_back_pressed():
 	visible = false
@@ -309,10 +527,15 @@ func _on_back_pressed():
 		if opts:
 			opts.show()
 			
-	# Natively disconnect gracefully to clear sockets
+	Network.cancel_matchmaking()
 	if Network.multiplayer.has_multiplayer_peer():
 		Network.multiplayer.multiplayer_peer.close()
 
 func _on_copy_pressed():
 	DisplayServer.clipboard_set(code_input.text)
 	status_label.text += "\n(Copied!)"
+
+func _on_nickname_changed(new_text: String):
+	Network.player_name = new_text.strip_edges()
+	if Network.player_name.is_empty():
+		Network.player_name = "Player_" + str(randi_range(100, 999))
