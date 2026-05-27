@@ -59,7 +59,17 @@ func _ready():
 func _on_network_player_disconnected(_id):
 	round_is_active = false
 	if message: message.fade_out_text("OPPONENT LEFT!")
-	get_tree().create_timer(3.0).timeout.connect(func():
+	
+	# Immediately transition to black loading screen to cover the scene and prevent gray flashes
+	var m = get_node_or_null("/root/Master")
+	if m:
+		var opts = m.get_node_or_null("CanvasLayer/OptionsContainer")
+		if opts:
+			opts.visible = true
+		if m.get("loading_screen") != null:
+			m.loading_screen.visible = true
+			
+	get_tree().create_timer(1.5).timeout.connect(func():
 		if Network.multiplayer.has_multiplayer_peer():
 			Network.multiplayer.multiplayer_peer.close()
 		Network.cancel_matchmaking()

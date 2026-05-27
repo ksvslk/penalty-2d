@@ -12,7 +12,7 @@ func sync_ball_transform(pos: Vector2, rot: float, sleep: bool):
 		sleeping = false # Preemptively wake up!
 	else:
 		sleeping = true
-		global_position = pos
+		position = pos
 		rotation = rot
 
 @rpc("reliable", "call_remote", "any_peer")
@@ -42,7 +42,8 @@ func init_multiplayer():
 	super_shot = get_node("SuperShot")
 	
 	# Pre-initialize target_pos to avoid initial 0,0 mismatch before first RPC sync
-	target_pos = global_position
+	force_update_transform()
+	target_pos = position
 	
 	# Enable continuous collision detection to prevent fast tunneling shots
 	continuous_cd = RigidBody2D.CCD_MODE_CAST_RAY
@@ -104,19 +105,19 @@ func _physics_process(_delta):
 		# Host broadcasts its absolute truth dynamically! Throttle sleep packets to prevent ENet queue DOS flooding.
 		if sleeping:
 			if not sleep_sent:
-				rpc("sync_ball_transform", global_position, rotation, true)
+				rpc("sync_ball_transform", position, rotation, true)
 				sleep_sent = true
 		else:
 			sleep_sent = false
-			rpc("sync_ball_transform", global_position, rotation, false)
+			rpc("sync_ball_transform", position, rotation, false)
 	else:
 		freeze = true
 		# Client perfectly mimics host visually without fighting local engine physics!
 		if target_pos != Vector2():
-			var old_pos = global_position
-			global_position = global_position.lerp(target_pos, _delta * 20)
+			var old_pos = position
+			position = position.lerp(target_pos, _delta * 20)
 			rotation = lerp_angle(rotation, target_rot, _delta * 20)
-			current_y_velocity = (global_position.y - old_pos.y) / _delta
+			current_y_velocity = (position.y - old_pos.y) / _delta
 			
 	# Trails run identically for both native and remote authority
 	if current_y_velocity < trail_speed_limit and did_get_over_limit:
