@@ -38,6 +38,9 @@ func _on_shield_body_entered(body: Node2D):
 	if "Ball" in body.name and is_multiplayer_authority():
 		rpc("goal_saved", body.name)
 		
+		if body.has_method("reject_ball"):
+			body.reject_ball()
+		
 		if Network.my_role_this_round == Network.PlayerRole.GOALKEEPER:
 			var is_fast = false
 			if body and body.get("current_y_velocity") != null:

@@ -72,6 +72,17 @@ func unlock_ball_related_achievements():
 		GPack.unlock_achievement(C.achievement_15_x_fast_shot)
 
 
+var remote_pos = Vector2()
+var remote_is_held = false
+var remote_burst_velocity = Vector2()
+var remote_launch_pos = Vector2()
+
+func get_local_shift_y() -> float:
+	if OS.get_name() != "macOS":
+		var viewport_height = get_viewport_rect().size.y
+		return viewport_height - 2400 - C.get_bottom_safe_margin()
+	return 0.0
+
 func _integrate_forces(state: PhysicsDirectBodyState2D):
 	if multiplayer.multiplayer_peer == null: return
 	if not is_multiplayer_authority() and Network.connected_peer_id != 0:
@@ -82,6 +93,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 			state.linear_velocity = Vector2.ZERO # Stop rigid physics while dragged remotely
 		elif remote_burst_velocity != Vector2.ZERO:
 			# ONE SHOT BURST RECEIVED!
+			state.transform.origin = remote_launch_pos
 			state.linear_velocity = remote_burst_velocity
 			remote_burst_velocity = Vector2.ZERO
 		return
@@ -96,33 +108,28 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 			mediator.holding_ball = false
 			# BURST FIRE! Send trajectory to Goalie!
 			if Network.connected_peer_id != 0:
-				rpc("launch_ball_remote", linear_vel * mouse_drag_scale)
+				var unshifted_pos = global_position - Vector2(0, get_local_shift_y())
+				rpc("launch_ball_remote", unshifted_pos, linear_vel * mouse_drag_scale)
 		
 		state.linear_velocity = linear_vel
 		state.linear_velocity *= mouse_drag_scale
 		
 		# Send drag interpolation to Goalie
 		if Network.connected_peer_id != 0:
-			rpc("update_ball_drag", global_position)
+			var unshifted_pos = global_position - Vector2(0, get_local_shift_y())
+			rpc("update_ball_drag", unshifted_pos)
 			
 	current_y_velocity = state.linear_velocity.y
 
-
-
-
-
-var remote_pos = Vector2()
-var remote_is_held = false
-var remote_burst_velocity = Vector2()
-
 @rpc("unreliable", "call_remote", "any_peer")
-func update_ball_drag(pos: Vector2):
-	remote_pos = pos
+func update_ball_drag(unshifted_pos: Vector2):
+	remote_pos = unshifted_pos + Vector2(0, get_local_shift_y())
 	remote_is_held = true
 
 @rpc("reliable", "call_remote", "any_peer")
-func launch_ball_remote(vel: Vector2):
+func launch_ball_remote(unshifted_pos: Vector2, vel: Vector2):
 	remote_is_held = false
+	remote_launch_pos = unshifted_pos + Vector2(0, get_local_shift_y())
 	remote_burst_velocity = vel
 
 func _process(_delta):

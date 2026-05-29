@@ -51,6 +51,16 @@ func start_multiplayer_match():
 	start_game()
 
 func _ready():
+	super()
+	
+	# Re-connect StartTimer timeout programmatically to guarantee countdown works in multiplayer
+	if start_timer:
+		if start_timer.timeout.is_connected(_on_StartTimer_timeout):
+			start_timer.timeout.disconnect(_on_StartTimer_timeout)
+		start_timer.timeout.connect(_on_StartTimer_timeout)
+		
+	balls.clear()
+	round_is_active = false
 	if not Network.player_disconnected.is_connected(_on_network_player_disconnected):
 		Network.player_disconnected.connect(_on_network_player_disconnected)
 	_setup_player_huds()
@@ -84,6 +94,8 @@ func _update_level_info(info: Dictionary):
 	time.timer.stop()
 	restart.visible = false
 	continue_button.visible = false
+	if start_countdown:
+		start_countdown.visible = false
 	
 	# Set Goalkeeper difficulty/speed from level info
 	goal_keeper.speed = info[C.DIFFICULTY]
@@ -302,8 +314,7 @@ func _spawn_role_style_indicator():
 		fade_out.tween_property(role_title, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_SINE)
 		fade_out.finished.connect(func():
 			canvas.queue_free()
-			round_start_actions()
-			round_is_active = true
+			level_start_countdown()
 		)
 	)
 
@@ -328,7 +339,11 @@ func add_ball(eternal_ball = false, adding_all_balls = false, pos = $BallPositio
 	goal_keeper.balls = balls
 	
 	new_ball.init_multiplayer()
-	new_ball.set_multiplayer_authority(1) # Host securely owns ALL predictive ball physics initially
+	
+	var striker_id = 1
+	if Network.connected_peer_id != 0:
+		striker_id = 1 if (Network.is_host == (Network.my_role_this_round == Network.PlayerRole.STRIKER)) else Network.connected_peer_id
+	new_ball.set_multiplayer_authority(striker_id)
 
 # Override single player logic
 var mp_time_remaining = 60.0
@@ -336,6 +351,10 @@ var local_host_score = 0
 var local_client_score = 0
 
 func _process(delta):
+	# Periodic diagnostic status logging
+	if Engine.get_process_frames() % 60 == 0:
+		print("[MP Manager] Status: round_is_active=", round_is_active, ", balls=", balls.size(), ", is_host=", Network.is_host, ", time_left=", mp_time_remaining)
+		
 	if round_is_active:
 		if Network.is_host:
 			mp_time_remaining -= delta
@@ -349,11 +368,13 @@ func _process(delta):
 			else:
 				# Check if all balls are finished
 				var all_finished = true
+				var has_valid_ball = false
 				if balls.is_empty():
 					all_finished = false
 				else:
 					for b in balls:
 						if is_instance_valid(b):
+							has_valid_ball = true
 							var b_shot = b.get("was_shot") == true
 							var b_finished = b_shot and (b.sleeping or b.global_position.y < 150 or not b.is_in_bounds())
 							if not b_finished:
@@ -362,8 +383,15 @@ func _process(delta):
 						else:
 							pass
 							
-				if all_finished:
-					print("All balls finished.")
+				if all_finished and has_valid_ball:
+					print("[MP Manager] Transition triggered! Logging all ball states:")
+					for i in range(balls.size()):
+						var b = balls[i]
+						if is_instance_valid(b):
+							print("  Ball ", i, " (", b.name, "): was_shot=", b.get("was_shot"), ", sleeping=", b.sleeping, ", pos.y=", b.global_position.y, ", in_bounds=", b.is_in_bounds())
+						else:
+							print("  Ball ", i, ": INVALID/NULL")
+					print("All balls finished. Swapping turns.")
 					round_is_active = false
 					_end_turn_delayed()
 				
@@ -387,9 +415,9 @@ func round_start_actions():
 	if time and time.timer:
 		(time.timer as Timer).stop() # Terminate native UI timer perfectly
 	whistle_sound.play()
-	# The tween inside _spawn_role_style_indicator will explicitly trigger `round_is_active = true`!
 	new_high_score_announced = false
 	mp_time_remaining = Network.round_time_limit
+	round_is_active = true
 	
 func _on_Goal_body_shape_entered(_body_rid, body, _body_shape_index, _local_shape_index):
 	if round_is_active:
@@ -480,6 +508,7 @@ func _setup_player_huds():
 	
 	var hud_root = Control.new()
 	hud_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hud_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud_canvas.add_child(hud_root)
 	
 	# Horizontal HUD Container
@@ -488,6 +517,7 @@ func _setup_player_huds():
 	hbox.size = Vector2(1000, 180)
 	hbox.custom_minimum_size = Vector2(1000, 180)
 	hbox.add_theme_constant_override("separation", 20)
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud_root.add_child(hbox)
 	
 	# Style for Panels
