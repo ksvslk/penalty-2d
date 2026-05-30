@@ -21,6 +21,7 @@ var right_score_label: Label
 
 var round_label: Label
 var timer_label: Label
+var ping_hud_label: Label
 
 var top_overlay_vbox: VBoxContainer
 var top_overlay_flag: TextureRect
@@ -355,6 +356,10 @@ func _process(delta):
 	if Engine.get_process_frames() % 60 == 0:
 		print("[MP Manager] Status: round_is_active=", round_is_active, ", balls=", balls.size(), ", is_host=", Network.is_host, ", time_left=", mp_time_remaining)
 		
+	if ping_hud_label and has_node("/root/Network"):
+		var net = get_node("/root/Network")
+		ping_hud_label.text = "PING: " + str(net.get("last_measured_ping")) + " ms"
+		
 	if round_is_active:
 		if Network.is_host:
 			mp_time_remaining -= delta
@@ -595,6 +600,15 @@ func _setup_player_huds():
 	timer_label.position = Vector2(0, -5)
 	timer_label.modulate = Color.GREEN
 	center_content.add_child(timer_label)
+	
+	ping_hud_label = Label.new()
+	ping_hud_label.text = "PING: -- ms"
+	ping_hud_label.add_theme_font_size_override("font_size", 24)
+	ping_hud_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ping_hud_label.size = Vector2(320, 30)
+	ping_hud_label.position = Vector2(0, 135)
+	ping_hud_label.modulate = Color(0.7, 0.7, 0.7, 1.0)
+	center_content.add_child(ping_hud_label)
 	
 	# CenterContainer to perfectly center the round panel horizontally at y = 1038
 	var round_container = CenterContainer.new()

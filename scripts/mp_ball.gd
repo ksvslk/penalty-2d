@@ -56,15 +56,15 @@ func init_multiplayer():
 	print("[MP Ball] init_multiplayer: name=", name)
 
 func _input_event(_viewport, event, _shape_idx):
-	if not is_multiplayer_authority(): return
+	if multiplayer.multiplayer_peer == null or not is_multiplayer_authority(): return
 	super(_viewport, event, _shape_idx)
 
 func _input(event):
-	if not is_multiplayer_authority(): return
+	if multiplayer.multiplayer_peer == null or not is_multiplayer_authority(): return
 	super(event)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D):
-	if is_multiplayer_authority():
+	if multiplayer.multiplayer_peer != null and is_multiplayer_authority():
 		super(state)
 		if was_held_last_frame and not held:
 			was_shot = true

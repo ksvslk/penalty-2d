@@ -46,6 +46,8 @@ var player_name := ""
 var ping_test_samples: Array = []
 var ping_test_in_progress := false
 var is_latency_verified := false
+var last_measured_ping := 0
+var _ping_timer := 0.0
 
 func _reset_network_state():
 	code = ""
@@ -61,6 +63,8 @@ func _reset_network_state():
 	ping_test_samples.clear()
 	ping_test_in_progress = false
 	is_latency_verified = false
+	last_measured_ping = 0
+	_ping_timer = 0.0
 	print("Network state reset successfully.")
 
 var ws: WebSocketPeer = WebSocketPeer.new()
@@ -92,7 +96,7 @@ func _ready():
 		
 	print("Multiplayer signaling URL: ", SIGNALING_URL)
 
-func _process(_delta):
+func _process(delta):
 	ws.poll()
 	var state = ws.get_ready_state()
 	
@@ -110,6 +114,14 @@ func _process(_delta):
 			print("Signaling connection closed unexpectedly.")
 			_reset_network_state()
 			emit_signal("game_error", "Connection to signaling server lost.")
+			
+	# Gameplay Ping updates (every 1.5 seconds)
+	if multiplayer.has_multiplayer_peer() and connected_peer_id != 0:
+		_ping_timer += delta
+		if _ping_timer >= 1.5:
+			_ping_timer = 0.0
+			if not ping_test_in_progress:
+				rpc_id(connected_peer_id, "rpc_game_ping", Time.get_ticks_msec())
 
 func connect_to_signaling_server():
 	if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
@@ -348,3 +360,11 @@ func rpc_latency_failed(avg_ping: int):
 func rpc_latency_passed():
 	is_latency_verified = true
 	emit_signal("game_started")
+
+@rpc("any_peer", "call_remote", "unreliable")
+func rpc_game_ping(timestamp: int):
+	rpc_id(multiplayer.get_remote_sender_id(), "rpc_game_pong", timestamp)
+
+@rpc("any_peer", "call_remote", "unreliable")
+func rpc_game_pong(timestamp: int):
+	last_measured_ping = (Time.get_ticks_msec() - timestamp) / 2
