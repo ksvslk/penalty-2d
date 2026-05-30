@@ -107,7 +107,7 @@ func _add_all_balls():
 func add_ball(eternal_ball = false, adding_all_balls = false, pos = $BallPositions.get_children()[0]):
 	var ball = ball_scene.instantiate() as Ball
 	ball.mediator = self
-	ball.scale = ball.scale / 2
+	# No scaling needed, Ball.tscn is already pre-scaled
 	ball.set_flag(Data.get_player_team())
 	ball.global_position = pos.global_position
 	if eternal_ball:

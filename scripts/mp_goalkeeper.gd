@@ -68,13 +68,12 @@ func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
 		# Remote Touch Dragging: Goalie can drag anywhere on screen (x-axis)
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.get_connected_joypads().size() > 0:
-			var target = get_local_mouse_position().x + position.x # get_local_mouse_position() evaluates relative to the origin of the node.
-			# Wait! By definition, 'get_local_mouse_position()' on a CharacterBody returns relative offset!
-			# To get the local coordinates relative to the PARENT level space where position.x exists:
-			target = get_parent().get_local_mouse_position().x
+			var target = get_parent().get_local_mouse_position().x
 			target = clamp(target, 80.0, 1000.0)
 			position.x = lerp(position.x, float(target), delta * 20.0)
-			rpc("mp_update_position", position.x)
+		
+		# Always send position update when authoritative so the other peer stays in sync
+		rpc("mp_update_position", position.x)
 	else:
 		# We are the Striker, viewing the remotely manipulated Goalie
 		position.x = lerp(position.x, mp_target_x, delta * 15)

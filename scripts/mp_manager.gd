@@ -325,7 +325,7 @@ func add_ball(eternal_ball = false, adding_all_balls = false, pos = $BallPositio
 	new_ball.set_script(load("res://scripts/mp_ball.gd"))
 	
 	new_ball.mediator = self
-	new_ball.scale = new_ball.scale / 2
+	# No scaling needed, Ball.tscn is already pre-scaled
 	new_ball.set_flag(Data.get_player_team())
 	new_ball.global_position = pos.global_position
 	
