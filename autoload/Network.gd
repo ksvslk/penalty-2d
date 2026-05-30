@@ -42,6 +42,11 @@ var round_ball_count := 5
 # Local Player Identity
 var player_name := ""
 
+# Latency Verification (250ms limit)
+var ping_test_samples: Array = []
+var ping_test_in_progress := false
+var is_latency_verified := false
+
 func _reset_network_state():
 	code = ""
 	is_host = false
@@ -53,6 +58,9 @@ func _reset_network_state():
 	match_total_rounds = 3
 	round_time_limit = 60
 	round_ball_count = 5
+	ping_test_samples.clear()
+	ping_test_in_progress = false
+	is_latency_verified = false
 	print("Network state reset successfully.")
 
 var ws: WebSocketPeer = WebSocketPeer.new()
@@ -280,8 +288,63 @@ func _on_network_peer_connected(id):
 		my_role_this_round = PlayerRole.GOALKEEPER
 		opponent_role_this_round = PlayerRole.STRIKER
 		
-	emit_signal("game_started")
+	# Instead of immediately starting game, Host triggers latency verification
+	if is_host:
+		print("[Network] Starting connection latency check...")
+		ping_test_samples.clear()
+		ping_test_in_progress = true
+		rpc_id(id, "rpc_ping", Time.get_ticks_msec())
+	else:
+		print("[Network] Waiting for host connection latency check...")
 
 func _on_network_peer_disconnected(id):
 	print("Network Peer Disconnected: ", id)
 	emit_signal("player_disconnected", id)
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_ping(timestamp: int):
+	rpc_id(multiplayer.get_remote_sender_id(), "rpc_pong", timestamp)
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_pong(timestamp: int):
+	if not ping_test_in_progress:
+		return
+	var rtt = Time.get_ticks_msec() - timestamp
+	var ping = rtt / 2
+	ping_test_samples.append(ping)
+	print("[Network] Latency sample: ", ping, " ms")
+	
+	if ping_test_samples.size() < 3:
+		# Send another sample after a short delay (100ms)
+		get_tree().create_timer(0.1).timeout.connect(func():
+			if ping_test_in_progress and multiplayer.has_multiplayer_peer():
+				rpc_id(connected_peer_id, "rpc_ping", Time.get_ticks_msec())
+		)
+	else:
+		# Calculate average ping
+		var sum = 0
+		for p in ping_test_samples:
+			sum += p
+		var avg_ping = sum / ping_test_samples.size()
+		print("[Network] Average latency: ", avg_ping, " ms")
+		ping_test_in_progress = false
+		
+		if avg_ping > 250:
+			print("[Network] Latency verification failed! Ping: ", avg_ping, " ms (Limit: 250ms)")
+			rpc("rpc_latency_failed", avg_ping)
+		else:
+			print("[Network] Latency verification passed. Ping: ", avg_ping, " ms")
+			rpc("rpc_latency_passed")
+
+@rpc("any_peer", "call_local", "reliable")
+func rpc_latency_failed(avg_ping: int):
+	is_latency_verified = false
+	emit_signal("game_error", "Connection speed too slow! Ping: " + str(avg_ping) + "ms (Max: 250ms)")
+	if multiplayer.has_multiplayer_peer():
+		multiplayer.multiplayer_peer.close()
+	_reset_network_state()
+
+@rpc("any_peer", "call_local", "reliable")
+func rpc_latency_passed():
+	is_latency_verified = true
+	emit_signal("game_started")
