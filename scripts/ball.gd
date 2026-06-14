@@ -3,6 +3,7 @@ class_name Ball
 
 var mediator
 var held = false
+var has_scored := false
 @onready var collision_shape_2d = $CollisionShape2D
 @export var mouse_drag_scale = 20
 @onready var kick_sound = $KickSound
@@ -84,8 +85,7 @@ func get_local_shift_y() -> float:
 	return 0.0
 
 func _integrate_forces(state: PhysicsDirectBodyState2D):
-	if multiplayer.multiplayer_peer == null: return
-	if not is_multiplayer_authority() and Network.connected_peer_id != 0:
+	if Network.connected_peer_id != 0 and multiplayer.multiplayer_peer != null and not is_multiplayer_authority():
 		# PVP: Goalie is watching the Striker remotely drag the ball
 		if remote_is_held:
 			var old_vel = state.linear_velocity
@@ -169,12 +169,11 @@ func _enter_tree():
 	set_multiplayer_authority(1) # Default to server, will be updated by spawner
 
 func _physics_process(_delta):
-	if multiplayer.multiplayer_peer == null: return
 	# only process physics trail if moving fast
-	if is_multiplayer_authority() or Network.connected_peer_id == 0:
+	if Network.connected_peer_id == 0 or (multiplayer.multiplayer_peer != null and is_multiplayer_authority()):
 		if current_y_velocity < trail_speed_limit and did_get_over_limit:
 			_add_trail()
-		if global_position.y <= 111:
+		if has_scored:
 			set_collision_mask_value(4, false)
 		else:
 			set_collision_mask_value(4, true)

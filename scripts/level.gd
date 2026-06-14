@@ -194,6 +194,8 @@ func vibrate(duration: int = 50):
 
 func _on_Goal_body_shape_entered(_body_rid, body, _body_shape_index, _local_shape_index):
 	if round_is_active:
+		if body is Ball:
+			body.has_scored = true
 		goal_counter += 1
 		var time_left = time.start_time
 		var bonus = time.start_time <= BONUS_TIME

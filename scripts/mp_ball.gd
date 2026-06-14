@@ -8,6 +8,13 @@ var remote_rotation := 0.0
 var remote_angular_velocity := 0.0
 var has_remote_state := false
 
+var last_x := 0.0
+var last_y := 0.0
+
+func _ready():
+	last_x = global_position.x
+	last_y = global_position.y
+
 @rpc("unreliable", "call_remote", "any_peer")
 func sync_ball_state(unshifted_pos: Vector2, vel: Vector2, rot: float, ang_vel: float):
 	remote_pos = unshifted_pos + Vector2(0, get_local_shift_y())
@@ -40,6 +47,8 @@ func launch_ball_remote(unshifted_pos: Vector2, vel: Vector2):
 	if not is_multiplayer_authority():
 		global_position = remote_pos
 		global_rotation = 0.0
+	last_x = remote_pos.x
+	last_y = remote_pos.y
 
 func reject_ball():
 	linear_velocity = Vector2(linear_velocity.x, 3000)
@@ -54,6 +63,8 @@ func init_multiplayer():
 	# Enable continuous collision detection to prevent fast tunneling shots
 	continuous_cd = RigidBody2D.CCD_MODE_CAST_RAY
 	print("[MP Ball] init_multiplayer: name=", name)
+	last_x = global_position.x
+	last_y = global_position.y
 
 func _input_event(_viewport, event, _shape_idx):
 	if multiplayer.multiplayer_peer == null or not is_multiplayer_authority(): return
@@ -68,10 +79,15 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 		super(state)
 		if was_held_last_frame and not held:
 			was_shot = true
+			last_x = global_position.x
+			last_y = global_position.y
 		was_held_last_frame = held
 
 func _physics_process(delta):
 	if multiplayer.multiplayer_peer == null: return
+	
+	var current_x = global_position.x
+	var current_y = global_position.y
 	
 	if is_multiplayer_authority():
 		freeze = false
@@ -100,7 +116,28 @@ func _physics_process(delta):
 	if current_y_velocity < trail_speed_limit and did_get_over_limit:
 		_add_trail()
 		
-	if global_position.y <= 111:
+	if has_scored:
 		set_collision_mask_value(4, false)
 	else:
 		set_collision_mask_value(4, true)
+		
+	# Sweep block check
+	if was_shot and not has_scored:
+		var goalie = mediator.goal_keeper
+		if goalie:
+			var goalie_y = goalie.global_position.y
+			if last_y > goalie_y and current_y <= goalie_y:
+				# Ball crossed the goalkeeper line
+				var t = 0.5
+				if current_y != last_y:
+					t = (goalie_y - last_y) / (current_y - last_y)
+				var cross_x = last_x + t * (current_x - last_x)
+				if abs(cross_x - goalie.global_position.x) <= 150.0:
+					reject_ball()
+					if is_multiplayer_authority():
+						rpc("launch_ball_remote", global_position - Vector2(0, get_local_shift_y()), linear_velocity)
+					else:
+						goalie.rpc("goal_saved", name)
+						
+	last_x = current_x
+	last_y = current_y

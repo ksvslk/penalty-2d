@@ -54,7 +54,7 @@ func _reset_network_state():
 	is_host = false
 	connected_peer_id = 0
 	multiplier_peer = null
-	multiplayer.multiplayer_peer = null
+	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	active_connections.clear()
 	ice_servers = DEFAULT_ICE_SERVERS
 	match_total_rounds = 3

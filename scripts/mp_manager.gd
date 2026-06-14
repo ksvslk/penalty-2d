@@ -426,6 +426,8 @@ func round_start_actions():
 	
 func _on_Goal_body_shape_entered(_body_rid, body, _body_shape_index, _local_shape_index):
 	if round_is_active:
+		if body is Ball:
+			body.has_scored = true
 		goal_counter += 1
 		
 		# Visually mirror single-player juiciness identically without disrupting network state!
