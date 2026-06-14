@@ -40,9 +40,11 @@ const ios_achievement_world_champion: String = "champion"
 
 # android leaderboard
 const leaderboard_goat: String = "CgkI5q-mtaQOEAIQAQ"
+const leaderboard_pvp_wins: String = "YOUR_PLAY_GAMES_LEADERBOARD_ID_HERE"
 
 # ios leaderboard
 const ios_leaderboard_goat: String = "goat"
+const ios_leaderboard_pvp_wins: String = "YOUR_GAME_CENTER_LEADERBOARD_ID_HERE"
 
 
 
@@ -77,6 +79,8 @@ const TOKENS: String = "TOKENS"
 
 const GAME_MODE: String = "GAME_MODE"
 const NOT_SET_MODE: String = "NOT_SET_MODE"
+const PVP_WINS: String = "PVP_WINS"
+
 const various_section_dictionary_keys = [
 	TOKENS,
 	CURRENT_LEVEL,
@@ -85,7 +89,8 @@ const various_section_dictionary_keys = [
 	FIRST_TIME,
 	ETERNAL_BALLS,
 	INTERMEDIATE_ADS,
-	TWO_BALLS_PURCHASED
+	TWO_BALLS_PURCHASED,
+	PVP_WINS
 ]
 
 const level_section_dictionary_keys = [

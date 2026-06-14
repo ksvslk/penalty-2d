@@ -338,6 +338,7 @@ func local_end_match(winner_id: int, h_wins: int, c_wins: int):
 			if mp_level.get("celebrate") != null:
 				mp_level.celebrate.play()
 			mp_level.emit_signal("level_passed")
+			Data.add_pvp_win()
 		elif winner_id == 0:
 			win_text = "MATCH DRAWN!\nWELL PLAYED!"
 		else:

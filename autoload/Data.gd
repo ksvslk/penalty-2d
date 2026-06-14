@@ -389,3 +389,16 @@ func load_game(game_data: Dictionary) -> void:
 		level_select_updated.emit(get_levels())
 		var current = get_max_level()
 		load_level(int(current))
+
+
+func get_pvp_wins() -> int:
+	return int(_config.get_value(C.VARIOUS_SECTION, C.PVP_WINS, 0))
+
+
+func add_pvp_win() -> void:
+	var current_wins = get_pvp_wins()
+	current_wins += 1
+	_config.set_value(C.VARIOUS_SECTION, C.PVP_WINS, current_wins)
+	_config.save(_path)
+	
+	GPack.submit_score(current_wins, C.leaderboard_pvp_wins)
